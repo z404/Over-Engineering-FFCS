@@ -1,5 +1,5 @@
 import itertools
-from script import printer
+from printer import printer
 
 datadict = {}
 with open('input.txt') as file:

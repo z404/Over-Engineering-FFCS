@@ -2,10 +2,21 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import UploadTeacherDataForm
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
 
 
-def testView(request):
-    return HttpResponse("test view yayy")
+class UserLogin(LoginView):
+    template_name = 'oeffcs/loginpage.html'
+
+
+class UserLogout(LogoutView):
+    template_name = 'app/logoutpage.html'
+
+
+def index(request):
+    user = request.user
+    return render(request, 'oeffcs/index.html', {'user': user})
 
 
 def UploadTeacherDataView(request):

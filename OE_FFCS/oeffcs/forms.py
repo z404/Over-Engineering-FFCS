@@ -1,5 +1,8 @@
-from django.forms import forms
+from django.forms import ModelForm
+from oeffcs.models import Profile
 
 
-class UploadTeacherDataForm(forms.Form):
-    excel_file = forms.FileField(label='Choose Excel file:\t\t')
+class UploadFileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['data_file', 'reg_no']

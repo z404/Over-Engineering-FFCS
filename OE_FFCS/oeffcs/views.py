@@ -15,9 +15,10 @@ class UserLogout(LogoutView):
     # template_name = 'oeffcs/logoutpage.html'
     pass
 
+
 def index(request):
     user = request.user
-    # try: 
+    # try:
     #     print(request.user.profile.reg_no)
     # except User.profile.RelatedObjectDoesNotExist:
     if request.user.is_authenticated:
@@ -29,16 +30,32 @@ def index(request):
                 form.instance.user = request.user
                 form.save()
             status = 0
-        
-    return render(request, 'oeffcs/index.html', {'user': user})
+
+        # For Each status, a variable needs to be made
+        st0 = True if status >= 0 else False
+        st1 = True if status > 0 else False
+        st2 = True if status > 1 else False
+        # Add rest later
+
+        context = {'st0': st0, 'st1': st1, 'st2': st2, 'user': user}
+    else:
+        context = {'st0': False, 'st1': False, 'st2': False, 'user': user}
+    return render(request, 'oeffcs/index.html', context)
+
 
 @login_required
 def upload_file(request):
     if request.method == 'POST':
         # try:
         print(request.POST)
-        form = UploadFileForm(request.POST, request.FILES, instance=request.user.profile)
+        form = UploadFileForm(request.POST, request.FILES,
+                              instance=request.user.profile)
         if form.is_valid():
+            form.save()
+        form = ChangeStatusForm({'status_value': 1},
+                                instance=request.user.profile)
+        if form.is_valid():
+            form.instance.user = request.user
             form.save()
         return HttpResponseRedirect('/oeffcs')
         # except User.profile.RelatedObjectDoesNotExist:
@@ -51,3 +68,11 @@ def upload_file(request):
     else:
         form = UploadFileForm()
     return render(request, 'oeffcs/uploadexcel.html', {'form': form})
+
+
+@login_required
+def pickteachers(request):
+    # with open(str(request.user.profile.data_file)) as file:
+    #     teacherdata = file.read()
+    teacherdata = request.user.profile.data_file.read()
+    return render(request, 'oeffcs/pickteachers.html', {'teacherdata': teacherdata})

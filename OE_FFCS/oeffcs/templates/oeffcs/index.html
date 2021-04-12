@@ -21,8 +21,8 @@
 
     {% if user.is_authenticated %}
     <span class="pagebuttons">
-        <a href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
-        <a href="{% url 'pickteachers' %}">Choose your teachers</a>
+        {% if st0 %}<a href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>{% endif %}
+        {% if st1 %}<a href="{% url 'pickteachers' %}">Choose your teachers</a>{% endif %}
         <!-- This is where the next few buttons go to redirect to other views -->
     </span> {% endif %}
 </body>

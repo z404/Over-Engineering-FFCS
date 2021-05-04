@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from .backend import convertToForm
 
 
 class UserLogin(LoginView):
@@ -57,12 +58,12 @@ def upload_file(request):
         if form.is_valid():
             form.instance.user = request.user
             form.save()
-        return HttpResponseRedirect('/oeffcs')
+        return HttpResponseRedirect('/')
         # except User.profile.RelatedObjectDoesNotExist:
         #     form = UploadFileForm(request.POST, request.FILES)
         #     if form.is_valid():
         #         # file is saved
-        #         form.instance.user = request.user
+        #         form.instance.user = request.userz
         #         form.save()
         #         return HttpResponseRedirect('/oeffcs')
     else:
@@ -72,7 +73,9 @@ def upload_file(request):
 
 @login_required
 def pickteachers(request):
-    # with open(str(request.user.profile.data_file)) as file:
-    #     teacherdata = file.read()
-    teacherdata = request.user.profile.data_file.read()
-    return render(request, 'oeffcs/pickteachers.html', {'teacherdata': teacherdata})
+    if request.method == 'POST':
+        print(request.POST)
+        return HttpResponseRedirect('/')
+    teacherdata = str(request.user.profile.data_file)
+    ret = convertToForm(teacherdata)
+    return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret})

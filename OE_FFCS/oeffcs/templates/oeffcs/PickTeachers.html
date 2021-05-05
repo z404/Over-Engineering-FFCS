@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,6 +6,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/teacherselect.css' %}">
+    <script src="{% static 'js/teacherselect.js' %}"></script>
     <title>Document</title>
 </head>
 
@@ -13,6 +16,7 @@
     <form method="post" id="form1">
         {% csrf_token %} {% autoescape off %} {{ teacherdata }} {% endautoescape %}
     </form>
+
 </body>
 
 </html>

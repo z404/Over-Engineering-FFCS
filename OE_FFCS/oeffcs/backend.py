@@ -30,16 +30,21 @@ def convertToForm(filepath):
             
     #DATASTRUCTURE IS READY, RENDER FORM
     form = ""
+    count = 1
     for key,val in totaldictionary.items():
         subject, code, *trash = [i.rstrip(' )') for i in key.split('(')]
-        form+='<input type="checkbox" class="subjectcheckbox" name="'+code+'" value="'+code+'">'
+        form+='<input type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="'+\
+            code+'" onclick=toggleview("'+"teacherlist"+str(count)+'")>'
         form+='<label for="'+code+'"> '+subject+'</label><br>'
+        form+='<span style="display: none;" id="teacherlist'+str(count)+'">'
         for c_type, teacherlist in val.items():
             form+='&emsp; <label class="coursetype">'+c_type+'</label><br>'
             for teacher in teacherlist:
                 teachername, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
                 form+='&emsp; &emsp; <input type="checkbox" class="teachercheckbox" name="'+code+'" value="'+code+':'+teachercode+'">'
                 form+='<label for="'+code+'"> '+teacher+'</label><br>'
+        form+='</span>'
+        count += 1
     form+='<button type="submit" form="form1" value="Submit">Submit</button>'
 
     return form

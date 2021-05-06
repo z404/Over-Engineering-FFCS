@@ -27,11 +27,26 @@ def convertToForm(filepath):
         else:
             if employee_name not in totaldictionary[course_title][row['COURSE TYPE']]:
                 totaldictionary[course_title][row['COURSE TYPE']].append(employee_name)
-            
+    
+    #REMOVE ELA FROM ANY THAT HAVE ETH
+    # print(totaldictionary)
+    finaldata = {}
+    for subject, courses in totaldictionary.items():
+        course_types = list(courses.keys())
+        if course_types == ['ELA', 'ETH'] or course_types == ['ETH', 'ELA']:
+            theory = courses['ETH']
+            lab = courses['ELA']
+            for i in range(len(theory)):
+                theory[i] = theory[i] + ' ('+ str(lab.count(theory[i])) + ' Lab class(es))'
+            finaldata.update({subject:{'ETH':theory}})
+        else:
+            finaldata.update({subject:courses})
+    # print(finaldata)
+
     #DATASTRUCTURE IS READY, RENDER FORM
     form = ""
     count = 1
-    for key,val in totaldictionary.items():
+    for key,val in finaldata.items():
         subject, code, *trash = [i.rstrip(' )') for i in key.split('(')]
         form+='<input type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="'+\
             code+'" onclick=toggleview("'+"teacherlist"+str(count)+'") autocomplete="off">'
@@ -41,7 +56,8 @@ def convertToForm(filepath):
             form+='&emsp; <label class="coursetype">'+c_type+'</label><br>'
             for teacher in teacherlist:
                 teachername, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
-                form+='&emsp; &emsp; <input type="checkbox" class="teachercheckbox" name="'+code+'" value="'+code+':'+teachercode+'">'
+                form+='&emsp; &emsp; <input type="checkbox" class="teachercheckbox" \
+                    name="'+code+'" value="'+code+':'+teachercode+'" autocomplete="off">'
                 form+='<label for="'+code+'"> '+teacher+'</label><br>'
         form+='</span>'
         count += 1

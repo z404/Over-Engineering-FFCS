@@ -34,7 +34,7 @@ def convertToForm(filepath):
     for key,val in totaldictionary.items():
         subject, code, *trash = [i.rstrip(' )') for i in key.split('(')]
         form+='<input type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="'+\
-            code+'" onclick=toggleview("'+"teacherlist"+str(count)+'")>'
+            code+'" onclick=toggleview("'+"teacherlist"+str(count)+'") autocomplete="off">'
         form+='<label for="'+code+'"> '+subject+'</label><br>'
         form+='<span style="display: none;" id="teacherlist'+str(count)+'">'
         for c_type, teacherlist in val.items():

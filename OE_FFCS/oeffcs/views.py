@@ -73,9 +73,21 @@ def upload_file(request):
 
 @login_required
 def pickteachers(request):
-    if request.method == 'POST':
-        print(request.POST)
-        return HttpResponseRedirect('/')
     teacherdata = str(request.user.profile.data_file)
     ret = convertToForm(teacherdata)
-    return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret})
+    if request.method == 'POST':
+        postdata = dict(request.POST)
+        del postdata['csrfmiddlewaretoken']
+
+        if postdata == {}:
+            return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
+        else:
+            for course, teachers in postdata.items():
+                if course not in teachers:
+                    return render(request, 'oeffcs/pickteachers.html', \
+                        {'teacherdata': ret, 'errordisplay': 'How did you even get this error?'})
+                elif len(teachers) == 1:
+                    return render(request, 'oeffcs/pickteachers.html', \
+                        {'teacherdata': ret, 'errordisplay': 'You\'ve chosen a subject with 0 teachers!'})
+        return HttpResponseRedirect('/')
+    return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})

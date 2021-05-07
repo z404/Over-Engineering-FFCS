@@ -11,3 +11,8 @@ class ChangeStatusForm(ModelForm):
     class Meta:
         model = Profile
         fields = ['status_value']
+
+class ChangeTeachersForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['saveteachers']

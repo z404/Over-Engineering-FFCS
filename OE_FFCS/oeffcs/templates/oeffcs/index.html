@@ -23,6 +23,7 @@
     <span class="pagebuttons">
         {% if st0 %}<a href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>{% endif %}
         {% if st1 %}<a href="{% url 'pickteachers' %}">Choose your teachers</a>{% endif %}
+        {% if st2 %}<a href="{% url 'pickfilters' %}">Choose Filters</a>{% endif %}
         <!-- This is where the next few buttons go to redirect to other views -->
     </span> {% endif %}
 </body>

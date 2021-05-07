@@ -6,5 +6,6 @@ urlpatterns = [
     path('upload/', views.upload_file, name='uploadexcelfile'),
     path('login/', views.UserLogin.as_view(), name='login'),
     path('logout/', views.UserLogout.as_view(), name='logout'),
-    path('pickteachers/', views.pickteachers, name='pickteachers')
+    path('pickteachers/', views.pickteachers, name='pickteachers'),
+    path('pickfilters/', views.pickfilters, name='pickfilters')
 ]

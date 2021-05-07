@@ -101,3 +101,8 @@ def pickteachers(request):
                 form.save()
             return HttpResponseRedirect('/')
     return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})
+
+@login_required
+def pickfilters(request):
+    teacherdata = json.loads(request.user.profile.saveteachers)
+    return render(request, 'oeffcs/pickfilters.html', {'display':teacherdata})

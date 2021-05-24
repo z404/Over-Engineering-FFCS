@@ -1,0 +1,551 @@
+<!--{% load static %}-->
+<link rel="stylesheet" href="../../static/css/teacherselect.css" />
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+<!--{% comment %} {% static 'teacherselect.css' %} {% endcomment %}-->
+<table
+    id="timeTableStyle"
+    class="w3-table-all w3-card-4 w3-hoverable"
+    style="
+        border: 2px solid #3c8dbc;
+        text-align: center;
+        font-size: 12px;
+        margin-bottom: 20px;
+        width: 100%;
+    "
+>
+    <tbody>
+        <tr>
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">Theory</td>
+            <td bgcolor="#e2e2e2" class="normal">Start</td>
+
+            <td bgcolor="#CCCCFF" class="normal">08:00</td>
+            <td bgcolor="#CCCCFF" class="normal">09:00</td>
+            <td bgcolor="#CCCCFF" class="normal">10:00</td>
+            <td bgcolor="#CCCCFF" class="normal">11:00</td>
+            <td bgcolor="#CCCCFF" class="normal">12:00</td>
+            <td bgcolor="#CCCCFF" class="normal">-</td>
+
+            <td bgcolor="#CCCCFF" class="normal">Lunch</td>
+
+            <td bgcolor="#CCCCFF" class="normal">14:00</td>
+            <td bgcolor="#CCCCFF" class="normal">15:00</td>
+            <td bgcolor="#CCCCFF" class="normal">16:00</td>
+            <td bgcolor="#CCCCFF" class="normal">17:00</td>
+            <td bgcolor="#CCCCFF" class="normal">18:00</td>
+            <td bgcolor="#CCCCFF" class="normal">18:46</td>
+            <td bgcolor="#CCCCFF" class="normal">19:01</td>
+        </tr>
+
+        <tr>
+            <td bgcolor="#e2e2e2" class="normal">End</td>
+
+            <td bgcolor="#CCCCFF" class="normal">08:45</td>
+            <td bgcolor="#CCCCFF" class="normal">09:45</td>
+            <td bgcolor="#CCCCFF" class="normal">10:45</td>
+            <td bgcolor="#CCCCFF" class="normal">11:45</td>
+            <td bgcolor="#CCCCFF" class="normal">12:45</td>
+            <td bgcolor="#CCCCFF" class="normal">-</td>
+
+            <td bgcolor="#CCCCFF" class="normal">Lunch</td>
+
+            <td bgcolor="#CCCCFF" class="normal">14:45</td>
+            <td bgcolor="#CCCCFF" class="normal">15:45</td>
+            <td bgcolor="#CCCCFF" class="normal">16:45</td>
+            <td bgcolor="#CCCCFF" class="normal">17:45</td>
+            <td bgcolor="#CCCCFF" class="normal">18:45</td>
+            <td bgcolor="#CCCCFF" class="normal">19:00</td>
+            <td bgcolor="#CCCCFF" class="normal">19:45</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">Lab</td>
+            <td bgcolor="#e2e2e2" class="normal">Start</td>
+
+            <td bgcolor="#99CCFF" class="normal">08:00</td>
+            <td bgcolor="#99CCFF" class="normal">08:46</td>
+            <td bgcolor="#99CCFF" class="normal">10:00</td>
+            <td bgcolor="#99CCFF" class="normal">10:46</td>
+            <td bgcolor="#99CCFF" class="normal">11:31</td>
+            <td bgcolor="#99CCFF" class="normal">12:16</td>
+
+            <td bgcolor="#99CCFF" class="normal">Lunch</td>
+
+            <td bgcolor="#99CCFF" class="normal">14:00</td>
+            <td bgcolor="#99CCFF" class="normal">14:46</td>
+            <td bgcolor="#99CCFF" class="normal">16:00</td>
+            <td bgcolor="#99CCFF" class="normal">16:46</td>
+            <td bgcolor="#99CCFF" class="normal">17:31</td>
+            <td bgcolor="#99CCFF" class="normal">18:16</td>
+            <td bgcolor="#99CCFF" class="normal">-</td>
+        </tr>
+
+        <tr>
+            <td bgcolor="#e2e2e2" class="normal">End</td>
+
+            <td bgcolor="#99CCFF" class="normal">08:45</td>
+            <td bgcolor="#99CCFF" class="normal">09:30</td>
+            <td bgcolor="#99CCFF" class="normal">10:45</td>
+            <td bgcolor="#99CCFF" class="normal">11:30</td>
+            <td bgcolor="#99CCFF" class="normal">12:15</td>
+            <td bgcolor="#99CCFF" class="normal">13:00</td>
+
+            <td bgcolor="#99CCFF" class="normal">Lunch</td>
+
+            <td bgcolor="#99CCFF" class="normal">14:45</td>
+            <td bgcolor="#99CCFF" class="normal">15:30</td>
+            <td bgcolor="#99CCFF" class="normal">16:45</td>
+            <td bgcolor="#99CCFF" class="normal">17:30</td>
+            <td bgcolor="#99CCFF" class="normal">18:15</td>
+            <td bgcolor="#99CCFF" class="normal">19:00</td>
+            <td bgcolor="#99CCFF" class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">MON</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">A1</td>
+
+            <td class="normal">F1</td>
+
+            <td class="normal">D1</td>
+
+            <td class="normal">TB1</td>
+
+            <td class="normal">TG1</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">A2</td>
+
+            <td class="normal">F2</td>
+
+            <td class="normal">D2</td>
+
+            <td class="normal">TB2</td>
+
+            <td class="normal">TG2</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V3</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L1</td>
+
+            <td class="normal">L2</td>
+
+            <td class="normal">L3</td>
+
+            <td class="normal">L4</td>
+
+            <td class="normal">L5</td>
+
+            <td class="normal">L6</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L31</td>
+
+            <td class="normal">L32</td>
+
+            <td class="normal">L33</td>
+
+            <td class="normal">L34</td>
+
+            <td class="normal">L35</td>
+
+            <td class="normal">L36</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">TUE</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">B1</td>
+
+            <td class="normal">G1</td>
+
+            <td class="normal">E1</td>
+
+            <td class="normal">TC1</td>
+
+            <td class="normal">TAA1</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">B2</td>
+
+            <td class="normal">G2</td>
+
+            <td class="normal">E2</td>
+
+            <td class="normal">TC2</td>
+
+            <td class="normal">TAA2</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V4</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L7</td>
+
+            <td class="normal">L8</td>
+
+            <td class="normal">L9</td>
+
+            <td class="normal">L10</td>
+
+            <td class="normal">L11</td>
+
+            <td class="normal">L12</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L37</td>
+
+            <td class="normal">L38</td>
+
+            <td class="normal">L39</td>
+
+            <td class="normal">L40</td>
+
+            <td class="normal">L41</td>
+
+            <td class="normal">L42</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">WED</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">C1</td>
+
+            <td class="normal">A1</td>
+
+            <td class="normal">F1</td>
+
+            <td class="normal">V1</td>
+
+            <td class="normal">V2</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">C2</td>
+
+            <td class="normal">A2</td>
+
+            <td class="normal">F2</td>
+
+            <td class="normal">TD2</td>
+
+            <td class="normal">TBB2</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V5</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L13</td>
+
+            <td class="normal">L14</td>
+
+            <td class="normal">L15</td>
+
+            <td class="normal">L16</td>
+
+            <td class="normal">L17</td>
+
+            <td class="normal">L18</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L43</td>
+
+            <td class="normal">L44</td>
+
+            <td class="normal">L45</td>
+
+            <td class="normal">L46</td>
+
+            <td class="normal">L47</td>
+
+            <td class="normal">L48</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">THU</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">D1</td>
+
+            <td class="normal">B1</td>
+
+            <td class="normal">G1</td>
+
+            <td class="normal">TE1</td>
+
+            <td class="normal">TCC1</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">D2</td>
+
+            <td class="normal">B2</td>
+
+            <td class="normal">G2</td>
+
+            <td class="normal">TE2</td>
+
+            <td class="normal">TCC2</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V6</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L19</td>
+
+            <td class="normal">L20</td>
+
+            <td class="normal">L21</td>
+
+            <td class="normal">L22</td>
+
+            <td class="normal">L23</td>
+
+            <td class="normal">L24</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L49</td>
+
+            <td class="normal">L50</td>
+
+            <td class="normal">L51</td>
+
+            <td class="normal">L52</td>
+
+            <td class="normal">L53</td>
+
+            <td class="normal">L54</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">FRI</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">E1</td>
+
+            <td class="normal">C1</td>
+
+            <td class="normal">TA1</td>
+
+            <td class="normal">TF1</td>
+
+            <td class="normal">TD1</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">E2</td>
+
+            <td class="normal">C2</td>
+
+            <td class="normal">TA2</td>
+
+            <td class="normal">TF2</td>
+
+            <td class="normal">TDD2</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V7</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L25</td>
+
+            <td class="normal">L26</td>
+
+            <td class="normal">L27</td>
+
+            <td class="normal">L28</td>
+
+            <td class="normal">L29</td>
+
+            <td class="normal">L30</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L55</td>
+
+            <td class="normal">L56</td>
+
+            <td class="normal">L57</td>
+
+            <td class="normal">L58</td>
+
+            <td class="normal">L59</td>
+
+            <td class="normal">L60</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">SAT</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">V8</td>
+
+            <td class="normal">X11</td>
+
+            <td class="normal">X12</td>
+
+            <td class="normal">Y11</td>
+
+            <td class="normal">Y12</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">X21</td>
+
+            <td class="normal">Z21</td>
+
+            <td class="normal">Y21</td>
+
+            <td class="normal">W21</td>
+
+            <td class="normal">W22</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V9</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L71</td>
+
+            <td class="normal">L72</td>
+
+            <td class="normal">L73</td>
+
+            <td class="normal">L74</td>
+
+            <td class="normal">L75</td>
+
+            <td class="normal">L76</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L77</td>
+
+            <td class="normal">L78</td>
+
+            <td class="normal">L79</td>
+
+            <td class="normal">L80</td>
+
+            <td class="normal">L81</td>
+
+            <td class="normal">L82</td>
+
+            <td class="normal">-</td>
+        </tr>
+
+        <tr style="background-color: #ffffcc">
+            <td rowspan="2" bgcolor="#e2e2e2" class="normal">SUN</td>
+            <td bgcolor="#e2e2e2" class="normal">Theory</td>
+
+            <td class="normal">V10</td>
+
+            <td class="normal">Y11</td>
+
+            <td class="normal">Y12</td>
+
+            <td class="normal">X11</td>
+
+            <td class="normal">X12</td>
+
+            <td class="normal">-</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">Y21</td>
+
+            <td class="normal">Z21</td>
+
+            <td class="normal">X21</td>
+
+            <td class="normal">W21</td>
+
+            <td class="normal">W22</td>
+
+            <td class="normal">-</td>
+
+            <td class="normal">V11</td>
+        </tr>
+        <tr style="background-color: #f9efa4">
+            <td bgcolor="#e2e2e2" class="normal">Lab</td>
+
+            <td class="normal">L83</td>
+
+            <td class="normal">L84</td>
+
+            <td class="normal">L85</td>
+
+            <td class="normal">L86</td>
+
+            <td class="normal">L87</td>
+
+            <td class="normal">L88</td>
+
+            <td bgcolor="#e2e2e2" class="normal">Lunch</td>
+
+            <td class="normal">L89</td>
+
+            <td class="normal">L90</td>
+
+            <td class="normal">L91</td>
+
+            <td class="normal">L92</td>
+
+            <td class="normal">L93</td>
+
+            <td class="normal">L94</td>
+
+            <td class="normal">-</td>
+        </tr>
+    </tbody>
+</table>

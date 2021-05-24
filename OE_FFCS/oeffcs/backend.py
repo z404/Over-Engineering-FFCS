@@ -74,3 +74,31 @@ def convertToForm(filepath):
     form += '<button type="submit" form="form1" value="Submit">Submit</button>'
 
     return form
+
+
+def timetable_to_html_str(lst):
+    def conventional(slot: str) -> str:
+        return '<td class="normal">'+slot+'</td>'
+
+    def activated(slotinfo: str) -> str:
+        return '<td class="normal active">'+slotinfo+'</td>'
+
+    filepath = base_dir+"/oeffcs/templates/oeffcs/timetable.html"
+    print(filepath)
+    with open(filepath, 'r') as obj:
+        all_text = obj.read()
+        # print(all_text)
+        print(lst)
+        for enrollment in lst:
+            slots_in_enrollment = enrollment.split()[0].split('+')
+            enrollment_data = " ".join(enrollment.split()[1:])
+            print(slots_in_enrollment)
+            for slot in slots_in_enrollment:
+                all_text = all_text.replace(conventional(slot), activated(
+                    slot+'<br>'+enrollment_data))
+        print("For loops completed\n*******\n")  # +all_text
+        filepath2 = base_dir+"/oeffcs/templates/oeffcs/testing.html"
+        testfile = open(filepath2, 'w')
+        testfile.write(all_text)
+        testfile.close()
+    return all_text

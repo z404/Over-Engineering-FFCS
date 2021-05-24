@@ -1,0 +1,10 @@
+.normal {
+    border: 1px solid #3c8dbc;
+    text-align: center;
+    vertical-align: middle;
+    padding: 3px;
+    width: 50px;
+}
+.active {
+    background-color: #ccff33;
+}

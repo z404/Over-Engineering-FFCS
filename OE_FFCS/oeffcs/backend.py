@@ -1,11 +1,13 @@
+from numpy.core.fromnumeric import prod
+from numpy.lib.npyio import save
 import pandas as pd
 from django.conf import settings
+from itertools import product
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
 def convert_file_to_df(filepath):
     dataframe = pd.read_excel(base_dir+"/media/"+filepath)
-    print(base_dir+"/media/"+filepath)
     dataframe.fillna(method="ffill", inplace=True)
 
     # THE CODE HERE IS SPECIFIC TO LAST YEAR'S STRUCTURE
@@ -87,7 +89,6 @@ def timetable_to_html_str(lst):
         return '<td class="normal active">'+slotinfo+'</td>'
 
     filepath = base_dir+"/oeffcs/templates/oeffcs/timetable.html"
-    print(filepath)
     with open(filepath, 'r') as obj:
         all_text = obj.read()
         # print(all_text)
@@ -107,7 +108,41 @@ def timetable_to_html_str(lst):
     return all_text
 
 def generate_time_tables(user_object):
-    saved_teachers = user_object.profile.saveteachers
+    saved_teachers = eval(user_object.profile.saveteachers)
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
-    print(dataframe.head())
+    list_saved = list(saved_teachers.values())
+    list_cleaned = []
+
+    def get_slot_from_code(code):
+        slots = {}
+        course_code, teacher_code = code.split(':')
+        teacher_rows = dataframe.loc[(dataframe['COURSE CODE'] == course_code) & (dataframe['ERP ID'] == teacher_code)]
+        for index, row in teacher_rows.iterrows():
+            try:
+                slots[row['COURSE TYPE']].append(row['SLOT'])
+            except:
+                slots[row['COURSE TYPE']] = [row['SLOT']]
+        combinations = product(*list(slots.values()))
+        combined = []
+        for i in combinations:
+            combined.append("+".join(i) + ' ' + code)
+        return combined
+
+    for i in list_saved:
+        list_cleaned.append([j for j in i if ':' in j])
+
+    total_combo = []
+    for subject in list_cleaned:
+        subject_slots = []
+        for teacher in subject:
+            subject_slots.extend(get_slot_from_code(teacher))
+        total_combo.append(subject_slots)
+
+    #ALL SLOTS RECORDED
+    print(total_combo)
+
+    # trial = [i[0] for i in total_combo]
+    # timetable_to_html_str(trial)
+
+    

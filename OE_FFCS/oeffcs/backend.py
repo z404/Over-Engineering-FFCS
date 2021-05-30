@@ -3,8 +3,7 @@ from django.conf import settings
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
-
-def convertToForm(filepath):
+def convert_file_to_df(filepath):
     dataframe = pd.read_excel(base_dir+"/media/"+filepath)
     print(base_dir+"/media/"+filepath)
     dataframe.fillna(method="ffill", inplace=True)
@@ -17,6 +16,10 @@ def convertToForm(filepath):
     # print(dataframe.head())
 
     dataframe.drop(["CLASS ID", "EMPLOYEE SCHOOL"], axis=1, inplace=True)
+    return dataframe
+
+def convertToForm(filepath):
+    dataframe = convert_file_to_df(filepath)
     subjects = dataframe['COURSE TITLE'].unique()
 
     totaldictionary = {}
@@ -102,3 +105,9 @@ def timetable_to_html_str(lst):
         testfile.write(all_text)
         testfile.close()
     return all_text
+
+def generate_time_tables(user_object):
+    saved_teachers = user_object.profile.saveteachers
+    teacher_db = user_object.profile.data_file
+    dataframe = convert_file_to_df(str(teacher_db))
+    print(dataframe.head())

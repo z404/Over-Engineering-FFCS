@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .backend import convertToForm, timetable_to_html_str
+from .backend import convertToForm, timetable_to_html_str, generate_time_tables
 import json
 
 
@@ -22,8 +22,8 @@ def index(request):
     # try:
     #     print(request.user.profile.reg_no)
     # except User.profile.RelatedObjectDoesNotExist:
-    timetable_to_html_str(('L31+L32 KARPAGAM S', 'B2+TB2 PADALA KISHOR', 'L35+L36+L39+L40+L59+L60 SRIVANI A', 'L19+L20 SHARMILA BANU K',
-                          'A1+TA1 PREETHA EVANGELINE D', 'C1+TC1+TCC1+V2 DEEPA G', 'L15+L16 GOWSALYA M', 'G1+TG1 GOWSALYA M'))
+    # timetable_to_html_str(('L31+L32 KARPAGAM S', 'B2+TB2 PADALA KISHOR', 'L35+L36+L39+L40+L59+L60 SRIVANI A', 'L19+L20 SHARMILA BANU K',
+                        #   'A1+TA1 PREETHA EVANGELINE D', 'C1+TC1+TCC1+V2 DEEPA G', 'L15+L16 GOWSALYA M', 'G1+TG1 GOWSALYA M'))
     if request.user.is_authenticated:
         try:
             status = request.user.profile.status_value
@@ -41,7 +41,6 @@ def index(request):
 def upload_file(request):
     if request.method == 'POST':
         # try:
-        print(request.POST)
         form = UploadFileForm(request.POST, request.FILES,
                               instance=request.user.profile)
         if form.is_valid():
@@ -67,12 +66,10 @@ def upload_file(request):
 @login_required
 def pickteachers(request):
     teacherdata = str(request.user.profile.data_file)
-    print(teacherdata)
     ret = convertToForm(teacherdata)
     if request.method == 'POST':
         postdata = dict(request.POST)
         del postdata['csrfmiddlewaretoken']
-        print(postdata)
         if postdata == {}:
             return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
         else:
@@ -94,6 +91,9 @@ def pickteachers(request):
             if form.is_valid():
                 form.instance.user = request.user
                 form.save()
+            
+            # Generating Time tables
+            generate_time_tables(request.user)
             return HttpResponseRedirect('/')
     return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})
 

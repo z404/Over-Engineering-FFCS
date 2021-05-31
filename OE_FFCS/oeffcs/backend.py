@@ -18,6 +18,7 @@ def convert_file_to_df(filepath):
     # print(dataframe.head())
 
     dataframe.drop(["CLASS ID", "EMPLOYEE SCHOOL"], axis=1, inplace=True)
+    # print(dataframe.tail())
     return dataframe
 
 def convertToForm(filepath):
@@ -69,8 +70,10 @@ def convertToForm(filepath):
         for c_type, teacherlist in val.items():
             form += '&emsp; <label class="coursetype">'+c_type+'</label><br>'
             for teacher in teacherlist:
-                teachername, teachercode, * \
-                    trash = [i.rstrip(' )') for i in teacher.split('(')]
+                if 'APT' not in teacher:
+                    teachername, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
+                else:
+                    teachercode = teacher.split(' (')[-1].rstrip(' )')
                 form += '&emsp; &emsp; <input type="checkbox" class="teachercheckbox" \
                     name="'+code+'" value="'+code+':'+teachercode+'" autocomplete="off">'
                 form += '<label for="'+code+'"> '+teacher+'</label><br>'
@@ -92,11 +95,11 @@ def timetable_to_html_str(lst):
     with open(filepath, 'r') as obj:
         all_text = obj.read()
         # print(all_text)
-        print(lst)
+        # print(lst)
         for enrollment in lst:
             slots_in_enrollment = enrollment.split()[0].split('+')
             enrollment_data = " ".join(enrollment.split()[1:])
-            print(slots_in_enrollment)
+            # print(slots_in_enrollment)
             for slot in slots_in_enrollment:
                 all_text = all_text.replace(conventional(slot), activated(
                     slot+'<br>'+enrollment_data))
@@ -117,6 +120,7 @@ def generate_time_tables(user_object):
     def get_slot_from_code(code):
         slots = {}
         course_code, teacher_code = code.split(':')
+        # print(code)
         teacher_rows = dataframe.loc[(dataframe['COURSE CODE'] == course_code) & (dataframe['ERP ID'] == teacher_code)]
         for index, row in teacher_rows.iterrows():
             try:
@@ -140,9 +144,13 @@ def generate_time_tables(user_object):
         total_combo.append(subject_slots)
 
     #ALL SLOTS RECORDED
-    print(total_combo)
+    # print(total_combo)
 
     # trial = [i[0] for i in total_combo]
     # timetable_to_html_str(trial)
 
+    all_combinations = list(product(*total_combo))
+    print(len(all_combinations),"Combinations found!")
+
+    timetable_to_html_str(all_combinations[0])
     

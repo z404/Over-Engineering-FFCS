@@ -103,7 +103,7 @@ def timetable_to_html_str(lst):
             for slot in slots_in_enrollment:
                 all_text = all_text.replace(conventional(slot), activated(
                     slot+'<br>'+enrollment_data))
-        print("For loops completed\n*******\n")  # +all_text
+        # print("For loops completed\n*******\n")  # +all_text
         filepath2 = base_dir+"/oeffcs/templates/oeffcs/testing.html"
         testfile = open(filepath2, 'w')
         testfile.write(all_text)
@@ -149,8 +149,17 @@ def generate_time_tables(user_object):
     # trial = [i[0] for i in total_combo]
     # timetable_to_html_str(trial)
 
-    all_combinations = list(product(*total_combo))
+    print(total_combo)
+    merged_combo = []
+    for i in total_combo:
+        subjectlst = {}
+        for j in i:
+            slot = j.split(' ')[0]
+            teachers = " ".join(j.split(" ")[1:])
+            if slot in subjectlst.keys():
+                subjectlst[slot] += ' ' + teachers
+            else:
+                subjectlst[slot] =  teachers
+        merged_combo.append([key+' '+value for key,value in subjectlst.items()])
+    all_combinations = list(product(*merged_combo))
     print(len(all_combinations),"Combinations found!")
-
-    timetable_to_html_str(all_combinations[0])
-    

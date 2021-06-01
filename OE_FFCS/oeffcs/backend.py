@@ -43,15 +43,21 @@ def convertToForm(filepath):
 
     # REMOVE ELA FROM ANY THAT HAVE ETH
     # print(totaldictionary)
+    def get_lab_count(subject, teacher):
+        shortened = dataframe.loc[(dataframe['COURSE CODE'] == subject) & (dataframe['COURSE TYPE'] == 'ELA') & (dataframe['ERP ID'] == teacher)]
+        return len(shortened)
+
     finaldata = {}
     for subject, courses in totaldictionary.items():
+        print()
         course_types = list(courses.keys())
         if course_types == ['ELA', 'ETH'] or course_types == ['ETH', 'ELA']:
             theory = courses['ETH']
             lab = courses['ELA']
             for i in range(len(theory)):
+                lab_count = get_lab_count(subject.split('(')[-1].rstrip(')'), theory[i].split('(')[-1].rstrip(')'))
                 theory[i] = theory[i] + \
-                    ' (' + str(lab.count(theory[i])) + ' Lab class(es))'
+                    ' (' + str(lab_count) + ' Lab class(es))'
             finaldata.update({subject: {'ETH': theory}})
         else:
             finaldata.update({subject: courses})

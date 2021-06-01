@@ -49,7 +49,6 @@ def convertToForm(filepath):
 
     finaldata = {}
     for subject, courses in totaldictionary.items():
-        print()
         course_types = list(courses.keys())
         if course_types == ['ELA', 'ETH'] or course_types == ['ETH', 'ELA']:
             theory = courses['ETH']
@@ -155,7 +154,7 @@ def generate_time_tables(user_object):
     # trial = [i[0] for i in total_combo]
     # timetable_to_html_str(trial)
 
-    print(total_combo)
+    # print(total_combo)
     merged_combo = []
     for i in total_combo:
         subjectlst = {}
@@ -169,3 +168,32 @@ def generate_time_tables(user_object):
         merged_combo.append([key+' '+value for key,value in subjectlst.items()])
     all_combinations = list(product(*merged_combo))
     print(len(all_combinations),"Combinations found!")
+
+    validated = []
+    for i in all_combinations:
+        if validate_timetable(i):
+            validated.append(i)
+    print(len(validated), "Combinations valid!")
+
+    return validated
+    #TODO: VALIDATE EACH TIME TABLE AND SAVE IN DATABASE
+
+def validate_timetable(timetable):
+    slots = []
+    for i in timetable:
+        slots.extend(i.split(' ')[0].split('+'))
+    dict_conv = {
+        'A1':['L1','L14'], 'B1':['L7','L20'], 'C1':['L13','L26'], 'D1':['L19','L3'], 'E1':['L25','L9'], 'F1':['L2','L15'],\
+        'G1':['L8','L21'], 'TA1':['L27'], 'TB1':['L4'], 'TC1':['L10'], 'V1':['L16'], 'TE1':['L22'], 'TF1':['L28'], 'TG1':['L5'],\
+        'TAA1':['L11'], 'V2':['L17'], 'TCC1':['L23'], 'TD1':['L29'],\
+        'A2':['L31','L44'], 'B2':['L37','L50'], 'C2':['L43','L56'], 'D2':['L49','L33'], 'E2':['L55','L39'], 'F2':['L32','L45'],\
+        'G2':['L38','L51'], 'TA2':['L57'], 'TB2':['L34'], 'TC2':['L40'], 'TD2':['L46'], 'TE2':['L52'], 'TF2':['L58'], 'TG2':['L35'],\
+        'TAA2':['L41'], 'TBB2':['L47'], 'TCC2':['L53'], 'TDD2':['L59']}
+    slots_cleaned = []
+    for i in slots:
+        if i in dict_conv.keys():
+            slots_cleaned.extend(dict_conv[i])
+        else: slots_cleaned.append(i)
+    
+    if len(slots_cleaned) == len(set(slots_cleaned)): return True
+    else: return False

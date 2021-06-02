@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, timetable_to_html_str, generate_time_tables
 import json
+import threading
 
 
 class UserLogin(LoginView):
@@ -80,11 +81,11 @@ def pickteachers(request):
                 elif len(teachers) == 1:
                     return render(request, 'oeffcs/pickteachers.html',
                                   {'teacherdata': ret, 'errordisplay': 'You\'ve chosen a subject with 0 teachers!'})
-            form = ChangeStatusForm(
-                {'status_value': 2}, instance=request.user.profile)
-            if form.is_valid():
-                form.instance.user = request.user
-                form.save()
+            # form = ChangeStatusForm(
+            #     {'status_value': 2}, instance=request.user.profile)
+            # if form.is_valid():
+            #     form.instance.user = request.user
+            #     form.save()
 
             form = ChangeTeachersForm(
                 {'saveteachers': json.dumps(postdata)}, instance=request.user.profile)
@@ -93,7 +94,8 @@ def pickteachers(request):
                 form.save()
             
             # Generating Time tables
-            generate_time_tables(request.user)
+            threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
+            threadsplit.start()
             return HttpResponseRedirect('/')
     return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})
 

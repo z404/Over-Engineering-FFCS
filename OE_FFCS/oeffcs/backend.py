@@ -3,6 +3,7 @@ from numpy.lib.npyio import save
 import pandas as pd
 from django.conf import settings
 from itertools import product
+from .forms import ChangeStatusForm
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -175,8 +176,7 @@ def generate_time_tables(user_object):
             validated.append(i)
     print(len(validated), "Combinations valid!")
 
-    return validated
-    #TODO: VALIDATE EACH TIME TABLE AND SAVE IN DATABASE
+    save_timetable(validated, user_object)
 
 def validate_timetable(timetable):
     slots = []
@@ -197,3 +197,13 @@ def validate_timetable(timetable):
     
     if len(slots_cleaned) == len(set(slots_cleaned)): return True
     else: return False
+
+def save_timetable(time_tables, user):
+    # Save to user profile, update status number
+    form = ChangeStatusForm(
+        {'status_value': 2}, instance=user.profile)
+    if form.is_valid():
+        form.instance.user = user
+        form.save()
+    
+    print('completed')

@@ -68,7 +68,7 @@ def convertToForm(filepath):
     count = 1
     for key, val in finaldata.items():
         subject, code, *trash = [i.rstrip(' )') for i in key.split('(')]
-        form += '<input type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="' +\
+        form += '<input id ="'+code+'" type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="' +\
             code+'" onclick=toggleview("'+"teacherlist" + \
             str(count)+'") autocomplete="off">'
         form += '<label for="'+code+'"> '+subject+'</label><br>'
@@ -80,9 +80,9 @@ def convertToForm(filepath):
                     teachername, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
                 else:
                     teachercode = teacher.split(' (')[-1].rstrip(' )')
-                form += '&emsp; &emsp; <input type="checkbox" class="teachercheckbox" \
+                form += '&emsp; &emsp; <input id="'+ teacher+code +'" type="checkbox" class="teachercheckbox" \
                     name="'+code+'" value="'+code+':'+teachercode+'" autocomplete="off">'
-                form += '<label for="'+code+'"> '+teacher+'</label><br>'
+                form += '<label for="'+teacher+code+'"> '+teacher+'</label><br>'
         form += '</span>'
         count += 1
     form += '<button type="submit" form="form1" value="Submit">Submit</button>'

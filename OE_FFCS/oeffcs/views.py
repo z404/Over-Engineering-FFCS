@@ -94,7 +94,6 @@ def pickteachers(request):
             #     form.instance.user = request.user
             #     form.save()
 
-            print(postdata_cleaned)
             form = ChangeTeachersForm(
                 {'saveteachers': json.dumps(postdata)}, instance=request.user.profile)
             if form.is_valid():

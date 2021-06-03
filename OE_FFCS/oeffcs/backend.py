@@ -18,6 +18,16 @@ EMPLOYEE_NAME = 'EMPLOYEE NAME'
 COURSE_ELA = 'ELA'
 COURSE_ETH = 'ETH'
 
+# !! Add saturday and sunday classes too !!
+dict_conv = {
+        'A1':['L1','L14'], 'B1':['L7','L20'], 'C1':['L13','L26'], 'D1':['L19','L3'], 'E1':['L25','L9'], 'F1':['L2','L15'],\
+        'G1':['L8','L21'], 'TA1':['L27'], 'TB1':['L4'], 'TC1':['L10'], 'V1':['L16'], 'TE1':['L22'], 'TF1':['L28'], 'TG1':['L5'],\
+        'TAA1':['L11'], 'V2':['L17'], 'TCC1':['L23'], 'TD1':['L29'],\
+        'A2':['L31','L44'], 'B2':['L37','L50'], 'C2':['L43','L56'], 'D2':['L49','L33'], 'E2':['L55','L39'], 'F2':['L32','L45'],\
+        'G2':['L38','L51'], 'TA2':['L57'], 'TB2':['L34'], 'TC2':['L40'], 'TD2':['L46'], 'TE2':['L52'], 'TF2':['L58'], 'TG2':['L35'],\
+        'TAA2':['L41'], 'TBB2':['L47'], 'TCC2':['L53'], 'TDD2':['L59']
+        }
+
 def convert_file_to_df(filepath):
     # REQUIRED COLUMNS IN THE DATASET ARE:
         # COURSE CODE
@@ -279,13 +289,7 @@ def validate_timetable(timetable):
     slots = []
     for i in timetable:
         slots.extend(i.split(' ')[0].split('+'))
-    dict_conv = {
-        'A1':['L1','L14'], 'B1':['L7','L20'], 'C1':['L13','L26'], 'D1':['L19','L3'], 'E1':['L25','L9'], 'F1':['L2','L15'],\
-        'G1':['L8','L21'], 'TA1':['L27'], 'TB1':['L4'], 'TC1':['L10'], 'V1':['L16'], 'TE1':['L22'], 'TF1':['L28'], 'TG1':['L5'],\
-        'TAA1':['L11'], 'V2':['L17'], 'TCC1':['L23'], 'TD1':['L29'],\
-        'A2':['L31','L44'], 'B2':['L37','L50'], 'C2':['L43','L56'], 'D2':['L49','L33'], 'E2':['L55','L39'], 'F2':['L32','L45'],\
-        'G2':['L38','L51'], 'TA2':['L57'], 'TB2':['L34'], 'TC2':['L40'], 'TD2':['L46'], 'TE2':['L52'], 'TF2':['L58'], 'TG2':['L35'],\
-        'TAA2':['L41'], 'TBB2':['L47'], 'TCC2':['L53'], 'TDD2':['L59']}
+    if len(slots) != len(set(slots)): return False
     slots_cleaned = []
     for i in slots:
         if i in dict_conv.keys():

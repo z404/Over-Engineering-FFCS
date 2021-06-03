@@ -4,6 +4,7 @@ import pandas as pd
 from django.conf import settings
 from itertools import product
 from .forms import ChangeStatusForm
+from .models import Profile, Timetable, Entry
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -306,5 +307,16 @@ def save_timetable(time_tables, user):
     if form.is_valid():
         form.instance.user = user
         form.save()
-    
+    print(time_tables)
+    for timetable in time_tables:
+        temp_timeable = Timetable(level = user.profile)
+        temp_timeable.save()
+        for entry in timetable:
+            temp_entry=Entry(
+                level = temp_timeable,
+                slots=entry.split()[0],
+                course_code=entry.split()[1].split(':')[0],
+                subject_name=' '.join(entry.split()[1:])
+            )
+            temp_entry.save()
     print('completed')

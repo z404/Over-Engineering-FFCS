@@ -7,88 +7,185 @@ from .forms import ChangeStatusForm
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
+# Coulmn names, if needed to be changed later
+COURSE_CODE = 'COURSE CODE'
+COURSE_TITLE = 'COURSE TITLE'
+COURSE_TYPE = 'COURSE TYPE'
+SLOT = 'SLOT'
+ERP_ID = 'ERP ID'
+EMPLOYEE_NAME = 'EMPLOYEE NAME'
+
+COURSE_ELA = 'ELA'
+COURSE_ETH = 'ETH'
+
 def convert_file_to_df(filepath):
+    # REQUIRED COLUMNS IN THE DATASET ARE:
+        # COURSE CODE
+        # COURSE TITLE
+        # COURSE TYPE
+        # SLOT
+        # ERP ID
+        # EMPLOYEE NAME
+
+    # Reading the dataset from file
     dataframe = pd.read_excel(base_dir+"/media/"+filepath)
+
+    # Filling previous entries into NAN values
     dataframe.fillna(method="ffill", inplace=True)
-
-    # THE CODE HERE IS SPECIFIC TO LAST YEAR'S STRUCTURE
-    # WHEN THE NEW SHEET COMES, MODIFY THIS PART OF CODE TO CHANGE READ STRUCTURE
-    # FOR NOW, WE ARE USING MID SLOT DETAILS, AS IT HAS TEACHER'S NAMES
-
-    # CONVERT DATAFRAME INTO DATASTRUCTURE: {"<COURSE NAME>;<COURSE CODE>": {<COURSE TYPE>: ["<TEACHER NAMES>;<ERP ID>"]}}
     # print(dataframe.head())
 
-    dataframe.drop(["CLASS ID", "EMPLOYEE SCHOOL"], axis=1, inplace=True)
-    # print(dataframe.tail())
+    # Dropping unrequired columns
+    required_columns = [COURSE_CODE, COURSE_TITLE, COURSE_TYPE, SLOT, ERP_ID, EMPLOYEE_NAME]
+    dataframe = dataframe[required_columns]
+
     return dataframe
 
-def convertToForm(filepath):
-    dataframe = convert_file_to_df(filepath)
-    subjects = dataframe['COURSE TITLE'].unique()
+def convert_df_to_ds(dataframe):
+    #List of subjects
+    subjects = dataframe[COURSE_TITLE].unique()
 
+    # CONVERT DATAFRAME INTO DATASTRUCTURE: {"<COURSE NAME>;<COURSE CODE>": {<COURSE TYPE>: ["<TEACHER NAMES>;<ERP ID>"]}}
+    # Total dictionary is in the above format
     totaldictionary = {}
 
+    # Iterating through the dataframe
     for index, row in dataframe.iterrows():
-        course_title = row['COURSE TITLE'] + ' (' + row['COURSE CODE']+')'
-        employee_name = row['EMPLOYEE NAME'] + ' (' + row['ERP ID']+')'
+        # Extracting title and name of teacher, along with course code and teacher ID
+        course_title = row[COURSE_TITLE] + ' (' + row[COURSE_CODE]+')'
+        employee_name = row[EMPLOYEE_NAME] + ' (' + row[ERP_ID]+')'
+
+        # If subject hasn't been seen before, add the new subject, along with the course type
         if course_title not in totaldictionary.keys():
             totaldictionary.update(
-                {course_title: {row['COURSE TYPE']: [employee_name]}})
-        elif row['COURSE TYPE'] not in totaldictionary[course_title].keys():
+                {course_title: {row[COURSE_TYPE]: [employee_name]}})
+        # Else if course type hasn't been seen before, add the new course type to the subject dictionary
+        elif row[COURSE_TYPE] not in totaldictionary[course_title].keys():
             totaldictionary[course_title].update(
-                {row['COURSE TYPE']: [employee_name]})
+                {row[COURSE_TYPE]: [employee_name]})
+        # If both subject and type has been seen, append teacher name to teacher list
         else:
-            if employee_name not in totaldictionary[course_title][row['COURSE TYPE']]:
-                totaldictionary[course_title][row['COURSE TYPE']].append(
+            if employee_name not in totaldictionary[course_title][row[COURSE_TYPE]]:
+                totaldictionary[course_title][row[COURSE_TYPE]].append(
                     employee_name)
 
     # REMOVE ELA FROM ANY THAT HAVE ETH
-    # print(totaldictionary)
+    # Function to get lab count from eacher for subject
     def get_lab_count(subject, teacher):
-        shortened = dataframe.loc[(dataframe['COURSE CODE'] == subject) & (dataframe['COURSE TYPE'] == 'ELA') & (dataframe['ERP ID'] == teacher)]
-        return len(shortened)
+        # Remove all other data except that teacher and that subject and lab classes and return length
+        return len(dataframe.loc[(dataframe[COURSE_CODE] == subject) & (dataframe[COURSE_TYPE] == COURSE_ELA) & (dataframe[ERP_ID] == teacher)])
 
+    # Building final datastructure after removing lab classes
     finaldata = {}
+
+    # Iterating through each subject
     for subject, courses in totaldictionary.items():
-        course_types = list(courses.keys())
-        if course_types == ['ELA', 'ETH'] or course_types == ['ETH', 'ELA']:
-            theory = courses['ETH']
-            lab = courses['ELA']
-            for i in range(len(theory)):
-                lab_count = get_lab_count(subject.split('(')[-1].rstrip(')'), theory[i].split('(')[-1].rstrip(')'))
-                theory[i] = theory[i] + \
+        # If course has ETH and ELA
+        if sorted(list(courses.keys())) == sorted([COURSE_ELA, COURSE_ETH]):
+            # Iterating through theory and searching for lab classes
+            for i in range(len(courses[COURSE_ETH])):
+                # Getting lab count
+                lab_count = get_lab_count(subject.split('(')[-1].rstrip(')'), courses[COURSE_ETH][i].split('(')[-1].rstrip(')'))
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                #What do we do when lab count is 0?
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                # Adding lab count to teacher name
+                courses[COURSE_ETH][i] = courses[COURSE_ETH][i] + \
                     ' (' + str(lab_count) + ' Lab class(es))'
-            finaldata.update({subject: {'ETH': theory}})
+            # Update the datastructure with new data
+            finaldata.update({subject: {COURSE_ETH: courses[COURSE_ETH]}})
         else:
+            # Not a ELA course, just uppend and move on
             finaldata.update({subject: courses})
+
+    return finaldata
     # print(finaldata)
 
-    # DATASTRUCTURE IS READY, RENDER FORM
-    form = ""
+class FORM:
+    # Form variable to store form
+    form = ''
+    # count variable to store count
     count = 1
-    for key, val in finaldata.items():
-        subject, code, *trash = [i.rstrip(' )') for i in key.split('(')]
-        form += '<input id ="'+code+'" type="checkbox" class="subjectcheckbox'+str(count)+'" name="'+code+'" value="' +\
-            code+'" onclick=toggleview("'+"teacherlist" + \
-            str(count)+'") autocomplete="off">'
-        form += '<label for="'+code+'"> '+subject+'</label><br>'
-        form += '<span style="display: none;" id="teacherlist'+str(count)+'">'
-        for c_type, teacherlist in val.items():
-            form += '&emsp; <label class="coursetype">'+c_type+'</label><br>'
+
+    def add_subject(self, subject, subject_code):
+        # Creating checkbox for subject
+        self.form += '<input id ="' + subject_code + '" \
+                type="checkbox" \
+                class="subjectcheckbox'+str(self.count)+'" \
+                name="'+subject_code+'" \
+                value="'+subject_code+'" \
+                onclick=toggleview("'+"teacherlist" + str(self.count)+'") \
+                autocomplete="off">'
+        
+        # Creating lable for checkbox
+        self.form += '<label for="'+subject_code+'"> '+subject+'</label><br>'
+
+        # Creating span to hold and hide teacher names
+        self.form += '<span style="display: none;" id="teacherlist'+str(self.count)+'">'
+
+        # Increment count for subjects
+        self.count += 1
+
+    def add_course_type(self, course_type):
+        # Adding label for course type
+        # !! Inside span of subject !!
+        self.form += '&emsp; <label class="coursetype">'+course_type+'</label><br>'
+
+    def add_teacher(self, teacher, subject_code, teacher_code):
+        # Adding checkbox for teacher 
+        self.form += '&emsp; &emsp; <input id="'+ teacher+subject_code +'" \
+                    type="checkbox" \
+                    class="teachercheckbox" \
+                    name="'+subject_code+'" \
+                    value="'+subject_code+':'+teacher_code+'" \
+                    autocomplete="off">'
+        
+        # Adding lable for teacher name
+        self.form += '<label for="'+teacher+subject_code+'"> '+teacher+'</label><br>'
+
+    def close_subject(self):
+        # Adding a closing span tag for subject
+        self.form += '</span>'
+
+    def output(self):
+        # Returning form with submit button at the end
+        return self.form + '<button type="submit" form="form1" value="Submit">Submit</button>'
+
+def convertToForm(filepath):
+    # Getting datastructure from file
+    finaldata = convert_df_to_ds(convert_file_to_df(filepath))
+    
+    # FORM object
+    form2 = FORM()
+
+    # Iterating through data
+    for subject_data, course_info in finaldata.items():
+        # Extract subject and subject code
+        subject, code, *trash = [i.rstrip(' )') for i in subject_data.split('(')]
+        # Pass to form
+        form2.add_subject(subject, code)
+
+        # Iterating through course data
+        for c_type, teacherlist in course_info.items():
+            # Add course to form
+            form2.add_course_type(c_type)
+
+            # Extract teacher code from teachers name
             for teacher in teacherlist:
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # Special Case for STS, need to generalize
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 if 'APT' not in teacher:
-                    teachername, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
+                    trash, teachercode, *trash = [i.rstrip(' )') for i in teacher.split('(')]
                 else:
                     teachercode = teacher.split(' (')[-1].rstrip(' )')
-                form += '&emsp; &emsp; <input id="'+ teacher+code +'" type="checkbox" class="teachercheckbox" \
-                    name="'+code+'" value="'+code+':'+teachercode+'" autocomplete="off">'
-                form += '<label for="'+teacher+code+'"> '+teacher+'</label><br>'
-        form += '</span>'
-        count += 1
-    form += '<button type="submit" form="form1" value="Submit">Submit</button>'
+                # Add teacher to form
+                form2.add_teacher(teacher, code, teachercode)
+        # Finish subject
+        form2.close_subject()
 
-    return form
-
+    # Return form data
+    return form2.output()
 
 def timetable_to_html_str(lst):
     def conventional(slot: str) -> str:
@@ -127,12 +224,12 @@ def generate_time_tables(user_object):
         slots = {}
         course_code, teacher_code = code.split(':')
         # print(code)
-        teacher_rows = dataframe.loc[(dataframe['COURSE CODE'] == course_code) & (dataframe['ERP ID'] == teacher_code)]
+        teacher_rows = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == teacher_code)]
         for index, row in teacher_rows.iterrows():
             try:
-                slots[row['COURSE TYPE']].append(row['SLOT'])
+                slots[row[COURSE_TYPE]].append(row[SLOT])
             except:
-                slots[row['COURSE TYPE']] = [row['SLOT']]
+                slots[row[COURSE_TYPE]] = [row[SLOT]]
         combinations = product(*list(slots.values()))
         combined = []
         for i in combinations:

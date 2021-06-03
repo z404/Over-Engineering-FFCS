@@ -74,19 +74,27 @@ def pickteachers(request):
         if postdata == {}:
             return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
         else:
+            postdata_cleaned = {}
             for course, teachers in postdata.items():
                 if course not in teachers:
-                    return render(request, 'oeffcs/pickteachers.html',
-                                  {'teacherdata': ret, 'errordisplay': 'How did you even get this error?'})
+                    # return render(request, 'oeffcs/pickteachers.html',
+                    #               {'teacherdata': ret, 'errordisplay': 'How did you even get this error?'})
+                    continue
                 elif len(teachers) == 1:
                     return render(request, 'oeffcs/pickteachers.html',
                                   {'teacherdata': ret, 'errordisplay': 'You\'ve chosen a subject with 0 teachers!'})
+                else:
+                    postdata_cleaned.update({course:teachers})
+            
+            if postdata_cleaned == {}:
+                return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
             # form = ChangeStatusForm(
             #     {'status_value': 2}, instance=request.user.profile)
             # if form.is_valid():
             #     form.instance.user = request.user
             #     form.save()
 
+            print(postdata_cleaned)
             form = ChangeTeachersForm(
                 {'saveteachers': json.dumps(postdata)}, instance=request.user.profile)
             if form.is_valid():

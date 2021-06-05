@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
@@ -111,3 +111,8 @@ def pickteachers(request):
 def pickfilters(request):
     teacherdata = json.loads(request.user.profile.saveteachers)
     return render(request, 'oeffcs/pickfilters.html', {'display': teacherdata})
+
+@login_required
+def pre_check(request):
+    data=dict(eval(request.body))
+    return JsonResponse(data=data)

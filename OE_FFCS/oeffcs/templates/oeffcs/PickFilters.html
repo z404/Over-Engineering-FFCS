@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Choose filters{% endblock title %}
+{% block head %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+{% endblock head %}
 {% block content %}
+<script type="text/javascript">
+$(document).ready(function () {
+  $('.btn').click(function() {
+    checked = $("input[type=checkbox]:checked").length;
+
+    if(!checked) {
+      alert("You must check at least one checkbox.");
+      return false;
+    }
+
+  });
+});
+</script>
 <h1>This is the filter page</h1>
   {% comment 'i don\'t know why we still have display but okay will delete later' %}{{ display }}{% endcomment %}
-  <form method="post" action="#">
+  <form method="post" action=""  class="ajax">
     {% csrf_token %}
     <hr>
     <input type="checkbox" name="category" id="category-pre-post-lunch" value="category-pre-post-lunch">
@@ -40,17 +56,65 @@
     <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
     <label for="8-classes">8 am 'o' clock classes</label>
     <br>
-    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
+    <input type="number" name="2-classes" id="2-classes" min="0" max="5" value="2">
     <label for="2-classes">2 pm 'o' clock classes</label>
     <br>
-    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
+    <input type="number" name="6-classes" id="6-classes" min="0" max="5" value="2">
     <label for="6-classes">6 pm 'o' clock classes</label>
     <br>
     <hr>
     <label for="slots">Enter the slots you want to eliminate for sure:</label>
     <input type="text" name="slots" id="slots" placeholder="A1, A2,B2,C1 , D2">
     <hr>
-    <input type="submit" value="Pre check" formaction="#">
-    <input type="submit" value="Save these filters">
+    <input type="submit" id="pre-check" class="btn btn-info" value="Pre check"/>
+    <input type="submit" id="save-filters" value="Save these filters" class="btn btn-primary"/>
   </form>
+  <div id="pre-check-info" class="paragraph">
+  </div>
+  <script type="text/javascript">
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  $(document).ready(function () {
+    $('input#pre-check').on('click',function(){
+    var that=$('form.ajax'),
+    url="{% url 'precheck' %}",
+    type=that.attr('method'),
+    data={};
+    // data['X-CSRFToken']=csrftoken;
+    console.log(that)
+    console.log("Hello world")
+    // $('<p>' + JSON.stringify(that) + '</p>').appendTo('#pre-check-info');
+
+    that.find('input[type=checkbox]:checked,input[type=radio]:checked,input[type=number],input[type=text]').each((index, valv)=>{
+      var that=$(valv),
+        name=that.attr('name'),
+        id=that.attr('id'),
+        value=that.val();
+      // console.log(id,value);
+      if(name=='category')
+        data[id]=value;
+      else{
+        data[name]=value;
+      }
+    });
+    // console.log(data);
+    fetch("{% url 'precheck' %}", {
+        method: 'POST',
+        'body': JSON.stringify(data),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+            'X-CSRFToken': csrftoken
+        }
+    }).then(
+      response => response.json()
+    ).then(json => {
+        console.log(json);
+        $("#pre-check-info").text(JSON.stringify(json));
+    });
+    event.preventDefault();
+  
+  });
+  });
+      
+    
+  </script>
 {% endblock content %}

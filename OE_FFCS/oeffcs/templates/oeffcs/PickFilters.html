@@ -1,7 +1,56 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}This is the filter page
-  {{ display }}
-  <script src="" async="async" defer="defer"></script>
+{% block title %}Choose filters{% endblock title %}
+{% block content %}
+<h1>This is the filter page</h1>
+  {% comment 'i don\'t know why we still have display but okay will delete later' %}{{ display }}{% endcomment %}
+  <form method="post" action="#">
+    {% csrf_token %}
+    <hr>
+    <input type="checkbox" name="category" id="category-pre-post-lunch" value="category-pre-post-lunch">
+    <label for="category-pre-post-lunch">Lab/Theory Pre/Post Lunch</label>
+    <br>
+    <input type="checkbox" name="category" id="category-time-based-selection" value="category-time-based-selection">
+    <label for="category-time-based-selection">Time based selections</label>
+    <br>
+    <input type="checkbox" name="category" id="category-slot-based-elim" value="category-slot-based-elim">
+    <label for="category-slot-based-elim">Slot based selections</label>
+    <br>
+    <hr>
+    <input type="radio" name="pre-post-lunch" id="pre-theory-postlab" value="pre-theory-postlab">
+    <label for="pre-theory-postlab">Lab/Theory Pre/Post Lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="pre-lab-post-theory" value="pre-lab-post-theory">
+    <label for="pre-lab-post-theory">Lab/Theory Post/Pre Lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="pre-theory" value="pre-theory">
+    <label for="pre-theory">Only care about <b>theory</b> being <b>pre</b> lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="pre-lab" value="pre-lab">
+    <label for="pre-lab">Only care about <b>lab</b> being <b>pre</b> lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="post-theory" value="post-theory">
+    <label for="post-theory">Only care about <b>theory</b> being <b>post</b> lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="post-lab" value="post-lab">
+    <label for="post-lab">Only care about <b>lab</b> being <b>post</b> lunch</label>
+    <br>
+    <hr>
+    <p>Maximum number of:</p>
+    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
+    <label for="8-classes">8 am 'o' clock classes</label>
+    <br>
+    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
+    <label for="2-classes">2 pm 'o' clock classes</label>
+    <br>
+    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
+    <label for="6-classes">6 pm 'o' clock classes</label>
+    <br>
+    <hr>
+    <label for="slots">Enter the slots you want to eliminate for sure:</label>
+    <input type="text" name="slots" id="slots" placeholder="A1, A2,B2,C1 , D2">
+    <hr>
+    <input type="submit" value="Pre check" formaction="#">
+    <input type="submit" value="Save these filters">
+  </form>
 {% endblock content %}
-{% block title %}Home Page{% endblock title %}

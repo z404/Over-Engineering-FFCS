@@ -319,3 +319,6 @@ def save_timetable(time_tables, user):
             )
             temp_entry.save()
     print('completed')
+
+def query_database(params):
+    pass

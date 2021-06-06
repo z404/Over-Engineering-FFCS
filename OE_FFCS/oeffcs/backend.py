@@ -5,6 +5,7 @@ from django.conf import settings
 from itertools import product
 from .forms import ChangeStatusForm
 from .models import Profile, Timetable, Entry
+from collections import Counter
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -28,6 +29,8 @@ dict_conv = {
         'G2':['L38','L51'], 'TA2':['L57'], 'TB2':['L34'], 'TC2':['L40'], 'TD2':['L46'], 'TE2':['L52'], 'TF2':['L58'], 'TG2':['L35'],\
         'TAA2':['L41'], 'TBB2':['L47'], 'TCC2':['L53'], 'TDD2':['L59']
         }
+
+morning_theory = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1','G1', 'TA1', 'TB1', 'TC1', 'V1', 'TE1', 'TF1', 'TG1', 'TAA1', 'V2', 'TCC1', 'TD1']
 
 def convert_file_to_df(filepath):
     # REQUIRED COLUMNS IN THE DATASET ARE:
@@ -280,27 +283,49 @@ def generate_time_tables(user_object):
 
     validated = []
     for i in all_combinations:
-        if validate_timetable(i):
-            validated.append(i)
+        validate_result = validate_timetable(i)
+        if validate_result[0]:
+            validated.append([i,validate_result])
     print(len(validated), "Combinations valid!")
 
     save_timetable(validated, user_object)
 
 def validate_timetable(timetable):
     slots = []
+    theory = ''
+    lab = ''
+
     for i in timetable:
         slots.extend(i.split(' ')[0].split('+'))
     if len(slots) != len(set(slots)): return False
     slots_cleaned = []
     for i in slots:
         if i in dict_conv.keys():
+            if theory != 'mixed':
+                if i in morning_theory and theory == '': theory = 'morning'
+                elif i not in morning_theory and theory == '': theory = 'evening'
+                elif i in morning_theory and theory == 'evening': theory = 'mixed'
+                elif i not in morning_theory and theory == 'morning': theory = 'mixed'
             slots_cleaned.extend(dict_conv[i])
-        else: slots_cleaned.append(i)
-    
-    if len(slots_cleaned) == len(set(slots_cleaned)): return True
-    else: return False
+        else: 
+            if lab != 'mixed':
+                inti = int(i[1:])
+                if inti <= 30 and lab == '': lab = 'morning'
+                elif inti > 30 and lab == '': lab = 'evening'
+                elif inti <= 30 and lab == 'evening': lab = 'mixed'
+                elif inti > 30 and lab == 'morning': lab = 'mixed'
+            slots_cleaned.append(i)
 
-def save_timetable(time_tables, user):
+    if len(slots_cleaned) == len(set(slots_cleaned)):
+        totalcounter = Counter(slots_cleaned)
+        total8 = totalcounter['L1'] + totalcounter['L7'] + totalcounter['L13'] + totalcounter['L19'] + totalcounter['L25']
+        total6 = totalcounter['L35'] + totalcounter['L41'] + totalcounter['L47'] + totalcounter['L53'] + totalcounter['L59']
+        total2 = totalcounter['L31'] + totalcounter['L37'] + totalcounter['L43'] + totalcounter['L49'] + totalcounter['L55']
+
+        return (True, total8, total2, total6, theory, lab)
+    else: return (False,)
+
+def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
     form = ChangeStatusForm(
         {'status_value': 2}, instance=user.profile)
@@ -308,15 +333,21 @@ def save_timetable(time_tables, user):
         form.instance.user = user
         form.save()
     Timetable.objects.filter(level=user.profile).delete()
-    for timetable in time_tables:
-        temp_timeable = Timetable(level = user.profile)
+    for timetable, data in time_tables_data:
+        temp_timeable = Timetable(
+            level = user.profile,
+             total8classes = data[1],
+             total2classes = data[2],
+             total6classes = data[3],
+             theory_status = data[4],
+             lab_status = data[5])
         temp_timeable.save()
         for entry in timetable:
             temp_entry=Entry(
                 level = temp_timeable,
                 slots=entry.split()[0],
                 course_code=entry.split()[1].split(':')[0],
-                subject_name=' '.join(entry.split()[1:])
+                class_code=' '.join(entry.split()[1:])
             )
             temp_entry.save()
     print('completed')

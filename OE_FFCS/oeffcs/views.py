@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .backend import convertToForm, timetable_to_html_str, generate_time_tables
+from .backend import convertToForm, timetable_to_html_str, generate_time_tables, query_database
 import json
 import threading
 
@@ -115,5 +115,5 @@ def pickfilters(request):
 @login_required
 def pre_check(request):
     data=dict(eval(request.body))
-    print(data)
+    return_data = query_database(data)
     return JsonResponse(data=data)

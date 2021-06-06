@@ -115,4 +115,5 @@ def pickfilters(request):
 @login_required
 def pre_check(request):
     data=dict(eval(request.body))
+    print(data)
     return JsonResponse(data=data)

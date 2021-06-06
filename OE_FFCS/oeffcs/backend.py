@@ -307,6 +307,7 @@ def save_timetable(time_tables, user):
     if form.is_valid():
         form.instance.user = user
         form.save()
+    Timetable.objects.filter(level=user.profile).delete()
     for timetable in time_tables:
         temp_timeable = Timetable(level = user.profile)
         temp_timeable.save()

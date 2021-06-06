@@ -1,25 +1,83 @@
-/* ANY CSS APPLIED HERE WILL APPLY TO THE FULL PAGE */
-
-.navbar-nav>li {
-    padding-left: 30px;
-    padding-right: 30px;
+body {
+    height: 100vh;
+    overflow-x: hidden;
+    padding-top: 55px;
 }
 
-.navbar {
-    padding-left: 10px;
+.w-sidebar {
+    width: 200px;
+    max-width: 200px;
 }
 
-#usertitle {
-    font-size: 90%;
+.vh-100 {
+    min-height: 100vh;
 }
 
-#logoutbtn {
-    font-size: 80%;
+.row.collapse {
+    margin-left: -200px;
+    left: 0;
+    transition: margin-left .15s linear;
 }
 
-#main-content {
-    padding: 10px;
+.row.collapse.show {
+    margin-left: 0 !important;
+}
+
+.row.collapsing {
+    margin-left: -200px;
+    left: -0.05%;
+    transition: all .15s linear;
+}
+
+span.main-content {
+    padding: 15px;
     /* display: flex;
     justify-content: center;
     align-items: center; */
+}
+
+li {
+    width: 500px;
+}
+
+.no-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.no-link:hover {
+    color: white;
+}
+
+@media (max-width:768px) {
+    .row.collapse,
+    .row.collapsing {
+        margin-left: 0 !important;
+        left: 0 !important;
+        overflow: visible;
+    }
+    .row>.sidebar.collapse {
+        display: flex !important;
+        margin-left: -100% !important;
+        transition: all .3s linear;
+        position: fixed;
+        z-index: 1050;
+        max-width: 0;
+        min-width: 0;
+        flex-basis: auto;
+    }
+    .row>.sidebar.collapse.show {
+        margin-left: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        min-width: initial;
+    }
+    .row>.sidebar.collapsing {
+        display: flex !important;
+        margin-left: -10% !important;
+        transition: all .3s linear !important;
+        position: fixed;
+        z-index: 1050;
+        min-width: initial;
+    }
 }

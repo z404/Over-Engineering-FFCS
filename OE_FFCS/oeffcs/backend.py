@@ -51,7 +51,7 @@ def convert_file_to_df(filepath):
     # Dropping unrequired columns
     required_columns = [COURSE_CODE, COURSE_TITLE, COURSE_TYPE, SLOT, ERP_ID, EMPLOYEE_NAME]
     dataframe = dataframe[required_columns]
-
+    dataframe = dataframe.astype({ERP_ID: str})
     return dataframe
 
 def convert_df_to_ds(dataframe):
@@ -297,7 +297,7 @@ def validate_timetable(timetable):
 
     for i in timetable:
         slots.extend(i.split(' ')[0].split('+'))
-    if len(slots) != len(set(slots)): return False
+    if len(slots) != len(set(slots)): return (False,0,0,0,'none','none')
     slots_cleaned = []
     for i in slots:
         if i in dict_conv.keys():
@@ -323,7 +323,7 @@ def validate_timetable(timetable):
         total2 = totalcounter['L31'] + totalcounter['L37'] + totalcounter['L43'] + totalcounter['L49'] + totalcounter['L55']
 
         return (True, total8, total2, total6, theory, lab)
-    else: return (False,)
+    else: return (False,0,0,0,'none','none')
 
 def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
@@ -354,6 +354,12 @@ def save_timetable(time_tables_data, user):
 
 def query_database(params, user):
     time_of_day = params['pre-post-lunch']
+
+    # params might be different due to form validation of Slot field
+    # Considering slot as string for now
+    # Converting string to list
+    slots = [i.strip() for i in params['slots'].split(',')]
+
     if time_of_day == 'none':
         objects = Timetable.objects.filter(level=user.profile,
          total8classes__lte = params['8-classes'],
@@ -384,7 +390,7 @@ def query_database(params, user):
              total6classes__lte = params['6-classes'],
              total2classes__lte = params['2-classes'],
              lab_status = 'evening')
-        elif 'pre-theory-postlab' == time_of_day:
+        elif 'pre-theory-post-lab' == time_of_day:
             objects = Timetable.objects.filter(level=user.profile,
              total8classes__lte = params['8-classes'],
              total6classes__lte = params['6-classes'],
@@ -398,6 +404,8 @@ def query_database(params, user):
              total2classes__lte = params['2-classes'],
              lab_status = 'morning',
              theory_status = 'evening')
-
-    
+    if slots != ['']:
+        for i in slots:
+            objects = objects.exclude(level=user.profile,
+            entry__slots__contains = i)
     return len(objects)

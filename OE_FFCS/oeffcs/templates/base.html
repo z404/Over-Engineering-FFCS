@@ -64,17 +64,29 @@
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
                             </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
+                            </li>
                             {% endif %}
 
                             {% if status >= 1 %}
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'pickteachers' %}">Choose your teachers</a>
                             </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'pickteachers' %}">Choose your teachers</a>
+                            </li>
                             {% endif %}
 
                             {% if status >= 2 %}
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'pickfilters' %}">Choose Filters</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'pickfilters' %}">Choose Filters</a>
                             </li>
                             {% endif %}
                             {% endwith %}

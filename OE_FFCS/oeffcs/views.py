@@ -115,5 +115,5 @@ def pickfilters(request):
 @login_required
 def pre_check(request):
     data=dict(eval(request.body))
-    return_data = query_database(data)
-    return JsonResponse(data=data)
+    return_data = query_database(data, request.user)
+    return JsonResponse(data={"ret":return_data})

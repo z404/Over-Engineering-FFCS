@@ -352,5 +352,52 @@ def save_timetable(time_tables_data, user):
             temp_entry.save()
     print('completed')
 
-def query_database(params):
-    pass
+def query_database(params, user):
+    time_of_day = params['pre-post-lunch']
+    if time_of_day == 'none':
+        objects = Timetable.objects.filter(level=user.profile,
+         total8classes__lte = params['8-classes'],
+         total6classes__lte = params['6-classes'],
+         total2classes__lte = params['2-classes'])
+    else:
+        if 'pre-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             theory_status = 'morning')
+        elif 'pre-lab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'morning')
+        elif 'post-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             theory_status = 'evening')
+        elif 'post-lab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'evening')
+        elif 'pre-theory-postlab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'evening',
+             theory_status = 'morning')
+        elif 'pre-lab-post-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'morning',
+             theory_status = 'evening')
+
+    
+    return len(objects)

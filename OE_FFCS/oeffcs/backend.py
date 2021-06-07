@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from numpy.core.fromnumeric import prod
 from numpy.lib.npyio import save
 import pandas as pd
@@ -51,6 +52,7 @@ def convert_file_to_df(filepath):
     # Dropping unrequired columns
     required_columns = [COURSE_CODE, COURSE_TITLE, COURSE_TYPE, SLOT, ERP_ID, EMPLOYEE_NAME]
     dataframe = dataframe[required_columns]
+    dataframe = dataframe.astype({ERP_ID: int})
     dataframe = dataframe.astype({ERP_ID: str})
     return dataframe
 
@@ -409,3 +411,33 @@ def query_database(params, user):
             objects = objects.exclude(level=user.profile,
             entry__slots__contains = i)
     return len(objects)
+
+def show_selected_data(user_profile):
+    file_path = str(user_profile.data_file).lstrip('exceldata/')
+    selected_teachers = eval(user_profile.saveteachers)
+    selected_teachers_cleaned = {}
+    for course, teachers in selected_teachers.items():
+        if course not in teachers:
+            # return render(request, 'oeffcs/pickteachers.html',
+            #               {'teacherdata': ret, 'errordisplay': 'How did you even get this error?'})
+            continue
+        elif len(teachers) == 1:
+            pass
+        else:
+            selected_teachers_cleaned.update({course:[i for i in teachers if i != course]})
+    
+    render_display = 'Here is all the data you have saved on our website to help calculate timetables that match your specifications\
+            <br><br><h5>&nbsp; &nbsp;⮞ Uploaded Excel Sheet</h5> \
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;This is the excel sheet required to get details of all \
+            available subjects, teachers, and thier respective slots.\
+            <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'
+
+    if file_path == '':
+        render_display+='You haven\'t uploaded a file yet!'
+    else:
+        # Add link to download excel sheet
+        render_display+='<b>File path: </b> '+file_path
+
+    render_display += '<br><br><h5>&nbsp; &nbsp;⮞ Chosen Teachers</h5>'
+
+    return render_display

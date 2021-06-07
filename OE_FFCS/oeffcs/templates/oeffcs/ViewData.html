@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+
+<h4>Saved Data</h4>
+{% autoescape off %}
+    {{ teacherdata }}
+{% endautoescape %}
+
+{% endblock content %}

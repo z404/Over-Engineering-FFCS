@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .backend import convertToForm, timetable_to_html_str, generate_time_tables, query_database
+from .backend import convertToForm, show_selected_data, timetable_to_html_str, generate_time_tables, query_database
 import json
 import threading
 
@@ -117,3 +117,8 @@ def pre_check(request):
     data=dict(eval(request.body))
     return_data = query_database(data, request.user)
     return JsonResponse(data={"ret":return_data})
+
+@login_required
+def viewdata(request):
+    ret = show_selected_data(request.user.profile)
+    return render(request, 'oeffcs/ViewData.html', {'teacherdata':ret})

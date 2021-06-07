@@ -33,13 +33,10 @@
                 </div>
                 <div class="col px-3 px-md-0 text-light">
                     <!-- toggler -->
-                   
-                    <h5>
-                        <a data-toggle="collapse" href="#" data-target=".collapse" role="button" class="p-1">
-                            <i class="fa fa-bars fa-lg"></i>
-                        </a>
-                        <a class="navbar-brand no-link" href="{% url 'index' %}">Over Engineering FFCS</a>
-                    </h5>
+                    <a data-toggle="collapse" href="#" data-target=".collapse" role="button" class="p-1">
+                        <i class="fa fa-bars fa-lg"></i>
+                    </a>
+                    <a class="navbar-brand no-link" href="{% url 'index' %}">Over Engineering FFCS</a>
                 </div>
             </div>
         </div>
@@ -60,6 +57,9 @@
                         <ul class="nav flex-column flex-nowrap text-truncate">
 
                             {% with user.profile.status_value as status %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'viewdata' %}">View Data</a>
+                            </li>
                             {% if status >= 0 %}
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>

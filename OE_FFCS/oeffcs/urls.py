@@ -9,4 +9,5 @@ urlpatterns = [
     path('pickteachers/', views.pickteachers, name='pickteachers'),
     path('pickfilters/', views.pickfilters, name='pickfilters'),
     path('precheck/',views.pre_check, name='precheck'),
+    path('viewdata/', views.viewdata, name='viewdata'),
 ]

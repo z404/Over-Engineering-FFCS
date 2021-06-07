@@ -121,4 +121,4 @@ def pre_check(request):
 @login_required
 def viewdata(request):
     ret = show_selected_data(request.user.profile)
-    return render(request, 'oeffcs/ViewData.html', {'teacherdata':ret})
+    return render(request, 'oeffcs/ViewData.html', context = ret)

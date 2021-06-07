@@ -52,8 +52,13 @@ def convert_file_to_df(filepath):
     # Dropping unrequired columns
     required_columns = [COURSE_CODE, COURSE_TITLE, COURSE_TYPE, SLOT, ERP_ID, EMPLOYEE_NAME]
     dataframe = dataframe[required_columns]
-    dataframe = dataframe.astype({ERP_ID: int})
-    dataframe = dataframe.astype({ERP_ID: str})
+    erpid = list(dataframe[ERP_ID])
+    for i in range(len(erpid)):
+        try:
+            erpid[i] = str(int(erpid[i]))
+        except:
+            pass
+    dataframe[ERP_ID] = erpid
     return dataframe
 
 def convert_df_to_ds(dataframe):
@@ -414,7 +419,10 @@ def query_database(params, user):
 
 def show_selected_data(user_profile):
     file_path = str(user_profile.data_file).lstrip('exceldata/')
-    selected_teachers = eval(user_profile.saveteachers)
+    try:
+        selected_teachers = eval(user_profile.saveteachers)
+    except:
+        selected_teachers = {}
     selected_teachers_cleaned = {}
     for course, teachers in selected_teachers.items():
         if course not in teachers:
@@ -426,18 +434,50 @@ def show_selected_data(user_profile):
         else:
             selected_teachers_cleaned.update({course:[i for i in teachers if i != course]})
     
-    render_display = 'Here is all the data you have saved on our website to help calculate timetables that match your specifications\
-            <br><br><h5>&nbsp; &nbsp;⮞ Uploaded Excel Sheet</h5> \
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;This is the excel sheet required to get details of all \
-            available subjects, teachers, and thier respective slots.\
-            <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'
-
+    retdict = {}
     if file_path == '':
-        render_display+='You haven\'t uploaded a file yet!'
+        retdict['exceldata'] = 'You haven\'t uploaded a file yet!'
     else:
         # Add link to download excel sheet
-        render_display+='<b>File path: </b> '+file_path
+        retdict['exceldata'] = '<b>File path: </b> '+file_path
 
-    render_display += '<br><br><h5>&nbsp; &nbsp;⮞ Chosen Teachers</h5>'
+    if selected_teachers_cleaned != {}:
+        retdict['teacherdata'] = '<table class="table table-bordered table-hover table-sm table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">##</th>\
+                                    <th scope="col">Employee Name</th>\
+                                    <th scope="col">ERP</th>\
+                                    <th scope="col">Slot</th>\
+                                    <th scope="col">Subject</th>\
+                                    </tr>\
+                                </thead><tbody>'
+        tabspace = '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'
+        dataframe = convert_file_to_df(str(user_profile.data_file))
+        count = 1
+        for i,j in selected_teachers_cleaned.items():
+            teacherstring = ''
+            for teacher in j:
+                course_code, erpid = teacher.split(':')
+                slots = ", ".join(dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][SLOT].unique())
+                name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
+                cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
+                teacherstring += '<tr>\
+                                        <th scope="row">'+str(count)+'</th>\
+                                        <td>'+name+'</td>\
+                                        <td>'+erpid+'</td>\
+                                        <td>'+slots+'</td>\
+                                        <td>'+cname+'</td>\
+                                    </tr>'
+                count+=1
+            retdict['teacherdata'] += teacherstring
+            
 
-    return render_display
+        retdict['teacherdata'] += '</tbody></table><br>'
+    
+    else:
+        retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
+
+
+
+    return retdict

@@ -14,6 +14,8 @@ class Profile(models.Model):
     #                                                                    'Only valid register numbers are allowed')])
     status_value = models.IntegerField(default=0)
     saveteachers = models.TextField()
+    savefilters = models.TextField()
+    
     def __str__(self):
         return f'{self.user.username}\'s Profile'
 

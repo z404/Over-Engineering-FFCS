@@ -17,3 +17,8 @@ class ChangeTeachersForm(ModelForm):
     class Meta:
         model = Profile
         fields = ['saveteachers']
+
+class ChangeFiltersForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['savefilters']

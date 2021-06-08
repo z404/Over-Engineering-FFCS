@@ -4,7 +4,7 @@ from numpy.lib.npyio import save
 import pandas as pd
 from django.conf import settings
 from itertools import product
-from .forms import ChangeStatusForm
+from .forms import ChangeStatusForm, ChangeFiltersForm
 from .models import Profile, Timetable, Entry
 from collections import Counter
 
@@ -415,7 +415,7 @@ def query_database(params, user):
         for i in slots:
             objects = objects.exclude(level=user.profile,
             entry__slots__contains = i)
-    return len(objects)
+    return objects
 
 def show_selected_data(user_profile):
     file_path = str(user_profile.data_file).lstrip('exceldata/')
@@ -507,8 +507,16 @@ def show_selected_data(user_profile):
                                         Generated final priority list'+tick_priority+'\
                                     </li>\
                                 </ul>'
-    
-    
-    
-
     return retdict
+
+def savefilters(save_dict, user_object):
+    form = ChangeFiltersForm(
+        {'savefilters':str(save_dict)}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()
+    form = ChangeStatusForm(
+        {'status_value': 3}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()

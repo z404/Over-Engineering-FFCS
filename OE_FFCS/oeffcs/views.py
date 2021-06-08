@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .backend import convertToForm, show_selected_data, timetable_to_html_str, generate_time_tables, query_database
+from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
 import json
 import threading
 
@@ -116,7 +116,7 @@ def pickfilters(request):
 def pre_check(request):
     data=dict(eval(request.body))
     return_data = query_database(data, request.user)
-    return JsonResponse(data={"ret":return_data})
+    return JsonResponse(data={"ret":len(return_data)})
 
 @login_required
 def viewdata(request):
@@ -125,5 +125,7 @@ def viewdata(request):
 
 @login_required
 def save_filters(request):
-    print(dict(request.POST))
+    filters = dict(request.POST)
+    del filters['csrfmiddlewaretoken']
+    savefilters(filters, request.user)
     return HttpResponseRedirect('/')

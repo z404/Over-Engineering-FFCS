@@ -1,6 +1,13 @@
 .table {
     margin-left: 48px;
     /* margin-right: 48px; */
+    width: 800px;
+    font-size: 14px;
+}
+
+.table#Teachertable {
+    margin-left: 48px;
+    /* margin-right: 48px; */
     width: auto !important;
     font-size: 14px;
 }

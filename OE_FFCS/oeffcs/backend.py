@@ -443,7 +443,7 @@ def show_selected_data(user_profile):
         retdict['exceldata'] = '<b>File path: </b> '+file_path
 
     if status_value >= 2:
-        retdict['teacherdata'] = '<table class="table table-bordered table-hover table-sm table-dark">\
+        retdict['teacherdata'] = '<table id="Teachertable" class="table table-bordered table-hover table-sm table-dark">\
                                 <thead>\
                                     <tr>\
                                     <th scope="col">##</th>\
@@ -474,7 +474,7 @@ def show_selected_data(user_profile):
             retdict['teacherdata'] += teacherstring
             
 
-        retdict['teacherdata'] += '</tbody></table><br>'
+        retdict['teacherdata'] += '</tbody></table>'
     
     else:
         retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
@@ -507,6 +507,58 @@ def show_selected_data(user_profile):
                                         Generated final priority list'+tick_priority+'\
                                     </li>\
                                 </ul>'
+
+    
+    retdict['filters'] = ''
+    if status_value >= 3:
+        saved_filters = eval(user_profile.savefilters)
+        print(user_profile.savefilters)
+        theory_pref, lab_pref = "Mixed", "Mixed"
+        if 'pre-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Morning"
+        if 'post-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Evening"
+        if 'pre-lab' in saved_filters['pre-post-lunch'][0]: lab_pref = "Morning"
+        if 'post-lab' in saved_filters['pre-post-lunch'][0]: lab_pref = "Evening"
+        retdict['filters'] = '<table class="table table-sm table-bordered table-hover table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">##</th>\
+                                    <th scope="col">Field</th>\
+                                    <th scope="col">Value</th>\
+                                    </tr>\
+                                </thead><tbody>\
+                                    <tr>\
+                                        <th scope="row">1</th>\
+                                        <td>Theory preference</td>\
+                                        <td>'+theory_pref+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">2</th>\
+                                        <td>Lab preference</td>\
+                                        <td>'+lab_pref+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">3</th>\
+                                        <td>Max 8 o\'clock classes</td>\
+                                        <td>'+saved_filters['8-classes'][0]+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">4</th>\
+                                        <td>Max 2 o\'clock classes</td>\
+                                        <td>'+saved_filters['2-classes'][0]+'</td>\
+                                    </tr>\
+                                        <tr>\
+                                        <th scope="row">5</th>\
+                                        <td>Max 6 o\'clock classes</td>\
+                                        <td>'+saved_filters['6-classes'][0]+'</td>\
+                                    </tr>\
+                                    </tr>\
+                                        <tr>\
+                                        <th scope="row">6</th>\
+                                        <td>Slots Ignored</td>\
+                                        <td>'+saved_filters['slots'][0]+'</td>\
+                                    </tr></tbody></table>'
+    else:
+        retdict['filters'] = 'You haven\'t chosen any filters yet!'
     return retdict
 
 def savefilters(save_dict, user_object):

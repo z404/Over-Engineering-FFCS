@@ -7,9 +7,15 @@
 
 <h4>Saved Data</h4>
 Here is all the data you have saved on our website to help calculate timetables that match your specifications
-            
+
+<br><br><h5>&nbsp; &nbsp;<i class="fas fa-angle-double-right"></i> Current Status of progress</h5> 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;This shows the progress you have made in the steps of generating your timetables
+<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+{% autoescape off %}
+    {{ status_details }}
+{% endautoescape %}
+
 <br><br><h5>&nbsp; &nbsp;<i class="fas fa-angle-double-right"></i> Uploaded Excel Sheet</h5> 
-            
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;This is the excel sheet required to get details of all available subjects, teachers, and thier respective slots.
 <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 {% autoescape off %}

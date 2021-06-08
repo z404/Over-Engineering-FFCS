@@ -435,13 +435,14 @@ def show_selected_data(user_profile):
             selected_teachers_cleaned.update({course:[i for i in teachers if i != course]})
     
     retdict = {}
-    if file_path == '':
+    status_value = user_profile.status_value
+    if not(status_value >= 1):
         retdict['exceldata'] = 'You haven\'t uploaded a file yet!'
     else:
         # Add link to download excel sheet
         retdict['exceldata'] = '<b>File path: </b> '+file_path
 
-    if selected_teachers_cleaned != {}:
+    if status_value >= 2:
         retdict['teacherdata'] = '<table class="table table-bordered table-hover table-sm table-dark">\
                                 <thead>\
                                     <tr>\
@@ -478,8 +479,36 @@ def show_selected_data(user_profile):
     else:
         retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
     
-    # Todo list for tommorow
-    # Add status value
-    # Ask sankalp on save filters button
+
+    tick_excel = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 1 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_teachers = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 2 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_filters = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 3 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_timetables ='<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 4 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_priority = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 5 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    retdict['status_details'] = '<ul class="list-group px-5">\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Uploaded Excel Sheet'+tick_excel+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Chose Teachers'+tick_teachers+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Chose Filters'+tick_filters+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Shortlisted Timetables'+tick_timetables+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Generated final priority list'+tick_priority+'\
+                                    </li>\
+                                </ul>'
+    
+    
+    
 
     return retdict

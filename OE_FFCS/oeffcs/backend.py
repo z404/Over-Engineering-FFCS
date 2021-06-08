@@ -1,10 +1,12 @@
+from django.shortcuts import render
 from numpy.core.fromnumeric import prod
 from numpy.lib.npyio import save
 import pandas as pd
 from django.conf import settings
 from itertools import product
-from .forms import ChangeStatusForm
+from .forms import ChangeStatusForm, ChangeFiltersForm
 from .models import Profile, Timetable, Entry
+from collections import Counter
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -29,6 +31,8 @@ dict_conv = {
         'TAA2':['L41'], 'TBB2':['L47'], 'TCC2':['L53'], 'TDD2':['L59']
         }
 
+morning_theory = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1','G1', 'TA1', 'TB1', 'TC1', 'V1', 'TE1', 'TF1', 'TG1', 'TAA1', 'V2', 'TCC1', 'TD1']
+
 def convert_file_to_df(filepath):
     # REQUIRED COLUMNS IN THE DATASET ARE:
         # COURSE CODE
@@ -48,7 +52,13 @@ def convert_file_to_df(filepath):
     # Dropping unrequired columns
     required_columns = [COURSE_CODE, COURSE_TITLE, COURSE_TYPE, SLOT, ERP_ID, EMPLOYEE_NAME]
     dataframe = dataframe[required_columns]
-
+    erpid = list(dataframe[ERP_ID])
+    for i in range(len(erpid)):
+        try:
+            erpid[i] = str(int(erpid[i]))
+        except:
+            pass
+    dataframe[ERP_ID] = erpid
     return dataframe
 
 def convert_df_to_ds(dataframe):
@@ -280,43 +290,233 @@ def generate_time_tables(user_object):
 
     validated = []
     for i in all_combinations:
-        if validate_timetable(i):
-            validated.append(i)
+        validate_result = validate_timetable(i)
+        if validate_result[0]:
+            validated.append([i,validate_result])
     print(len(validated), "Combinations valid!")
 
     save_timetable(validated, user_object)
 
 def validate_timetable(timetable):
     slots = []
+    theory = ''
+    lab = ''
+
     for i in timetable:
         slots.extend(i.split(' ')[0].split('+'))
-    if len(slots) != len(set(slots)): return False
+    if len(slots) != len(set(slots)): return (False,0,0,0,'none','none')
     slots_cleaned = []
     for i in slots:
         if i in dict_conv.keys():
+            if theory != 'mixed':
+                if i in morning_theory and theory == '': theory = 'morning'
+                elif i not in morning_theory and theory == '': theory = 'evening'
+                elif i in morning_theory and theory == 'evening': theory = 'mixed'
+                elif i not in morning_theory and theory == 'morning': theory = 'mixed'
             slots_cleaned.extend(dict_conv[i])
-        else: slots_cleaned.append(i)
-    
-    if len(slots_cleaned) == len(set(slots_cleaned)): return True
-    else: return False
+        else: 
+            if lab != 'mixed':
+                inti = int(i[1:])
+                if inti <= 30 and lab == '': lab = 'morning'
+                elif inti > 30 and lab == '': lab = 'evening'
+                elif inti <= 30 and lab == 'evening': lab = 'mixed'
+                elif inti > 30 and lab == 'morning': lab = 'mixed'
+            slots_cleaned.append(i)
 
-def save_timetable(time_tables, user):
+    if len(slots_cleaned) == len(set(slots_cleaned)):
+        totalcounter = Counter(slots_cleaned)
+        total8 = totalcounter['L1'] + totalcounter['L7'] + totalcounter['L13'] + totalcounter['L19'] + totalcounter['L25']
+        total6 = totalcounter['L35'] + totalcounter['L41'] + totalcounter['L47'] + totalcounter['L53'] + totalcounter['L59']
+        total2 = totalcounter['L31'] + totalcounter['L37'] + totalcounter['L43'] + totalcounter['L49'] + totalcounter['L55']
+
+        return (True, total8, total2, total6, theory, lab)
+    else: return (False,0,0,0,'none','none')
+
+def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
     form = ChangeStatusForm(
         {'status_value': 2}, instance=user.profile)
     if form.is_valid():
         form.instance.user = user
         form.save()
-    print(time_tables)
-    for timetable in time_tables:
-        temp_timeable = Timetable(level = user.profile)
+    Timetable.objects.filter(level=user.profile).delete()
+    for timetable, data in time_tables_data:
+        temp_timeable = Timetable(
+            level = user.profile,
+             total8classes = data[1],
+             total2classes = data[2],
+             total6classes = data[3],
+             theory_status = data[4],
+             lab_status = data[5])
         temp_timeable.save()
         for entry in timetable:
             temp_entry=Entry(
                 level = temp_timeable,
                 slots=entry.split()[0],
                 course_code=entry.split()[1].split(':')[0],
-                subject_name=' '.join(entry.split()[1:])
+                class_code=' '.join(entry.split()[1:])
             )
             temp_entry.save()
     print('completed')
+
+def query_database(params, user):
+    time_of_day = params['pre-post-lunch']
+
+    # params might be different due to form validation of Slot field
+    # Considering slot as string for now
+    # Converting string to list
+    slots = [i.strip() for i in params['slots'].split(',')]
+
+    if time_of_day == 'none':
+        objects = Timetable.objects.filter(level=user.profile,
+         total8classes__lte = params['8-classes'],
+         total6classes__lte = params['6-classes'],
+         total2classes__lte = params['2-classes'])
+    else:
+        if 'pre-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             theory_status = 'morning')
+        elif 'pre-lab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'morning')
+        elif 'post-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             theory_status = 'evening')
+        elif 'post-lab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'evening')
+        elif 'pre-theory-post-lab' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'evening',
+             theory_status = 'morning')
+        elif 'pre-lab-post-theory' == time_of_day:
+            objects = Timetable.objects.filter(level=user.profile,
+             total8classes__lte = params['8-classes'],
+             total6classes__lte = params['6-classes'],
+             total2classes__lte = params['2-classes'],
+             lab_status = 'morning',
+             theory_status = 'evening')
+    if slots != ['']:
+        for i in slots:
+            objects = objects.exclude(level=user.profile,
+            entry__slots__contains = i)
+    return objects
+
+def show_selected_data(user_profile):
+    file_path = str(user_profile.data_file).lstrip('exceldata/')
+    try:
+        selected_teachers = eval(user_profile.saveteachers)
+    except:
+        selected_teachers = {}
+    selected_teachers_cleaned = {}
+    for course, teachers in selected_teachers.items():
+        if course not in teachers:
+            # return render(request, 'oeffcs/pickteachers.html',
+            #               {'teacherdata': ret, 'errordisplay': 'How did you even get this error?'})
+            continue
+        elif len(teachers) == 1:
+            pass
+        else:
+            selected_teachers_cleaned.update({course:[i for i in teachers if i != course]})
+    
+    retdict = {}
+    status_value = user_profile.status_value
+    if not(status_value >= 1):
+        retdict['exceldata'] = 'You haven\'t uploaded a file yet!'
+    else:
+        # Add link to download excel sheet
+        retdict['exceldata'] = '<b>File path: </b> '+file_path
+
+    if status_value >= 2:
+        retdict['teacherdata'] = '<table class="table table-bordered table-hover table-sm table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">##</th>\
+                                    <th scope="col">Employee Name</th>\
+                                    <th scope="col">ERP</th>\
+                                    <th scope="col">Slot</th>\
+                                    <th scope="col">Subject</th>\
+                                    </tr>\
+                                </thead><tbody>'
+        tabspace = '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'
+        dataframe = convert_file_to_df(str(user_profile.data_file))
+        count = 1
+        for i,j in selected_teachers_cleaned.items():
+            teacherstring = ''
+            for teacher in j:
+                course_code, erpid = teacher.split(':')
+                slots = ", ".join(dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][SLOT].unique())
+                name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
+                cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
+                teacherstring += '<tr>\
+                                        <th scope="row">'+str(count)+'</th>\
+                                        <td>'+name+'</td>\
+                                        <td>'+erpid+'</td>\
+                                        <td>'+slots+'</td>\
+                                        <td>'+cname+'</td>\
+                                    </tr>'
+                count+=1
+            retdict['teacherdata'] += teacherstring
+            
+
+        retdict['teacherdata'] += '</tbody></table><br>'
+    
+    else:
+        retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
+    
+
+    tick_excel = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 1 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_teachers = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 2 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_filters = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 3 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_timetables ='<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 4 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    tick_priority = '<span class="badge bg-success rounded-pill"><i class="fa fa-check" aria-hidden="true"></i></span>' \
+        if status_value >= 5 else '<span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>'
+    retdict['status_details'] = '<ul class="list-group px-5">\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Uploaded Excel Sheet'+tick_excel+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Chose Teachers'+tick_teachers+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Chose Filters'+tick_filters+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Shortlisted Timetables'+tick_timetables+'\
+                                    </li>\
+                                    <li class="list-group-item d-flex justify-content-between align-items-center py-1 bg-dark text-light">\
+                                        Generated final priority list'+tick_priority+'\
+                                    </li>\
+                                </ul>'
+    return retdict
+
+def savefilters(save_dict, user_object):
+    form = ChangeFiltersForm(
+        {'savefilters':str(save_dict)}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()
+    form = ChangeStatusForm(
+        {'status_value': 3}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()

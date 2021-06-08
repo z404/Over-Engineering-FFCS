@@ -1,44 +1,128 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
-      {% block title %}Add title{% endblock %}
+        {% block title %}Add title{% endblock %}
     </title>
     {% comment %} Bootstrap CSS: {% endcomment %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}"> 
     {% comment %} Any extra elements that need to go in the head {% endcomment %}
     {% block head %}{% endblock head %}
-  </head>
+</head>
 
-  <body>
-    {% comment %} TEMPORARY NAVBAR: {% endcomment %}
-    {% block navbar %}
-      {% if user.is_authenticated %}
-      {% with user.profile.status_value as status %}
-      <span class="pagebuttons">
-      {% if status >= 0 %}
-            <a href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
-      {% if status >= 1 %}
-            <a href="{% url 'pickteachers' %}">Choose your teachers</a>
-      {% if status >= 2 %}
-            <a href="{% url 'pickfilters' %}">Choose Filters</a>
-        </span>
-      {% endif %}{% endif %}{% endif %}
-      {% comment %} {{ status }} {% endcomment %}
-      {% endwith %}
-      {% endif %}
+<body>
+    {% comment %} TEMPORARY NAVBAR: {% endcomment %} 
+    {% block navbar %} 
+    
+        <div class="container-fluid fixed-top bg-dark py-2">
+            {% if user.is_authenticated %}
+            <div class="row collapse show no-gutters d-flex h-100 position-relative">
+            {% else %}
+            <div class="row collapse no-gutters d-flex h-100 position-relative">
+            {% endif %}
+                <!-- add show class to show bar above-->
+                <div class="col-3 px-0 w-sidebar navbar-collapse collapse d-none d-md-flex">
+                    <!-- spacer col -->
+                </div>
+                <div class="col px-3 px-md-0 text-light">
+                    <!-- toggler -->
+                    <a data-toggle="collapse" href="#" data-target=".collapse" role="button" class="p-1">
+                        <i class="fa fa-bars fa-lg"></i>
+                    </a>
+                    <a class="navbar-brand no-link" href="{% url 'index' %}">Over Engineering FFCS</a>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid px-0 h-100">
+            
+
+                {% if user.is_authenticated %}
+                <div class="row show vh-100 collapse no-gutters d-flex h-100 position-relative">
+                {% else %}
+                <div class="row vh-100 collapse no-gutters d-flex h-100 position-relative">
+                {% endif %}
+
+
+                <div class="col-3 p-0 vh-100 h-100 text-white w-sidebar navbar-collapse collapse d-none d-md-flex sidebar">
+                    <!-- fixed sidebar -->
+                    <div class="navbar-dark bg-dark position-fixed h-100 w-sidebar">
+                        <h6 class="px-3 pt-3 mb-3">Menu</h6>
+                        <ul class="nav flex-column flex-nowrap text-truncate">
+
+                            {% with user.profile.status_value as status %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'viewdata' %}">View Data</a>
+                            </li>
+                            {% if status >= 0 %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'uploadexcelfile' %}">Upload Excel sheet</a>
+                            </li>
+                            {% endif %}
+
+                            {% if status >= 1 %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'pickteachers' %}">Choose your teachers</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'pickteachers' %}">Choose your teachers</a>
+                            </li>
+                            {% endif %}
+
+                            {% if status >= 2 %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'pickfilters' %}">Choose Filters</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'pickfilters' %}">Choose Filters</a>
+                            </li>
+                            {% endif %}
+                            {% endwith %}
+
+                        </ul>
+
+                        <ul id="logoutbutton" class="nav flex-column flex-nowrap text-truncate">
+
+                            {% if user.is_authenticated %}
+                            <a id="logoutbtn" class="btn btn-sm btn-outline-danger" href="{% url 'logout' %}">Log out</a>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                    
+                </div>
+
+                <span class="main-content col p-3">
+                    {% block content %}{% endblock content %}
+                </span>
+                
+            </div>
+            
+        </div>
+        
+
+        
+        {% comment %} {{ status }} {% endcomment %} 
     {% endblock navbar %}
-    <br><br>
-    <hr>
-    {% block content %}{% endblock content %}
+    <!-- <br><br> -->
+    <!-- <hr>  -->
+
     {% comment %} Bootstrap JS: {% endcomment %}
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+</body>
 
 </html>

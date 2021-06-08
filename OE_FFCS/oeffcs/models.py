@@ -14,19 +14,24 @@ class Profile(models.Model):
     #                                                                    'Only valid register numbers are allowed')])
     status_value = models.IntegerField(default=0)
     saveteachers = models.TextField()
+    savefilters = models.TextField()
+    
     def __str__(self):
         return f'{self.user.username}\'s Profile'
 
 class Timetable(models.Model):
     level = models.ForeignKey(Profile, on_delete=models.CASCADE)
-
+    total8classes = models.IntegerField(default=0)
+    total2classes = models.IntegerField(default=0)
+    total6classes = models.IntegerField(default=0)
+    lab_status = models.CharField(max_length=10)
+    theory_status = models.CharField(max_length=10)
+    
     def __str__(self):
         return str(self.pk)
 
 class Entry(models.Model):
     level=models.ForeignKey(Timetable, on_delete=models.CASCADE)
     slots=models.CharField(max_length=20)
-    subject_name=models.CharField(max_length=50)
+    class_code=models.CharField(max_length=50)
     course_code=models.CharField(max_length=10)
-    faculty_name=models.CharField(max_length=30)
-    employee_id=models.CharField(max_length=10)

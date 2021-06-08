@@ -5,116 +5,53 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 {% endblock head %}
 {% block content %}
-<script type="text/javascript">
-$(document).ready(function () {
-  $('.btn').click(function() {
-    checked = $("input[type=checkbox]:checked").length;
-
-    if(!checked) {
-      alert("You must check at least one checkbox.");
-      return false;
-    }
-
-  });
-});
-</script>
-<h1>This is the filter page</h1>
-  {% comment 'i don\'t know why we still have display but okay will delete later' %}{{ display }}{% endcomment %}
-  <form method="post" action=""  class="ajax">
+<h5>Choose your filters</h5>
+  <form method="post" action="{% url 'savefilters' %}"  class="ajax form-group">
     {% csrf_token %}
     <hr>
-    <input type="checkbox" name="category" id="category-pre-post-lunch" value="category-pre-post-lunch">
-    <label for="category-pre-post-lunch">Lab/Theory Pre/Post Lunch</label>
-    <br>
-    <input type="checkbox" name="category" id="category-time-based-selection" value="category-time-based-selection">
-    <label for="category-time-based-selection">Time based selections</label>
-    <br>
-    <input type="checkbox" name="category" id="category-slot-based-elim" value="category-slot-based-elim">
-    <label for="category-slot-based-elim">Slot based selections</label>
-    <br>
-    <hr>
-    <input type="radio" name="pre-post-lunch" id="pre-theory-postlab" value="pre-theory-postlab">
-    <label for="pre-theory-postlab">Lab/Theory Pre/Post Lunch</label>
+    <input type="radio" name="pre-post-lunch" id="none" value="none" checked>
+    <label for="none">Any of these is fine!</label>
     <br>
     <input type="radio" name="pre-post-lunch" id="pre-lab-post-theory" value="pre-lab-post-theory">
-    <label for="pre-lab-post-theory">Lab/Theory Post/Pre Lunch</label>
+    <label for="pre-lab-post-theory">I want all <b>lab</b> classes to be <b>before</b> lunch and all <b>theory</b> classes to be <b>after</b> lunch</label>
+    <br>
+    <input type="radio" name="pre-post-lunch" id="pre-theory-post-lab" value="pre-theory-post-lab">
+    <label for="pre-theory-post-lab">I want all <b>lab</b> classes to be <b>after</b> lunch and all <b>theory</b> classes to be <b>before</b> lunch</label>
     <br>
     <input type="radio" name="pre-post-lunch" id="pre-theory" value="pre-theory">
-    <label for="pre-theory">Only care about <b>theory</b> being <b>pre</b> lunch</label>
+    <label for="pre-theory">Only want all <b>theory</b> classes be <b>before</b> lunch</label>
     <br>
     <input type="radio" name="pre-post-lunch" id="pre-lab" value="pre-lab">
-    <label for="pre-lab">Only care about <b>lab</b> being <b>pre</b> lunch</label>
+    <label for="pre-lab">Only want all <b>lab</b> classes be <b>before</b> lunch</label>
     <br>
     <input type="radio" name="pre-post-lunch" id="post-theory" value="post-theory">
-    <label for="post-theory">Only care about <b>theory</b> being <b>post</b> lunch</label>
+    <label for="post-theory">Only want all <b>theory</b> classes be <b>after</b> lunch</label>
     <br>
     <input type="radio" name="pre-post-lunch" id="post-lab" value="post-lab">
-    <label for="post-lab">Only care about <b>lab</b> being <b>post</b> lunch</label>
+    <label for="post-lab">Only want all <b>lab</b> classes be <b>after</b> lunch</label>
     <br>
     <hr>
     <p>Maximum number of:</p>
-    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="2">
-    <label for="8-classes">8 am 'o' clock classes</label>
+    <label for="8-classes">8 am 'o' clock classes: </label>
+    <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="5">
     <br>
-    <input type="number" name="2-classes" id="2-classes" min="0" max="5" value="2">
-    <label for="2-classes">2 pm 'o' clock classes</label>
+    <label for="2-classes">2 pm 'o' clock classes: </label>
+    <input type="number" name="2-classes" id="2-classes" min="0" max="5" value="5">
     <br>
-    <input type="number" name="6-classes" id="6-classes" min="0" max="5" value="2">
-    <label for="6-classes">6 pm 'o' clock classes</label>
+    <label for="6-classes">6 pm 'o' clock classes: </label>
+    <input type="number" name="6-classes" id="6-classes" min="0" max="5" value="5">
     <br>
     <hr>
-    <label for="slots">Enter the slots you want to eliminate for sure:</label>
-    <input type="text" name="slots" id="slots" placeholder="A1, A2,B2,C1 , D2">
+    <div class="form-group">
+      <label for="slots" class="form-control-label">Enter the slots you want to eliminate for sure:</label>
+      <input type="text" name="slots" id="slots" placeholder="A1, A2, B2, C1, D2 ..." class="form-control">
+      <h5 id="error-message" class="invalid-feedback">**Format of slots entered is wrong, please try again</h5>
+    </div>
     <hr>
+    <div id="pre-check-info" class="paragraph text-success">
+    </div><br>
     <input type="submit" id="pre-check" class="btn btn-info" value="Pre check"/>
     <input type="submit" id="save-filters" value="Save these filters" class="btn btn-primary"/>
   </form>
-  <div id="pre-check-info" class="paragraph">
-  </div>
-  <script type="text/javascript">
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-  $(document).ready(function () {
-    $('input#pre-check').on('click',function(){
-    var that=$('form.ajax'),
-    url="{% url 'precheck' %}",
-    type=that.attr('method'),
-    data={};
-    // data['X-CSRFToken']=csrftoken;
-    console.log(that)
-    console.log("Hello world")
-    // $('<p>' + JSON.stringify(that) + '</p>').appendTo('#pre-check-info');
-
-    that.find('input[type=checkbox]:checked,input[type=radio]:checked,input[type=number],input[type=text]').each((index, valv)=>{
-      var that=$(valv),
-        name=that.attr('name'),
-        id=that.attr('id'),
-        value=that.val();
-      // console.log(id,value);
-      if(name=='category')
-        data[id]=value;
-      else{
-        data[name]=value;
-      }
-    });
-    // console.log(data);
-    fetch("{% url 'precheck' %}", {
-        method: 'POST',
-        'body': JSON.stringify(data),
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-            'X-CSRFToken': csrftoken
-        }
-    }).then(
-      response => response.json()
-    ).then(json => {
-        console.log(json);
-        $("#pre-check-info").text(JSON.stringify(json));
-    });
-    event.preventDefault();
-  
-  });
-  });
-      
-    
-  </script>
+  <script type="text/javascript" src="{% static 'js/pickfilters.js' %}"></script>
 {% endblock content %}

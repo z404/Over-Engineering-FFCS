@@ -1,12 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/uploadexcel.css' %}"> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-filestyle/2.1.0/bootstrap-filestyle.min.js" integrity="sha512-HfRdzrvve5p31VKjxBhIaDhBqreRXt4SX3i3Iv7bhuoeJY47gJtFTRWKUpjk8RUkLtKZUhf87ONcKONAROhvIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript" src="{% static 'js/uploadexcel.js' %}"></script>
+{% endblock head %}
 {% block content %}
+  <h5>Upload your Excel Sheet</h5>
+  Find and upload the teacher list from your FFCS email. This Excel sheet should compulsorily have columns of Course Name, Course Code, 
+  Employee Name, ERP ID, Slots, and Course Type. If your excel sheet is causing errors or if these columns are missing, contact us
+  and we'll help you out.<br><br>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form}}
-      <input type="submit" value="Upload"/>
+      {{form}}
+      <br>
+      <input type="submit" value="Upload" class="btn btn-outline-success btn-block"/>
+      
     </form>
+  <script>
+    $(":file").filestyle('btnClass', 'btn-primary');
+  </script>
   {% endblock content %}
   {% block title %}
-    Uplaod screen
+    Upload screen
   {% endblock title %}

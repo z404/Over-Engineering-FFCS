@@ -477,7 +477,9 @@ def show_selected_data(user_profile):
     
     else:
         retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
-
-
+    
+    # Todo list for tommorow
+    # Add status value
+    # Ask sankalp on save filters button
 
     return retdict

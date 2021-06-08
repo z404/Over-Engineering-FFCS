@@ -122,3 +122,8 @@ def pre_check(request):
 def viewdata(request):
     ret = show_selected_data(request.user.profile)
     return render(request, 'oeffcs/ViewData.html', context = ret)
+
+@login_required
+def save_filters(request):
+    print(dict(request.POST))
+    return HttpResponseRedirect('/')

@@ -4,15 +4,21 @@
   <script src="{% static 'js/teacherselect.js' %}"></script>
 {% endblock head %}
 {% block content %}
-  This is the teacher pick page
+  <h5>Pick your Teachers!</h5>
+  For every subject that you select, pick around 3-4 teachers that you feel are good. These teachers will then be used to
+  calculate all possible time tables.
+  <br>
+  <br>
+  <span class="errordisplay text-danger">
+    {{ errordisplay }}
+  </span>
+  <br>
+  <h5>Subjects and teachers available</h5>
   <form method="post" id="form1">
     {% csrf_token %}
     {% autoescape off %}
       {{ teacherdata }}
     {% endautoescape %}
-    <br>
-    <span class="errordisplay">
-      {{ errordisplay }}
-    </span>
+    
   </form>
 {% endblock content %}

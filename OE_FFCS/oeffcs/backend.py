@@ -130,16 +130,16 @@ class FORM:
 
     def add_subject(self, subject, subject_code):
         # Creating checkbox for subject
-        self.form += '<input id ="' + subject_code + '" \
+        self.form += '<div class="custom-control custom-switch"><input id ="' + subject_code + '" \
                 type="checkbox" \
-                class="subjectcheckbox'+str(self.count)+'" \
+                class="custom-control-input subjectcheckbox'+str(self.count)+'" \
                 name="'+subject_code+'" \
                 value="'+subject_code+'" \
                 onclick=toggleview("'+"teacherlist" + str(self.count)+'") \
                 autocomplete="off">'
         
         # Creating lable for checkbox
-        self.form += '<label for="'+subject_code+'"> '+subject+'</label><br>'
+        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label></div>'
 
         # Creating span to hold and hide teacher names
         self.form += '<span style="display: none;" id="teacherlist'+str(self.count)+'">'
@@ -154,15 +154,17 @@ class FORM:
 
     def add_teacher(self, teacher, subject_code, teacher_code):
         # Adding checkbox for teacher 
-        self.form += '&emsp; &emsp; <input id="'+ teacher+subject_code +'" \
+        self.form += '<div class="form-check">&emsp; &emsp; \
+                    <input id="'+ teacher+subject_code +'" \
                     type="checkbox" \
-                    class="teachercheckbox" \
+                    class="teachercheckbox form-check-input" \
                     name="'+subject_code+'" \
                     value="'+subject_code+':'+teacher_code+'" \
                     autocomplete="off">'
         
         # Adding lable for teacher name
-        self.form += '<label for="'+teacher+subject_code+'"> '+teacher+'</label><br>'
+        self.form += '<label for="'+teacher+subject_code+'" class="form-check-label"\
+            style="margin-bottom:4px;"> '+teacher+'</label></div>'
 
     def close_subject(self):
         # Adding a closing span tag for subject
@@ -170,7 +172,7 @@ class FORM:
 
     def output(self):
         # Returning form with submit button at the end
-        return self.form + '<button type="submit" form="form1" value="Submit">Submit</button>'
+        return self.form + '<button type="submit" form="form1" class="btn btn-primary btn-block w-50" value="Submit">Submit</button>'
 
 def convertToForm(filepath):
     # Getting datastructure from file

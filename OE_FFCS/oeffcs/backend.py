@@ -1,3 +1,4 @@
+from os import stat
 from django.shortcuts import render
 from numpy.core.fromnumeric import prod
 from numpy.lib.npyio import save
@@ -128,15 +129,15 @@ class FORM:
     # count variable to store count
     count = 1
 
-    def add_subject(self, subject, subject_code):
+    def add_subject(self, subject, subject_code, check_status = "unchecked"):
         # Creating checkbox for subject
         self.form += '<div class="custom-control custom-switch"><input id ="' + subject_code + '" \
                 type="checkbox" \
                 class="custom-control-input subjectcheckbox'+str(self.count)+'" \
                 name="'+subject_code+'" \
                 value="'+subject_code+'" \
-                onclick=toggleview("'+"teacherlist" + str(self.count)+'") \
-                autocomplete="off">'
+                onclick=toggleview("'+"teacherlist" + str(self.count)+'","' + subject_code + '") \
+                autocomplete="off" '+check_status+'>'
         
         # Creating lable for checkbox
         self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label></div>'
@@ -152,7 +153,7 @@ class FORM:
         # !! Inside span of subject !!
         self.form += '&emsp; <label class="coursetype">'+course_type+'</label><br>'
 
-    def add_teacher(self, teacher, subject_code, teacher_code):
+    def add_teacher(self, teacher, subject_code, teacher_code, check_status = "unchecked"):
         # Adding checkbox for teacher 
         self.form += '<div class="form-check">&emsp; &emsp; \
                     <input id="'+ teacher+subject_code +'" \
@@ -160,7 +161,7 @@ class FORM:
                     class="teachercheckbox form-check-input" \
                     name="'+subject_code+'" \
                     value="'+subject_code+':'+teacher_code+'" \
-                    autocomplete="off">'
+                    autocomplete="off" '+check_status+'>'
         
         # Adding lable for teacher name
         self.form += '<label for="'+teacher+subject_code+'" class="form-check-label"\
@@ -174,19 +175,29 @@ class FORM:
         # Returning form with submit button at the end
         return self.form + '<button type="submit" form="form1" class="btn btn-primary btn-block w-50" value="Submit">Submit</button>'
 
-def convertToForm(filepath):
+def convertToForm(user):
     # Getting datastructure from file
-    finaldata = convert_df_to_ds(convert_file_to_df(filepath))
+    finaldata = convert_df_to_ds(convert_file_to_df(str(user.profile.data_file)))
+    status_value = user.profile.status_value
+    if status_value >= 2:
+        saved_previous_teachers = user.profile.saveteachers
+    else:
+        saved_previous_teachers = ''
     
     # FORM object
     form2 = FORM()
+
+    #asdf
 
     # Iterating through data
     for subject_data, course_info in finaldata.items():
         # Extract subject and subject code
         subject, code, *trash = [i.rstrip(' )') for i in subject_data.split('(')]
         # Pass to form
-        form2.add_subject(subject, code)
+        if code in saved_previous_teachers:
+            form2.add_subject(subject, code, "checked")
+        else:
+            form2.add_subject(subject, code)
 
         # Iterating through course data
         for c_type, teacherlist in course_info.items():
@@ -203,7 +214,10 @@ def convertToForm(filepath):
                 else:
                     teachercode = teacher.split(' (')[-1].rstrip(' )')
                 # Add teacher to form
-                form2.add_teacher(teacher, code, teachercode)
+                if code+':'+teachercode in saved_previous_teachers:
+                    form2.add_teacher(teacher, code, teachercode, "checked")
+                else:
+                    form2.add_teacher(teacher, code, teachercode)
         # Finish subject
         form2.close_subject()
 

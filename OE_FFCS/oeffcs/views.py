@@ -66,8 +66,8 @@ def upload_file(request):
 
 @login_required
 def pickteachers(request):
-    teacherdata = str(request.user.profile.data_file)
-    ret = convertToForm(teacherdata)
+    # teacherdata = str(request.user.profile.data_file)
+    ret = convertToForm(request.user)
     if request.method == 'POST':
         postdata = dict(request.POST)
         del postdata['csrfmiddlewaretoken']

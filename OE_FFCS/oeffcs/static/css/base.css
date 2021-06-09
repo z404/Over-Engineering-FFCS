@@ -49,6 +49,15 @@ li {
     color: white;
 }
 
+#logoutbtn {
+    float: right;
+}
+
+#usertitle {
+    padding-top: 5px;
+    display: inline-block;
+}
+
 @media (max-width:768px) {
     .row.collapse,
     .row.collapsing {

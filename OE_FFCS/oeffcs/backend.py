@@ -1,3 +1,4 @@
+from os import stat
 from django.shortcuts import render
 from numpy.core.fromnumeric import prod
 from numpy.lib.npyio import save
@@ -128,18 +129,18 @@ class FORM:
     # count variable to store count
     count = 1
 
-    def add_subject(self, subject, subject_code):
+    def add_subject(self, subject, subject_code, check_status = "unchecked"):
         # Creating checkbox for subject
-        self.form += '<input id ="' + subject_code + '" \
+        self.form += '<div class="custom-control custom-switch"><input id ="' + subject_code + '" \
                 type="checkbox" \
-                class="subjectcheckbox'+str(self.count)+'" \
+                class="custom-control-input subjectcheckbox'+str(self.count)+'" \
                 name="'+subject_code+'" \
                 value="'+subject_code+'" \
-                onclick=toggleview("'+"teacherlist" + str(self.count)+'") \
-                autocomplete="off">'
+                onclick=toggleview("'+"teacherlist" + str(self.count)+'","' + subject_code + '") \
+                autocomplete="off" '+check_status+'>'
         
         # Creating lable for checkbox
-        self.form += '<label for="'+subject_code+'"> '+subject+'</label><br>'
+        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label></div>'
 
         # Creating span to hold and hide teacher names
         self.form += '<span style="display: none;" id="teacherlist'+str(self.count)+'">'
@@ -152,17 +153,19 @@ class FORM:
         # !! Inside span of subject !!
         self.form += '&emsp; <label class="coursetype">'+course_type+'</label><br>'
 
-    def add_teacher(self, teacher, subject_code, teacher_code):
+    def add_teacher(self, teacher, subject_code, teacher_code, check_status = "unchecked"):
         # Adding checkbox for teacher 
-        self.form += '&emsp; &emsp; <input id="'+ teacher+subject_code +'" \
+        self.form += '<div class="form-check">&emsp; &emsp; \
+                    <input id="'+ teacher+subject_code +'" \
                     type="checkbox" \
-                    class="teachercheckbox" \
+                    class="teachercheckbox form-check-input" \
                     name="'+subject_code+'" \
                     value="'+subject_code+':'+teacher_code+'" \
-                    autocomplete="off">'
+                    autocomplete="off" '+check_status+'>'
         
         # Adding lable for teacher name
-        self.form += '<label for="'+teacher+subject_code+'"> '+teacher+'</label><br>'
+        self.form += '<label for="'+teacher+subject_code+'" class="form-check-label"\
+            style="margin-bottom:4px;"> '+teacher+'</label></div>'
 
     def close_subject(self):
         # Adding a closing span tag for subject
@@ -170,21 +173,31 @@ class FORM:
 
     def output(self):
         # Returning form with submit button at the end
-        return self.form + '<button type="submit" form="form1" value="Submit">Submit</button>'
+        return self.form + '<button type="submit" form="form1" class="btn btn-primary btn-block w-50" value="Submit">Submit</button>'
 
-def convertToForm(filepath):
+def convertToForm(user):
     # Getting datastructure from file
-    finaldata = convert_df_to_ds(convert_file_to_df(filepath))
+    finaldata = convert_df_to_ds(convert_file_to_df(str(user.profile.data_file)))
+    status_value = user.profile.status_value
+    if status_value >= 2:
+        saved_previous_teachers = user.profile.saveteachers
+    else:
+        saved_previous_teachers = ''
     
     # FORM object
     form2 = FORM()
+
+    #asdf
 
     # Iterating through data
     for subject_data, course_info in finaldata.items():
         # Extract subject and subject code
         subject, code, *trash = [i.rstrip(' )') for i in subject_data.split('(')]
         # Pass to form
-        form2.add_subject(subject, code)
+        if code in saved_previous_teachers:
+            form2.add_subject(subject, code, "checked")
+        else:
+            form2.add_subject(subject, code)
 
         # Iterating through course data
         for c_type, teacherlist in course_info.items():
@@ -201,7 +214,10 @@ def convertToForm(filepath):
                 else:
                     teachercode = teacher.split(' (')[-1].rstrip(' )')
                 # Add teacher to form
-                form2.add_teacher(teacher, code, teachercode)
+                if code+':'+teachercode in saved_previous_teachers:
+                    form2.add_teacher(teacher, code, teachercode, "checked")
+                else:
+                    form2.add_teacher(teacher, code, teachercode)
         # Finish subject
         form2.close_subject()
 
@@ -443,7 +459,7 @@ def show_selected_data(user_profile):
         retdict['exceldata'] = '<b>File path: </b> '+file_path
 
     if status_value >= 2:
-        retdict['teacherdata'] = '<table class="table table-bordered table-hover table-sm table-dark">\
+        retdict['teacherdata'] = '<table id="Teachertable" class="table table-bordered table-hover table-sm table-dark">\
                                 <thead>\
                                     <tr>\
                                     <th scope="col">##</th>\
@@ -474,7 +490,7 @@ def show_selected_data(user_profile):
             retdict['teacherdata'] += teacherstring
             
 
-        retdict['teacherdata'] += '</tbody></table><br>'
+        retdict['teacherdata'] += '</tbody></table>'
     
     else:
         retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
@@ -507,6 +523,58 @@ def show_selected_data(user_profile):
                                         Generated final priority list'+tick_priority+'\
                                     </li>\
                                 </ul>'
+
+    
+    retdict['filters'] = ''
+    if status_value >= 3:
+        saved_filters = eval(user_profile.savefilters)
+        print(user_profile.savefilters)
+        theory_pref, lab_pref = "Mixed", "Mixed"
+        if 'pre-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Morning"
+        if 'post-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Evening"
+        if 'pre-lab' in saved_filters['pre-post-lunch'][0]: lab_pref = "Morning"
+        if 'post-lab' in saved_filters['pre-post-lunch'][0]: lab_pref = "Evening"
+        retdict['filters'] = '<table class="table table-sm table-bordered table-hover table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">##</th>\
+                                    <th scope="col">Field</th>\
+                                    <th scope="col">Value</th>\
+                                    </tr>\
+                                </thead><tbody>\
+                                    <tr>\
+                                        <th scope="row">1</th>\
+                                        <td>Theory preference</td>\
+                                        <td>'+theory_pref+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">2</th>\
+                                        <td>Lab preference</td>\
+                                        <td>'+lab_pref+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">3</th>\
+                                        <td>Max 8 o\'clock classes</td>\
+                                        <td>'+saved_filters['8-classes'][0]+'</td>\
+                                    </tr>\
+                                    <tr>\
+                                        <th scope="row">4</th>\
+                                        <td>Max 2 o\'clock classes</td>\
+                                        <td>'+saved_filters['2-classes'][0]+'</td>\
+                                    </tr>\
+                                        <tr>\
+                                        <th scope="row">5</th>\
+                                        <td>Max 6 o\'clock classes</td>\
+                                        <td>'+saved_filters['6-classes'][0]+'</td>\
+                                    </tr>\
+                                    </tr>\
+                                        <tr>\
+                                        <th scope="row">6</th>\
+                                        <td>Slots Ignored</td>\
+                                        <td>'+saved_filters['slots'][0]+'</td>\
+                                    </tr></tbody></table>'
+    else:
+        retdict['filters'] = 'You haven\'t chosen any filters yet!'
     return retdict
 
 def savefilters(save_dict, user_object):

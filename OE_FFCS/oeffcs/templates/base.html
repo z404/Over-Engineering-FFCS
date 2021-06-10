@@ -37,6 +37,13 @@
                         <i class="fa fa-bars fa-lg"></i>
                     </a>
                     <a class="navbar-brand no-link" href="{% url 'index' %}">Over Engineering FFCS</a>
+                    {% if user.is_authenticated %}
+                    <span id="logoutbtn">
+                    <span id="usertitle">Logged in as {{ user.username }}!</span>
+                    <!-- <br> --> &nbsp;
+                    <a id="logoutbutton" class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}">Log out</a>
+                    </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -57,6 +64,10 @@
                         <ul class="nav flex-column flex-nowrap text-truncate">
 
                             {% with user.profile.status_value as status %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'index' %}">Home</a>
+                            </li>
+
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'viewdata' %}">View Data</a>
                             </li>

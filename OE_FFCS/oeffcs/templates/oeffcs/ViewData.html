@@ -28,4 +28,11 @@ Here is all the data you have saved on our website to help calculate timetables 
 {% autoescape off %}
     {{ teacherdata }}
 {% endautoescape %}
+
+<br><h5>&nbsp; &nbsp;<i class="fas fa-angle-double-right"></i> Chosen Filters</h5>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;These are the filters you have chosen to reduce timetables to your specifications.
+<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+{% autoescape off %}
+    {{ filters }}
+{% endautoescape %}
 {% endblock content %}

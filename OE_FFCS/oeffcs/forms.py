@@ -22,3 +22,8 @@ class ChangeFiltersForm(ModelForm):
     class Meta:
         model = Profile
         fields = ['savefilters']
+
+class ChangeTimetableNumber(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['timetable_count']

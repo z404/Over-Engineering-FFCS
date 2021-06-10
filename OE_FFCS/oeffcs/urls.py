@@ -11,4 +11,5 @@ urlpatterns = [
     path('precheck/',views.pre_check, name='precheck'),
     path('viewdata/', views.viewdata, name='viewdata'),
     path('savefilters/', views.save_filters, name='savefilters'),
+    path('timetablepriority/',views.tablepriority, name='tablepriority'),
 ]

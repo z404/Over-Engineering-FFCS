@@ -5,7 +5,7 @@ from numpy.lib.npyio import save
 import pandas as pd
 from django.conf import settings
 from itertools import product
-from .forms import ChangeStatusForm, ChangeFiltersForm
+from .forms import ChangeStatusForm, ChangeFiltersForm, ChangeTimetableNumber
 from .models import Profile, Timetable, Entry
 from collections import Counter
 
@@ -356,6 +356,13 @@ def save_timetable(time_tables_data, user):
         form.instance.user = user
         form.save()
     Timetable.objects.filter(level=user.profile).delete()
+    no_of_timetables = len(time_tables_data)
+    form = ChangeTimetableNumber(
+        {'timetable_count': no_of_timetables}, instance=user.profile)
+    if form.is_valid():
+        form.instance.user = user
+        form.save()
+    count = 1
     for timetable, data in time_tables_data:
         temp_timeable = Timetable(
             level = user.profile,
@@ -363,7 +370,10 @@ def save_timetable(time_tables_data, user):
              total2classes = data[2],
              total6classes = data[3],
              theory_status = data[4],
-             lab_status = data[5])
+             lab_status = data[5],
+             ttid = str(user)+str(count),
+             nickname = str(user)+str(count))
+        count+=1
         temp_timeable.save()
         for entry in timetable:
             temp_entry=Entry(
@@ -377,7 +387,7 @@ def save_timetable(time_tables_data, user):
 
 def query_database(params, user):
     time_of_day = params['pre-post-lunch']
-
+    print(params)
     # params might be different due to form validation of Slot field
     # Considering slot as string for now
     # Converting string to list
@@ -578,6 +588,7 @@ def show_selected_data(user_profile):
     return retdict
 
 def savefilters(save_dict, user_object):
+    print(save_dict)
     form = ChangeFiltersForm(
         {'savefilters':str(save_dict)}, instance=user_object.profile)
     if form.is_valid():
@@ -588,3 +599,16 @@ def savefilters(save_dict, user_object):
     if form.is_valid():
         form.instance.user = user_object
         form.save()
+
+def rectifyfiltersave(filter):
+    new_filter = {}
+    for i,j in eval(filter).items():
+        new_filter.update({i:j[0]})
+    return new_filter
+
+def apicall_getselectedtt(user_object):
+    saved_filters = rectifyfiltersave(user_object.profile.savefilters)
+    query_data = [i.ttid for i in query_database(saved_filters, user_object)]
+    return query_data
+
+# def get_timetable_data_by_id(table_id)

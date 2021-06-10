@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
+from .backend import apicall_getselectedtt
 import json
 import threading
 
@@ -129,3 +130,8 @@ def save_filters(request):
     del filters['csrfmiddlewaretoken']
     savefilters(filters, request.user)
     return HttpResponseRedirect('/')
+
+@login_required
+def tablepriority(request):
+    ret = apicall_getselectedtt(request.user)
+    return render(request, 'oeffcs/tablepriority.html', {'display': ret})

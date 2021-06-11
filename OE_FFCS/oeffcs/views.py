@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
-from .backend import apicall_getselectedtt
+from .backend import apicall_getselectedtt, get_timetable_data_by_id, apicall_changenick_by_id
 import json
 import threading
 
@@ -133,5 +133,7 @@ def save_filters(request):
 
 @login_required
 def tablepriority(request):
-    ret = apicall_getselectedtt(request.user)
+    # ret = apicall_getselectedtt(request.user)
+    ret = get_timetable_data_by_id('anish1')
+    apicall_changenick_by_id('anish1','yenis')
     return render(request, 'oeffcs/tablepriority.html', {'display': ret})

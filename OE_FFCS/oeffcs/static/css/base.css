@@ -1,6 +1,6 @@
 body {
     height: 100vh;
-    overflow-x: hidden;
+    overflow-x: auto;
     padding-top: 55px;
 }
 
@@ -58,7 +58,7 @@ li {
     display: inline-block;
 }
 
-@media (max-width:768px) {
+@media (max-width:1420px) {
     .row.collapse,
     .row.collapsing {
         margin-left: 0 !important;
@@ -88,5 +88,11 @@ li {
         position: fixed;
         z-index: 1050;
         min-width: initial;
+    }
+}
+
+@media all and (max-width: 890px) {
+    .navbar-collapse {
+        align-items: unset;
     }
 }

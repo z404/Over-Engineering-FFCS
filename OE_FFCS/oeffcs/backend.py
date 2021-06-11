@@ -611,4 +611,25 @@ def apicall_getselectedtt(user_object):
     query_data = [i.ttid for i in query_database(saved_filters, user_object)]
     return query_data
 
-# def get_timetable_data_by_id(table_id)
+def get_timetable_data_by_id(table_id):
+    timetable = Timetable.objects.filter(ttid = table_id)
+    if len(timetable) != 1: return None
+    else:
+        timetable_lst = []
+        entries = Entry.objects.filter(level = timetable[0])
+        for i in entries:
+            timetable_lst.append(i.slots+" "+i.class_code)
+        timetablestr = timetable_to_html_str(timetable_lst)
+        return timetablestr
+        # return timetable[0].ttid
+
+def apicall_changenick_by_id(table_id, new_nick):
+    timetable = Timetable.objects.filter(ttid = table_id)[0]
+    timetable.nickname = new_nick
+    timetable.save(update_fields = ['nickname'])
+
+def apicall_changepriority_by_id(table_id, new_priority):
+    timetable = Timetable.objects.filter(ttid = table_id)[0]
+    timetable.priority = new_priority
+    timetable.save(update_fields = ['priority'])
+# render next timetable

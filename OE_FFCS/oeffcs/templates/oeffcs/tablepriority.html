@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
+<link rel="stylesheet" href="../../static/css/tablepriority.css" />
 {% endblock head %}
 {% block content %}
-This is the timetable pick page!
-{{ display }}
+This is the timetable pick page! <br>
+<div id="displaytimetable">
+{% autoescape off %}
+    {{ display }}
+{% endautoescape %}
+</div>
+
 {% endblock content %}

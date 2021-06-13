@@ -387,7 +387,7 @@ def save_timetable(time_tables_data, user):
 
 def query_database(params, user):
     time_of_day = params['pre-post-lunch']
-    print(params)
+    # print(params)
     # params might be different due to form validation of Slot field
     # Considering slot as string for now
     # Converting string to list
@@ -538,7 +538,7 @@ def show_selected_data(user_profile):
     retdict['filters'] = ''
     if status_value >= 3:
         saved_filters = eval(user_profile.savefilters)
-        print(user_profile.savefilters)
+        # print(user_profile.savefilters)
         theory_pref, lab_pref = "Mixed", "Mixed"
         if 'pre-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Morning"
         if 'post-theory' in saved_filters['pre-post-lunch'][0]: theory_pref = "Evening"
@@ -588,7 +588,7 @@ def show_selected_data(user_profile):
     return retdict
 
 def savefilters(save_dict, user_object):
-    print(save_dict)
+    # print(save_dict)
     form = ChangeFiltersForm(
         {'savefilters':str(save_dict)}, instance=user_object.profile)
     if form.is_valid():
@@ -606,9 +606,9 @@ def rectifyfiltersave(filter):
         new_filter.update({i:j[0]})
     return new_filter
 
-def apicall_getselectedtt(user_object):
+def getselectedtt(user_object):
     saved_filters = rectifyfiltersave(user_object.profile.savefilters)
-    query_data = [i.ttid for i in query_database(saved_filters, user_object)]
+    query_data = query_database(saved_filters, user_object)
     return query_data
 
 def get_timetable_data_by_id(table_id):
@@ -632,4 +632,12 @@ def apicall_changepriority_by_id(table_id, new_priority):
     timetable = Timetable.objects.filter(ttid = table_id)[0]
     timetable.priority = new_priority
     timetable.save(update_fields = ['priority'])
+    
 # render next timetable
+def apicall_render_next(user_object, index_number):
+    selected_timetables = getselectedtt(user_object)
+    list_of_selected_timetables = [i.ttid for i in selected_timetables]
+    index_number = index_number % len(list_of_selected_timetables)
+    timetable_by_index = get_timetable_data_by_id(selected_timetables[index_number].ttid)
+    
+    return timetable_by_index

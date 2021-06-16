@@ -1,3 +1,34 @@
 #displaytimetable {
     font-size: x-small;
 }
+
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+#timeTableStyle td {
+    padding: 2px;
+}
+
+ul {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+#Teachertable {
+    font-size: small;
+}
+
+.list-group {
+    margin: 0;
+    max-width: 400px;
+    width: 100%;
+}
+
+#timetablelist {
+    display: block;
+    max-height: 725px;
+}

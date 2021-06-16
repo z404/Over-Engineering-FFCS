@@ -372,7 +372,7 @@ def save_timetable(time_tables_data, user):
              theory_status = data[4],
              lab_status = data[5],
              ttid = str(user)+str(count),
-             nickname = str(user)+str(count))
+             nickname = 'Timetable '+str(count))
         count+=1
         temp_timeable.save()
         for entry in timetable:
@@ -611,16 +611,47 @@ def getselectedtt(user_object):
     query_data = query_database(saved_filters, user_object)
     return query_data
 
-def get_timetable_data_by_id(table_id):
+def get_teacher_data(user_object, teacher, count):
+    teacherstring = ''
+    dataframe = convert_file_to_df(str(user_object.profile.data_file))
+    course_code, erpid = teacher.split(':')
+    slots = ", ".join(dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][SLOT].unique())
+    name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
+    cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
+    teacherstring = '<tr>\
+                            <th scope="row">'+str(count)+'</th>\
+                            <td>'+name+'</td>\
+                            <td>'+erpid+'</td>\
+                            <td>'+slots+'</td>\
+                            <td>'+cname+'</td>\
+                        </tr>'
+    return teacherstring
+
+def get_timetable_data_by_id(user_object, table_id):
+    returndata = {}
     timetable = Timetable.objects.filter(ttid = table_id)
     if len(timetable) != 1: return None
     else:
         timetable_lst = []
         entries = Entry.objects.filter(level = timetable[0])
+        returndata['teacher_list'] = '<table id="Teachertable" class="table table-bordered table-hover table-sm table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">##</th>\
+                                    <th scope="col">Employee Name</th>\
+                                    <th scope="col">ERP</th>\
+                                    <th scope="col">Slot</th>\
+                                    <th scope="col">Subject</th>\
+                                    </tr>\
+                                </thead><tbody>'
+        count = 1
         for i in entries:
             timetable_lst.append(i.slots+" "+i.class_code)
-        timetablestr = timetable_to_html_str(timetable_lst)
-        return timetablestr
+            returndata['teacher_list'] += get_teacher_data(user_object, i.class_code, count)
+            count += 1
+        returndata['teacher_list'] += '</tbody></table>'
+        returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
+        return returndata
         # return timetable[0].ttid
 
 def apicall_changenick_by_id(table_id, new_nick):
@@ -635,9 +666,16 @@ def apicall_changepriority_by_id(table_id, new_priority):
     
 # render next timetable
 def apicall_render_next(user_object, index_number):
+    returndata = {}
+
     selected_timetables = getselectedtt(user_object)
-    list_of_selected_timetables = [i.ttid for i in selected_timetables]
+    list_of_selected_timetables = [i.nickname for i in selected_timetables]
+    returndata['timetable_list'] = '<table id="timetablelist" class="table table-dark"><tbody>'
+    for i in list_of_selected_timetables:
+        returndata['timetable_list'] += '<tr><td>'+i+'</td></tr>'
+    returndata['timetable_list'] += '</tbody></table>'
+
     index_number = index_number % len(list_of_selected_timetables)
-    timetable_by_index = get_timetable_data_by_id(selected_timetables[index_number].ttid)
-    
-    return timetable_by_index
+    timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
+    returndata.update(timetable_by_index)
+    return returndata

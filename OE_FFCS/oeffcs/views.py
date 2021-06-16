@@ -135,4 +135,4 @@ def save_filters(request):
 def tablepriority(request):
     # ret = apicall_getselectedtt(request.user)
     ret = apicall_render_next(request.user, 2)
-    return render(request, 'oeffcs/tablepriority.html', {'display': ret})
+    return render(request, 'oeffcs/tablepriority.html', ret)

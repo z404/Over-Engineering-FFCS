@@ -1,14 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
-<link rel="stylesheet" href="../../static/css/tablepriority.css" />
+<link rel="stylesheet" href="{% static 'css/tablepriority.css' %}"> 
 {% endblock head %}
 {% block content %}
 This is the timetable pick page! <br>
-<div id="displaytimetable">
-{% autoescape off %}
-    {{ display }}
-{% endautoescape %}
+<div class="row">
+    <div id="displaytimetable" class="col-9">
+        {% autoescape off %}
+            {{ render_timetable }}
+        {% endautoescape %}
+
+        <div class="container px-0">
+            <div class="row">
+                <div class="col-4">
+                    <button type="button" class="btn btn-primary btn-block">Previous Timetable</button>
+                </div>
+                <div class="col-4 d-flex justify-content-center">
+                    <!-- <label id="priorityLabel"> Choose your priority: &nbsp;&nbsp;</label> -->
+                        <button type="button" id="prioritybutton5" class="btn btn-success">5</button>&nbsp;
+                        <button type="button" id="prioritybutton4" class="btn btn-primary">4</button>&nbsp;
+                        <button type="button" id="prioritybutton3" class="btn btn-info">3</button>&nbsp;
+                        <button type="button" id="prioritybutton2" class="btn btn-warning">2</button>&nbsp;
+                        <button type="button" id="prioritybutton1" class="btn btn-danger">1</button>&nbsp;
+                        <button type="button" id="prioritybuttonX" class="btn btn-danger" style="background-color: white;">
+                            <i class="fa fa-trash" aria-hidden="true" style="color: red;"></i>
+                        </button>
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-primary btn-block">Next Timetable</button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    {% autoescape off %}
+                        {{ teacher_list }}
+                    {% endautoescape %}
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <div class="col-3">
+        {% autoescape off %}
+            {{ timetable_list }}
+        {% endautoescape %}  
+    </div>
+    
 </div>
 
 {% endblock content %}

@@ -485,18 +485,22 @@ def show_selected_data(user_profile):
         for i,j in selected_teachers_cleaned.items():
             teacherstring = ''
             for teacher in j:
-                course_code, erpid = teacher.split(':')
-                slots = ", ".join(dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][SLOT].unique())
-                name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
-                cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
-                teacherstring += '<tr>\
-                                        <th scope="row">'+str(count)+'</th>\
-                                        <td>'+name+'</td>\
-                                        <td>'+erpid+'</td>\
-                                        <td>'+slots+'</td>\
-                                        <td>'+cname+'</td>\
-                                    </tr>'
-                count+=1
+                if ' ' in teacher:
+                    teachers=teacher.split(' ')
+                else: teachers = [teacher]
+                for teacher in teachers:
+                    course_code, erpid = teacher.split(':')
+                    slots = ", ".join(dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][SLOT].unique())
+                    name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
+                    cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
+                    teacherstring += '<tr>\
+                                            <th scope="row">'+str(count)+'</th>\
+                                            <td>'+name+'</td>\
+                                            <td>'+erpid+'</td>\
+                                            <td>'+slots+'</td>\
+                                            <td>'+cname+'</td>\
+                                        </tr>'
+                    count+=1
             retdict['teacherdata'] += teacherstring
             
 

@@ -102,6 +102,11 @@ def pickteachers(request):
                 form.save()
             
             # Generating Time tables
+            form = ChangeStatusForm(
+                {'status_value': 1}, instance=request.user.profile)
+            if form.is_valid():
+                form.instance.user = request.user
+                form.save()
             threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
             threadsplit.start()
             return HttpResponseRedirect('/')

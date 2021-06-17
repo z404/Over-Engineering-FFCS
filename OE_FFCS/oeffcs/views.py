@@ -121,7 +121,16 @@ def pre_check(request):
 
 @login_required
 def viewdata(request):
-    ret = show_selected_data(request.user.profile)
+    try:
+        ret = show_selected_data(request.user.profile)
+    except User.profile.RelatedObjectDoesNotExist:
+        ret = {'exceldata': 'You haven\'t uploaded a file yet!',
+        'teacherdata': 'You haven\'t chosen any teachers yet!',
+        'filters': 'You haven\'t chosen any filters yet!'}
+        form = ChangeStatusForm({'status_value': 0})
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
     return render(request, 'oeffcs/ViewData.html', context = ret)
 
 @login_required

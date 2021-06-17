@@ -659,18 +659,18 @@ def get_timetable_data_by_id(user_object, table_id):
         return returndata
         # return timetable[0].ttid
 
-def apicall_changenick_by_id(table_id, new_nick):
-    timetable = Timetable.objects.filter(ttid = table_id)[0]
-    timetable.nickname = new_nick
-    timetable.save(update_fields = ['nickname'])
+# def apicall_changenick_by_id(table_id, new_nick):
+#     timetable = Timetable.objects.filter(ttid = table_id)[0]
+#     timetable.nickname = new_nick
+#     timetable.save(update_fields = ['nickname'])
 
-def apicall_changepriority_by_id(table_id, new_priority):
-    timetable = Timetable.objects.filter(ttid = table_id)[0]
-    timetable.priority = new_priority
-    timetable.save(update_fields = ['priority'])
+# def apicall_changepriority_by_id(table_id, new_priority):
+#     timetable = Timetable.objects.filter(ttid = table_id)[0]
+#     timetable.priority = new_priority
+#     timetable.save(update_fields = ['priority'])
     
 # render next timetable
-def apicall_render_next(user_object, index_number):
+def render_next(user_object, index_number):
     returndata = {'index':index_number}
 
     selected_timetables = getselectedtt(user_object)
@@ -703,3 +703,7 @@ def apicall_render_next(user_object, index_number):
     timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
     returndata.update(timetable_by_index)
     return returndata
+
+def apicall_render_next(request):
+    print(request.data)
+    return "hi"

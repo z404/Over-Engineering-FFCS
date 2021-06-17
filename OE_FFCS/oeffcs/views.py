@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
-from .backend import apicall_changenick_by_id, apicall_render_next
+from .backend import render_next
 import json
 import threading
 
@@ -148,5 +148,10 @@ def save_filters(request):
 @login_required
 def tablepriority(request):
     # ret = apicall_getselectedtt(request.user)
-    ret = apicall_render_next(request.user, 0)
-    return render(request, 'oeffcs/tablepriority.html', ret)
+    ret = render_next(request.user, 0)
+    return render(request, 'oeffcs/TablePriority.html', ret)
+
+@login_required
+def api_render_tt(request):
+    print(request.body)
+    return JsonResponse({"Hello":"Bye"})

@@ -32,3 +32,8 @@ ul {
     display: block;
     max-height: 725px;
 }
+
+tbody {
+    width: 100%;
+    display: table;
+}

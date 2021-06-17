@@ -4,7 +4,9 @@
 <link rel="stylesheet" href="{% static 'css/tablepriority.css' %}"> 
 {% endblock head %}
 {% block content %}
-This is the timetable pick page! <br>
+<h5>
+    <b>Timetable {{ index|add:"1" }} of {{ total }}</b>
+</h5>
 <div class="row">
     <div id="displaytimetable" class="col-9">
         {% autoescape off %}

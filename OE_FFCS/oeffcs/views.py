@@ -96,7 +96,7 @@ def pickteachers(request):
             #     form.save()
 
             form = ChangeTeachersForm(
-                {'saveteachers': json.dumps(postdata)}, instance=request.user.profile)
+                {'saveteachers': json.dumps(postdata_cleaned)}, instance=request.user.profile)
             if form.is_valid():
                 form.instance.user = request.user
                 form.save()
@@ -134,5 +134,5 @@ def save_filters(request):
 @login_required
 def tablepriority(request):
     # ret = apicall_getselectedtt(request.user)
-    ret = apicall_render_next(request.user, 2)
+    ret = apicall_render_next(request.user, 0)
     return render(request, 'oeffcs/tablepriority.html', ret)

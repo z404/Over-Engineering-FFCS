@@ -29,7 +29,7 @@ class Timetable(models.Model):
     theory_status = models.CharField(max_length=10)
     ttid = models.CharField(max_length=75)
     nickname = models.CharField(max_length=75)
-    priority = models.IntegerField(default=2)
+    priority = models.IntegerField(default=3)
     
     def __str__(self):
         return str(self.pk)

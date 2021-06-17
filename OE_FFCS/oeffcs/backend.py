@@ -618,16 +618,18 @@ def getselectedtt(user_object):
 def get_teacher_data(user_object, teacher, count, slots):
     teacherstring = ''
     dataframe = convert_file_to_df(str(user_object.profile.data_file))
-    course_code, erpid = teacher.split(':')
-    name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
-    cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
-    teacherstring = '<tr>\
-                            <td>'+str(count)+'</td>\
-                            <td>'+name+'</td>\
-                            <td>'+erpid+'</td>\
-                            <td>'+slots+'</td>\
-                            <td>'+cname+'</td>\
-                        </tr>'
+    teachers = teacher.split(' ')
+    for teacher in teachers:
+        course_code, erpid = teacher.split(':')
+        name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
+        cname = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][COURSE_TITLE].unique()[0]
+        teacherstring += '<tr>\
+                                <td>'+str(count)+'</td>\
+                                <td>'+name+'</td>\
+                                <td>'+erpid+'</td>\
+                                <td>'+slots+'</td>\
+                                <td>'+cname+'</td>\
+                            </tr>'
     return teacherstring
 
 def get_timetable_data_by_id(user_object, table_id):
@@ -649,7 +651,7 @@ def get_timetable_data_by_id(user_object, table_id):
                                 #</thead><tbody>'
         count = 1
         for i in entries:
-            timetable_lst.append(i.slots+" "+i.class_code)
+            timetable_lst.append(i.slots+" "+i.course_code)
             returndata['teacher_list'] += get_teacher_data(user_object, i.class_code, count, i.slots)
             count += 1
         returndata['teacher_list'] += '</tbody></table>'

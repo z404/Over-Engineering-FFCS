@@ -664,40 +664,42 @@ def get_timetable_data_by_id(user_object, table_id):
 #     timetable.nickname = new_nick
 #     timetable.save(update_fields = ['nickname'])
 
-# def apicall_changepriority_by_id(table_id, new_priority):
-#     timetable = Timetable.objects.filter(ttid = table_id)[0]
-#     timetable.priority = new_priority
-#     timetable.save(update_fields = ['priority'])
+def apicall_changepriority_by_id(user_object, table_index, new_priority):
+    selected_timetables = getselectedtt(user_object)
+    timetable = selected_timetables[table_index]
+    timetable.priority = new_priority
+    timetable.save(update_fields = ['priority'])
     
 # render next timetable
-def apicall_render_next(user_object, index_number):
+def apicall_render_next(user_object, index_number, first="second"):
     returndata = {'index':index_number}
 
     selected_timetables = getselectedtt(user_object)
     returndata.update({'total':len(selected_timetables)})
     list_of_selected_timetables = [i.nickname for i in selected_timetables]
-    returndata['timetable_list'] = '<table id="timetablelist" class="table table-dark"><tbody style="width: 100%; display: table;">'
-    for i in selected_timetables:
-        if i.priority == 5:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></td></tr>'
-        elif i.priority == 4:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></td></tr>'
-        elif i.priority == 3:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></td></tr>'
-        elif i.priority == 2:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></td></tr>'
-        elif i.priority == 1:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></td></tr>'
-        elif i.priority == 0:
-            returndata['timetable_list'] += '<tr><td>'+i.nickname+\
-            '<span class="badge badge-pill badge-danger float-right">\
-            <i class="fa fa-trash" aria-hidden="true"></i></span></td></tr>'
-    returndata['timetable_list'] += '</tbody></table>'
+    if first == 'first':
+        returndata['timetable_list'] = '<table id="timetablelist" class="table table-dark"><tbody style="width: 100%; display: table;">'
+        for i in selected_timetables:
+            if i.priority == 5:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></td></tr>'
+            elif i.priority == 4:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></td></tr>'
+            elif i.priority == 3:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></td></tr>'
+            elif i.priority == 2:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></td></tr>'
+            elif i.priority == 1:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></td></tr>'
+            elif i.priority == 0:
+                returndata['timetable_list'] += '<tr><td>'+i.nickname+\
+                '<span class="badge badge-pill badge-danger float-right">\
+                <i class="fa fa-trash" aria-hidden="true"></i></span></td></tr>'
+        returndata['timetable_list'] += '</tbody></table>'
 
     index_number = index_number % len(list_of_selected_timetables)
     timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)

@@ -148,7 +148,7 @@ def save_filters(request):
 @login_required
 def tablepriority(request):
     # ret = apicall_getselectedtt(request.user)
-    ret = apicall_render_next(request.user, 0)
+    ret = apicall_render_next(request.user, 0, 'first')
     return render(request, 'oeffcs/TablePriority.html', ret)
 
 @login_required

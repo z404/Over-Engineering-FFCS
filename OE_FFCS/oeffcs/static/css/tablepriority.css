@@ -20,6 +20,7 @@ ul {
 
 #Teachertable {
     font-size: small;
+    margin-bottom: 0px;
 }
 
 .list-group {
@@ -30,7 +31,6 @@ ul {
 
 #timetablelist {
     display: block;
-    max-height: 725px;
 }
 
 tbody {

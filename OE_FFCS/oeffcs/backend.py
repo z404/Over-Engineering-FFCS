@@ -639,7 +639,7 @@ def get_timetable_data_by_id(user_object, table_id):
     else:
         timetable_lst = []
         entries = Entry.objects.filter(level = timetable[0])
-        returndata['teacher_list'] = '<table id="Teachertable" class="table table-bordered table-hover table-sm table-dark">\
+        returndata['information_table'] = '<table id="Teachertable" class="table table-bordered table-hover table-sm table-dark">\
                                 <tbody>\
                                     <tr>\
                                     <th scope="col">##</th>\
@@ -652,9 +652,9 @@ def get_timetable_data_by_id(user_object, table_id):
         count = 1
         for i in entries:
             timetable_lst.append(i.slots+" "+i.course_code)
-            returndata['teacher_list'] += get_teacher_data(user_object, i.class_code, count, i.slots)
+            returndata['information_table'] += get_teacher_data(user_object, i.class_code, count, i.slots)
             count += 1
-        returndata['teacher_list'] += '</tbody></table>'
+        returndata['information_table'] += '</tbody></table>'
         returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
         return returndata
         # return timetable[0].ttid
@@ -670,7 +670,7 @@ def get_timetable_data_by_id(user_object, table_id):
 #     timetable.save(update_fields = ['priority'])
     
 # render next timetable
-def render_next(user_object, index_number):
+def apicall_render_next(user_object, index_number):
     returndata = {'index':index_number}
 
     selected_timetables = getselectedtt(user_object)
@@ -703,7 +703,3 @@ def render_next(user_object, index_number):
     timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
     returndata.update(timetable_by_index)
     return returndata
-
-def apicall_render_next(request):
-    print(request.data)
-    return "hi"

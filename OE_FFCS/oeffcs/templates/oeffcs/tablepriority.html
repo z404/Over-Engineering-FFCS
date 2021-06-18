@@ -1,15 +1,22 @@
-{% extends 'base.html' %} {% load static %} {% block head %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block head %}
 <form method="post">{% csrf_token %}</form>
 <link rel="stylesheet" href="{% static 'css/tablepriority.css' %}">
 <script src="{% static 'js/timetablepriority.js' %}"></script>
-{% endblock head %} {% block content %}
+{% endblock head %} 
+{% block content %}
 <h5>
     <b>Timetable <span id="timetable-identifier">{{ index|add:"1" }}</span> of {{ total }}</b>
     <!-- Put more info about "total filtered timetables somewhere around here." -->
 </h5>
 <div class="row">
     <div id="displaytimetable" class="col-9">
-        {% autoescape off %} {{ render_timetable }} {% endautoescape %}
+        <span id="render_table_span">
+            {% autoescape off %} 
+                {{ render_timetable }} 
+            {% endautoescape %}
+        </span>
 
         <div class="container px-0">
             <div class="row">
@@ -34,7 +41,12 @@
 
             <div class="row">
                 <div class="col-12">
-                    <br> {% autoescape off %} {{ teacher_list }} {% endautoescape %}
+                    <br> 
+                    <span id="info_table_span">
+                        {% autoescape off %} 
+                            {{ information_table }} 
+                        {% endautoescape %}
+                    </span>
                 </div>
             </div>
         </div>

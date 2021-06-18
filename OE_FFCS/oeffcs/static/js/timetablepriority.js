@@ -4,7 +4,7 @@ const priorityChangeClick = () => {
     console.log(event.currentTarget.id);
     fetch("/rendertimetable/", {
             method: "POST",
-            data: { "index": 1 },
+            body: JSON.stringify({ "index": 1 }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
                 "X-CSRFToken": csrftoken,

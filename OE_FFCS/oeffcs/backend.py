@@ -703,5 +703,6 @@ def apicall_render_next(user_object, index_number, first="second"):
 
     index_number = index_number % len(list_of_selected_timetables)
     timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
+    returndata['nickname_render'] = selected_timetables[index_number].nickname
     returndata.update(timetable_by_index)
     return returndata

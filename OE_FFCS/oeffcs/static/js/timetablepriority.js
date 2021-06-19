@@ -1,10 +1,14 @@
 const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-const priorityChangeClick = () => {
-    console.log(event.currentTarget.id);
-    fetch("/rendertimetable/", {
+const scoreChange = () => {
+    const newScore = Number(event.currentTarget.id.slice(-1))
+    console.log(newScore);
+    fetch("/scorechange/", {
             method: "POST",
-            body: JSON.stringify({ "index": 1 }),
+            body: JSON.stringify({ 
+                "index": Number(document.getElementById("timetable-index").innerText)-1,
+                "score":newScore
+            }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
                 "X-CSRFToken": csrftoken,
@@ -60,8 +64,22 @@ const timetableChange = () => {
             }
         });
 }
+
 $(document).ready(() => {
     var height = $('#boxifycontent').height();
     document.getElementById("timetablelist").style.maxHeight = height + "px";
     console.log(height);
 });
+
+const nicknameChange = () => {
+    const newnick = document.getElementById("nickname-box").value;
+    fetch("/nicknamechange/", {
+        method: "POST",
+        body: JSON.stringify({"nick":newnick}),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "X-CSRFToken": csrftoken,
+        },
+    }).then(res=>res.json())
+    .then(json => console.log(json));
+}

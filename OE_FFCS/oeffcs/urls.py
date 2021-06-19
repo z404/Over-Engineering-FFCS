@@ -12,5 +12,7 @@ urlpatterns = [
     path('viewdata/', views.viewdata, name='viewdata'),
     path('savefilters/', views.save_filters, name='savefilters'),
     path('timetablepriority/',views.tablepriority, name='tablepriority'),
-    path('rendertimetable/',views.api_render_tt, name='renderTimetable'),
+    path('rendertimetable/',views.api_render_tt, name='rendertimetable'),
+    path('scorechange/',views.api_score_change, name='scorechange'),
+    path('nicknamechange/',views.api_nickname_change, name='nicknamechange'),
 ]

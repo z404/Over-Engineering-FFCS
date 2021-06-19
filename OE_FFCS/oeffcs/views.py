@@ -156,3 +156,21 @@ def api_render_tt(request):
     post_data = dict(eval(request.body))
     ret = apicall_render_next(request.user, post_data['index'])
     return JsonResponse(ret)
+
+@login_required
+def api_score_change(request):
+    post_data = dict(eval(request.body))
+    ret = {
+        "Insert":"here",
+        "json I sent":post_data
+    }
+    return JsonResponse(ret)
+
+@login_required
+def api_nickname_change(request):
+    post_data = dict(eval(request.body))
+    ret = {
+        "Insert":"here",
+        "look here though":post_data["nick"],
+    }
+    return JsonResponse(ret)

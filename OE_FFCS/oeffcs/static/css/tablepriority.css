@@ -37,3 +37,12 @@ tbody {
     width: 100%;
     display: table;
 }
+
+#timetablelist td {
+    cursor: pointer;
+    margin: 15px 0;
+}
+
+#timetablelist td:hover {
+    background-color: #202121;
+}

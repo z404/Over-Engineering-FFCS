@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
-from .backend import apicall_render_next
+from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id
 import json
 import threading
 
@@ -160,17 +160,11 @@ def api_render_tt(request):
 @login_required
 def api_score_change(request):
     post_data = dict(eval(request.body))
-    ret = {
-        "Insert":"here",
-        "json I sent":post_data
-    }
-    return JsonResponse(ret)
+    apicall_changepriority_by_id(request.user, post_data['index'], post_data['score'])
+    return JsonResponse({})
 
 @login_required
 def api_nickname_change(request):
     post_data = dict(eval(request.body))
-    ret = {
-        "Insert":"here",
-        "look here though":post_data["nick"],
-    }
-    return JsonResponse(ret)
+    apicall_changenick_by_id(request.user, post_data['index'], post_data['nick'])
+    return JsonResponse({})

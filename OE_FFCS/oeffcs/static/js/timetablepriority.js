@@ -2,19 +2,34 @@ const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
 const scoreChange = () => {
     const newScore = Number(event.currentTarget.id.slice(-1))
-    console.log(newScore);
     fetch("/scorechange/", {
             method: "POST",
-            body: JSON.stringify({ 
-                "index": Number(document.getElementById("timetable-index").innerText)-1,
-                "score":newScore
+            body: JSON.stringify({
+                "index": Number(document.getElementById("timetable-index").innerText) - 1,
+                "score": newScore
             }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
                 "X-CSRFToken": csrftoken,
             }
         }).then(res => res.json())
-        .then(json => console.log(json));
+        .then(json => {
+            let ele = document.getElementById("displayPriority" + (Number(document.getElementById("timetable-index").innerText) - 1));
+            if (newScore === 1) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-danger float-right\">1</span>"
+            } else if (newScore === 2) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-warning float-right\">2</span>"
+            } else if (newScore === 3) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-info float-right\">3</span>"
+            } else if (newScore === 4) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-primary float-right\">4</span>"
+            } else if (newScore === 5) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-success float-right\">5</span>"
+            } else if (newScore === 0) {
+                ele.innerHTML = "<span class=\"badge badge-pill badge-danger float-right\">\
+                <i class=\"fa fa-trash\" aria-hidden=\"true\"></i></span>"
+            }
+        });
 };
 
 
@@ -33,7 +48,6 @@ const timetableChange = () => {
         }
     }
 
-    console.log(index)
     fetch("/rendertimetable/", {
             method: "POST",
             body: JSON.stringify({ "index": index }),
@@ -50,8 +64,9 @@ const timetableChange = () => {
             let inftbl = document.getElementById("info_table_span");
             inftbl.innerHTML = json["information_table"];
             let nickname = document.getElementById("nickname-" + (json["index"]));
-            document.getElementById("nickname-box").value=(nickname.childNodes[0].nodeValue);
-            console.log(nickname.childNodes[0])
+            document.getElementById("nickname-box").value = (nickname.childNodes[0].nodeValue);
+            let nicktextbox = document.getElementById("nickname-box");
+            nicktextbox.value = json["nickname_render"]
             if (ind.innerText == 1) {
                 document.getElementById("prev-timetable").disabled = true;
             } else {
@@ -62,24 +77,31 @@ const timetableChange = () => {
             } else {
                 document.getElementById("next-timetable").disabled = false;
             }
+            var height = $('#boxifycontent').height();
+            document.getElementById("timetablelist").style.maxHeight = height + "px";
         });
 }
 
 $(document).ready(() => {
     var height = $('#boxifycontent').height();
     document.getElementById("timetablelist").style.maxHeight = height + "px";
-    console.log(height);
 });
 
 const nicknameChange = () => {
     const newnick = document.getElementById("nickname-box").value;
     fetch("/nicknamechange/", {
-        method: "POST",
-        body: JSON.stringify({"nick":newnick}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "X-CSRFToken": csrftoken,
-        },
-    }).then(res=>res.json())
-    .then(json => console.log(json));
+            method: "POST",
+            body: JSON.stringify({
+                "nick": newnick,
+                "index": Number(document.getElementById("timetable-index").innerText) - 1,
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": csrftoken,
+            },
+        }).then(res => res.json())
+        .then(json => {
+            let ele = document.getElementById("displayNickname" + (Number(document.getElementById("timetable-index").innerText) - 1));
+            ele.innerText = newnick;
+        });
 }

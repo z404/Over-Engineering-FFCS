@@ -659,10 +659,11 @@ def get_timetable_data_by_id(user_object, table_id):
         return returndata
         # return timetable[0].ttid
 
-# def apicall_changenick_by_id(table_id, new_nick):
-#     timetable = Timetable.objects.filter(ttid = table_id)[0]
-#     timetable.nickname = new_nick
-#     timetable.save(update_fields = ['nickname'])
+def apicall_changenick_by_id(user_object, table_index, new_nick):
+    selected_timetables = getselectedtt(user_object)
+    timetable = selected_timetables[table_index]
+    timetable.nickname = new_nick
+    timetable.save(update_fields = ['nickname'])
 
 def apicall_changepriority_by_id(user_object, table_index, new_priority):
     selected_timetables = getselectedtt(user_object)
@@ -682,24 +683,30 @@ def apicall_render_next(user_object, index_number, first="second"):
         index = 0
         for i in selected_timetables:
             if i.priority == 5:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 4:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 3:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 2:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 1:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 0:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = "{"""nickname-"""+str(index)}">'+i.nickname+\
-                '<span class="badge badge-pill badge-danger float-right">\
-                <i class="fa fa-trash" aria-hidden="true"></i></span></td></tr>'
+                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">\
+                <i class="fa fa-trash" aria-hidden="true"></i></span></span></td></tr>'
             index += 1
         returndata['timetable_list'] += '</tbody></table>'
 

@@ -15,18 +15,20 @@ const priorityChangeClick = () => {
 
 
 const timetableChange = () => {
+    let index;
+    const total = Number(document.getElementById("timetable-total").innerText);
     const btnId = event.currentTarget.id;
     if (btnId !== "prev-timetable" && btnId !== "next-timetable") {
-        console.log("Not there yet.");
-        return;
+        index = Number(btnId);
+    } else {
+        index = Number(document.getElementById("timetable-index").innerText) - 1;
+        if (btnId === "prev-timetable" && index > 0) {
+            --index;
+        } else if (btnId == "next-timetable" && index <= total) {
+            ++index;
+        }
     }
-    let index = Number(document.getElementById("timetable-index").innerText) - 1;
-    const total = Number(document.getElementById("timetable-total").innerText);
-    if (btnId === "prev-timetable" && index > 0) {
-        --index;
-    } else if (btnId == "next-timetable" && index <= total) {
-        ++index;
-    }
+
     console.log(index)
     fetch("/rendertimetable/", {
             method: "POST",
@@ -43,6 +45,9 @@ const timetableChange = () => {
             tmtbl.innerHTML = json["render_timetable"];
             let inftbl = document.getElementById("info_table_span");
             inftbl.innerHTML = json["information_table"];
+            let nickname = document.getElementById("nickname-" + (json["index"]));
+            document.getElementById("nickname-box").value=(nickname.childNodes[0].nodeValue);
+            console.log(nickname.childNodes[0])
             if (ind.innerText == 1) {
                 document.getElementById("prev-timetable").disabled = true;
             } else {

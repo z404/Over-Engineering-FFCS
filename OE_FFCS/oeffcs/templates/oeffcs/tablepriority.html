@@ -1,15 +1,12 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block head %}
+{% extends 'base.html' %} {% load static %} {% block head %}
 <form method="post">{% csrf_token %}</form>
 <link rel="stylesheet" href="{% static 'css/tablepriority.css' %}">
 <script src="{% static 'js/timetablepriority.js' %}"></script>
-{% endblock head %} 
-{% block content %}
+{% endblock head %} {% block content %}
 
 <div class="row">
     <div id="displaytimetable" class="col-9">
-        <span id="boxifycontent" style="padding: 0px;">
+        <div id="boxifycontent" style="padding: 0px;">
             <span id="render_table_span">
                 {% autoescape off %} 
                     {{ render_timetable }} 
@@ -18,7 +15,7 @@
             <div class="container px-0">
                 <div class="row">
                     <div class="col-6">
-                        <h5><b><input type="text" value="{{ nickname_render }}"/></b></h5>
+                        <h5><b><input id = "nickname-box" type="text" value="{{ nickname_render }}"/></b></h5>
                     </div>
                     <div class="col-6">
                         <h5 class="float-right">
@@ -49,10 +46,10 @@
                         <button type="button" id="next-timetable" class="btn btn-primary btn-block" onclick="timetableChange()">Next Timetable</button>
                     </div>
                 </div>
-    
+
                 <div class="row">
                     <div class="col-12">
-                        <br> 
+                        <br>
                         <span id="info_table_span">
                             {% autoescape off %} 
                                 {{ information_table }} 
@@ -61,10 +58,10 @@
                     </div>
                 </div>
             </div>
-        </span>
+        </div>
     </div>
 
-        
+
 
     <div id="TimetableListCol" class="col-3">
         {% autoescape off %} {{ timetable_list }} {% endautoescape %}

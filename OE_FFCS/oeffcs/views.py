@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
+from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id
 import json
 import threading
 
@@ -95,12 +96,17 @@ def pickteachers(request):
             #     form.save()
 
             form = ChangeTeachersForm(
-                {'saveteachers': json.dumps(postdata)}, instance=request.user.profile)
+                {'saveteachers': json.dumps(postdata_cleaned)}, instance=request.user.profile)
             if form.is_valid():
                 form.instance.user = request.user
                 form.save()
             
             # Generating Time tables
+            form = ChangeStatusForm(
+                {'status_value': 1}, instance=request.user.profile)
+            if form.is_valid():
+                form.instance.user = request.user
+                form.save()
             threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
             threadsplit.start()
             return HttpResponseRedirect('/')
@@ -120,7 +126,16 @@ def pre_check(request):
 
 @login_required
 def viewdata(request):
-    ret = show_selected_data(request.user.profile)
+    try:
+        ret = show_selected_data(request.user.profile)
+    except User.profile.RelatedObjectDoesNotExist:
+        ret = {'exceldata': 'You haven\'t uploaded a file yet!',
+        'teacherdata': 'You haven\'t chosen any teachers yet!',
+        'filters': 'You haven\'t chosen any filters yet!'}
+        form = ChangeStatusForm({'status_value': 0})
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
     return render(request, 'oeffcs/ViewData.html', context = ret)
 
 @login_required
@@ -129,3 +144,27 @@ def save_filters(request):
     del filters['csrfmiddlewaretoken']
     savefilters(filters, request.user)
     return HttpResponseRedirect('/')
+
+@login_required
+def tablepriority(request):
+    # ret = apicall_getselectedtt(request.user)
+    ret = apicall_render_next(request.user, 0, 'first')
+    return render(request, 'oeffcs/TablePriority.html', ret)
+
+@login_required
+def api_render_tt(request):
+    post_data = dict(eval(request.body))
+    ret = apicall_render_next(request.user, post_data['index'])
+    return JsonResponse(ret)
+
+@login_required
+def api_score_change(request):
+    post_data = dict(eval(request.body))
+    apicall_changepriority_by_id(request.user, post_data['index'], post_data['score'])
+    return JsonResponse({})
+
+@login_required
+def api_nickname_change(request):
+    post_data = dict(eval(request.body))
+    apicall_changenick_by_id(request.user, post_data['index'], post_data['nick'])
+    return JsonResponse({})

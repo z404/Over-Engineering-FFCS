@@ -1,0 +1,71 @@
+{% extends 'base.html' %} {% load static %} {% block head %}
+<form method="post">{% csrf_token %}</form>
+<link rel="stylesheet" href="{% static 'css/tablepriority.css' %}">
+<script src="{% static 'js/timetablepriority.js' %}"></script>
+{% endblock head %} {% block content %}
+
+<div class="row">
+    <div id="displaytimetable" class="col-9">
+        <div id="boxifycontent" style="padding: 0px;">
+            <span id="render_table_span">
+                {% autoescape off %} 
+                    {{ render_timetable }} 
+                {% endautoescape %}
+            </span>
+            <div class="container px-0">
+                <div class="row">
+                    <div class="col-6">
+                        <h5><b><input id = "nickname-box" type="text" value="{{ nickname_render }}" onchange="nicknameChange()"/></b></h5>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="float-right">
+                            <b>Timetable <span id="timetable-index">
+                                {{ index|add:"1" }}</span> of <span id="timetable-total">{{ total }}</span></b>
+                            <!-- Put more info about "total filtered timetables somewhere around here." -->
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="container px-0">
+                <div class="row">
+                    <div class="col-4">
+                        <button type="button" id="prev-timetable" class="btn btn-primary btn-block" onclick="timetableChange()" disabled>Previous Timetable</button>
+                    </div>
+                    <div class="col-4 d-flex justify-content-center">
+                        <!-- <label id="priorityLabel"> Choose your priority: &nbsp;&nbsp;</label> -->
+                        <button type="button" id="prioritybutton5" class="btn btn-success" onclick="scoreChange()">5</button>&nbsp;
+                        <button type="button" id="prioritybutton4" class="btn btn-primary" onclick="scoreChange()">4</button>&nbsp;
+                        <button type="button" id="prioritybutton3" class="btn btn-info" onclick="scoreChange()">3</button>&nbsp;
+                        <button type="button" id="prioritybutton2" class="btn btn-warning" onclick="scoreChange()">2</button>&nbsp;
+                        <button type="button" id="prioritybutton1" class="btn btn-danger" onclick="scoreChange()">1</button>&nbsp;
+                        <button type="button" id="prioritybutton0" class="btn btn-danger" style="background-color: white;" onclick="scoreChange()">
+                                <i class="fa fa-trash" aria-hidden="true" style="color: red;"></i>
+                            </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" id="next-timetable" class="btn btn-primary btn-block" onclick="timetableChange()">Next Timetable</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <span id="info_table_span">
+                            {% autoescape off %} 
+                                {{ information_table }} 
+                            {% endautoescape %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="TimetableListCol" class="col-3">
+        {% autoescape off %} {{ timetable_list }} {% endautoescape %}
+    </div>
+
+</div>
+{% endblock content %} {% block title %}Choose your tables!{% endblock title %}

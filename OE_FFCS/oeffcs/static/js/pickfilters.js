@@ -35,7 +35,7 @@ const ValidForm = () => {
         $("#slots").removeClass("is-invalid");
         return true;
     }
-    $("#error-message2").hide();
+    $("#zero-timetables-error").hide();
     $("#slots").addClass("is-invalid");
     $("#pre-check-info").text("");
     return false;
@@ -71,6 +71,7 @@ const request = async () => {
 
 $(document).ready(() => {
     $(".invalid-feedback").hide();
+    $("#zero-timetables-error").hide();
 
     $("#pre-check").on("click", async () => {
         if (ValidForm()) {
@@ -83,17 +84,17 @@ $(document).ready(() => {
                     JSON.stringify(json["ret"]) +
                     " Timetables!"
                 );
-                $(".invalid-feedback").hide();
+                $("#pre-check-info").show();
+                $("#error-message1").hide();
+                $("#zero-timetables-error").hide();
             }
             else {
-                $("#error-message2").show();
-                $("#slots").addClass("is-invalid");
-                $("#pre-check-info").text("");
+                $("#zero-timetables-error").show();
+                $("#pre-check-info").hide();
             }
 
         } else {
             $("#error-message1").show();
-            $("#slots").addClass("is-invalid");
             $("#pre-check-info").text("");
             event.preventDefault();
         }
@@ -104,19 +105,17 @@ $(document).ready(() => {
             event.preventDefault();
             json = await request();
             if (json["ret"] == 0) {
-                $("#error-message2").show();
+                $("#zero-timetables-error").show();
                 $("#slots").addClass("is-invalid");
                 $("#pre-check-info").text("");
             }
             else {
-                console.log("SUBMITTABLE GODDAMIT")
                 $("form.ajax").submit();
             }
         }
         else {
             event.preventDefault();
             $("#error-message1").show();
-            $("#slots").addClass("is-invalid");
             $("#pre-check-info").text("");
         }
     });

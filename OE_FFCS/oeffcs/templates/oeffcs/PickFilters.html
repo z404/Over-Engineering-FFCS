@@ -45,10 +45,12 @@
       <label for="slots" class="form-control-label">Enter the slots you want to eliminate for sure:</label>
       <input type="text" name="slots" id="slots" placeholder="A1, A2, B2, C1, D2 ..." class="form-control">
       <h5 id="error-message1" class="invalid-feedback">**Format of slots entered is wrong, please try again</h5>
-      <h5 id="error-message2" class="invalid-feedback">**Those filters generate 0 timetables!</h5>
+      <!-- <h5 id="error-message2" class="invalid-feedback">**Those filters generate 0 timetables!</h5> -->
     </div>
     <hr>
     <div id="pre-check-info" class="paragraph text-success">
+    </div>
+    <div id="zero-timetables-error" class="paragraph text-danger">Those filters generate 0 timetables!
     </div><br>
     <input type="submit" id="pre-check" class="btn btn-info" value="Pre check"/>
     <input type="submit" id="save-filters" value="Save these filters" class="btn btn-primary"/>

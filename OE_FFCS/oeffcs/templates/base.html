@@ -107,16 +107,6 @@
                                 <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'tablepriority' %}">Prioritize Timetables</a>
                             </li>
                             {% endif %}
-                            
-                            {% if status >= 3 %}
-                            <li class="nav-item active mb-3">
-                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'genteachlist' %}">Generate Teacher List</a>
-                            </li>
-                            {% else %}
-                            <li class="nav-item active mb-3">
-                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'genteachlist' %}">Generate Teacher List</a>
-                            </li>
-                            {% endif %}
                             {% endwith %}
 
                         </ul>

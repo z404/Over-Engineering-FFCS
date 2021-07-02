@@ -771,7 +771,7 @@ def get_timetable_popup(user_object, ttid, nickname):
         <span id="myModal'''+ttid+'''close" class="close">&times;</span>
         </div>
         <div class="modal-body">
-        the command to render is: str(get_timetable_data_by_id(user_object,ttid)['render_timetable']) please use an api call
+        the command to render is: '''+str(get_timetable_data_by_id(user_object,ttid)['render_timetable'])+''' please use an api call
         </div>
     </div>
 

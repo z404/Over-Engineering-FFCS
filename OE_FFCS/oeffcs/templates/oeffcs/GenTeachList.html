@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/genteachlist.css' %}"> 
+
+{% endblock head %}
+{% block content %}
+
+{% autoescape off %}
+    {{ display_table }}
+{% endautoescape %}
+<script src="{% static 'js/genteachlist.js' %}"></script>
+{% endblock content %}

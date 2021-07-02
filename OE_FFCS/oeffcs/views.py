@@ -1,15 +1,14 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, request
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
+from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id
 import json
 import threading
-import os
 
 
 class UserLogin(LoginView):
@@ -169,8 +168,3 @@ def api_nickname_change(request):
     post_data = dict(eval(request.body))
     apicall_changenick_by_id(request.user, post_data['index'], post_data['nick'])
     return JsonResponse({})
-
-@login_required
-def genteachlist(request):
-    ret = backend_genteachlist(request.user)
-    return render(request, 'oeffcs/GenTeachList.html', ret)

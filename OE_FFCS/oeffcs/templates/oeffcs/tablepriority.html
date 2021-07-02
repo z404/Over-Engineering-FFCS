@@ -64,6 +64,8 @@
 
 
     <div id="TimetableListCol" class="col-3">
+        <button class="btn btn-primary" id="index-button" onclick="updateIndex()" disabled>Indexed</button>
+        <button class="btn btn-primary" id="priority-button" onclick="updatePriority()">By priority</button>
         {% autoescape off %} {{ timetable_list }} {% endautoescape %}
     </div>
 

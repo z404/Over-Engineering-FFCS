@@ -8,6 +8,7 @@ from itertools import product
 from .forms import ChangeStatusForm, ChangeFiltersForm, ChangeTimetableNumber
 from .models import Profile, Timetable, Entry
 from collections import Counter
+import time
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -255,6 +256,7 @@ def generate_time_tables(user_object):
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
     list_saved = list(saved_teachers.values())
+    # list_cleaned = [[j] for i in list_saved for j in i if ":" in j]
     list_cleaned = []
 
     def get_slot_from_code(code):
@@ -275,14 +277,12 @@ def generate_time_tables(user_object):
 
     for i in list_saved:
         list_cleaned.append([j for j in i if ':' in j])
-
     total_combo = []
     for subject in list_cleaned:
         subject_slots = []
         for teacher in subject:
             subject_slots.extend(get_slot_from_code(teacher))
         total_combo.append(subject_slots)
-
     #ALL SLOTS RECORDED
     # print(total_combo)
 
@@ -301,17 +301,32 @@ def generate_time_tables(user_object):
             else:
                 subjectlst[slot] =  teachers
         merged_combo.append([key+' '+value for key,value in subjectlst.items()])
-    all_combinations = list(product(*merged_combo))
-    print(len(all_combinations),"Combinations found!")
 
-    validated = []
+    all_combinations = product(*merged_combo)
+    print("Combinations found!")
+
+    form = ChangeStatusForm(
+        {'status_value': 2}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()
+    Timetable.objects.filter(level=user_object.profile).delete()
+    count = 0
     for i in all_combinations:
         validate_result = validate_timetable(i)
         if validate_result[0]:
-            validated.append([i,validate_result])
-    print(len(validated), "Combinations valid!")
+            count+=1
+            save_timetable_indivisual([i,validate_result], user_object, count)
+    print(count, "Combinations valid!")
 
-    save_timetable(validated, user_object)
+    no_of_timetables = count
+    form = ChangeTimetableNumber(
+        {'timetable_count': no_of_timetables}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()
+    
+    # save_timetable(validated, user_object)
 
 def validate_timetable(timetable):
     slots = []
@@ -347,6 +362,26 @@ def validate_timetable(timetable):
 
         return (True, total8, total2, total6, theory, lab)
     else: return (False,0,0,0,'none','none')
+
+def save_timetable_indivisual(timetable_data, user, count):
+    temp_timeable = Timetable(
+        level = user.profile,
+            total8classes = timetable_data[1][1],
+            total2classes = timetable_data[1][2],
+            total6classes = timetable_data[1][3],
+            theory_status = timetable_data[1][4],
+            lab_status = timetable_data[1][5],
+            ttid = str(user)+str(count),
+            nickname = 'Timetable '+str(count))
+    temp_timeable.save()
+    for entry in timetable_data[0]:
+        temp_entry=Entry(
+            level = temp_timeable,
+            slots=entry.split()[0],
+            course_code=entry.split()[1].split(':')[0],
+            class_code=' '.join(entry.split()[1:])
+        )
+    temp_entry.save()
 
 def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
@@ -626,6 +661,7 @@ def get_teacher_data(user_object, teacher, count, slots):
         teacherstring += '<tr>\
                                 <td>'+str(count)+'</td>\
                                 <td>'+name+'</td>\
+                                <td>'+course_code+'</td>\
                                 <td>'+erpid+'</td>\
                                 <td>'+slots+'</td>\
                                 <td>'+cname+'</td>\
@@ -644,6 +680,7 @@ def get_timetable_data_by_id(user_object, table_id):
                                     <tr>\
                                     <th scope="col">##</th>\
                                     <th scope="col">Employee Name</th>\
+                                    <th scope="col">Course Code</th>\
                                     <th scope="col">ERP</th>\
                                     <th scope="col">Slot</th>\
                                     <th scope="col">Subject</th>\
@@ -683,28 +720,28 @@ def apicall_render_next(user_object, index_number, first="second"):
         index = 0
         for i in selected_timetables:
             if i.priority == 5:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 4:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 3:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 2:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 1:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 0:
-                returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                returndata['timetable_list'] += f'<tr id = "{index}" data-index="{index}" data-priority="{str(i.priority)}" onclick = "timetableChange()"><td id = \
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+f'#{index+1}: '+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">\
                 <i class="fa fa-trash" aria-hidden="true"></i></span></span></td></tr>'
             index += 1

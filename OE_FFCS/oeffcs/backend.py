@@ -661,6 +661,7 @@ def get_teacher_data(user_object, teacher, count, slots):
         teacherstring += '<tr>\
                                 <td>'+str(count)+'</td>\
                                 <td>'+name+'</td>\
+                                <td>'+course_code+'</td>\
                                 <td>'+erpid+'</td>\
                                 <td>'+slots+'</td>\
                                 <td>'+cname+'</td>\
@@ -679,6 +680,7 @@ def get_timetable_data_by_id(user_object, table_id):
                                     <tr>\
                                     <th scope="col">##</th>\
                                     <th scope="col">Employee Name</th>\
+                                    <th scope="col">Course Code</th>\
                                     <th scope="col">ERP</th>\
                                     <th scope="col">Slot</th>\
                                     <th scope="col">Subject</th>\
@@ -719,27 +721,27 @@ def apicall_render_next(user_object, index_number, first="second"):
         for i in selected_timetables:
             if i.priority == 5:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+"#"+str(index+1)+": "+'">'+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-success float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 4:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+"#"+str(index+1)+": "+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-primary float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 3:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+"#"+str(index+1)+": "+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-info float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 2:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+"#"+str(index+1)+": "+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-warning float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 1:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+"#"+str(index+1)+": "+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">'+str(i.priority)+'</span></span></td></tr>'
             elif i.priority == 0:
                 returndata['timetable_list'] += f'<tr id = "{index}" onclick = "timetableChange()"><td id = \
-                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+i.nickname+\
+                    "{"""nickname-"""+str(index)}"><span id="displayNickname'+str(index)+'">'+"#"+str(index+1)+": "+i.nickname+\
                 '</span><span id="displayPriority'+str(index)+'"><span class="badge badge-pill badge-danger float-right">\
                 <i class="fa fa-trash" aria-hidden="true"></i></span></span></td></tr>'
             index += 1

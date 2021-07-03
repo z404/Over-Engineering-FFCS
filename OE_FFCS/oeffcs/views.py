@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.conf import settings
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
 import json
@@ -47,6 +48,12 @@ def upload_file(request):
         form = UploadFileForm(request.POST, request.FILES,
                               instance=request.user.profile)
         if form.is_valid():
+            if request.user.profile.status_value >= 1:
+                os.remove(
+                    os.path.join(
+                        settings.MEDIA_ROOT,request.user.profile.data_file.name
+                    )
+                )
             form.save()
         form = ChangeStatusForm({'status_value': 1},
                                 instance=request.user.profile)

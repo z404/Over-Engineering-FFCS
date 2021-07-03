@@ -27,7 +27,7 @@ class Timetable(models.Model):
     total6classes = models.IntegerField(default=0)
     lab_status = models.CharField(max_length=10)
     theory_status = models.CharField(max_length=10)
-    ttid = models.CharField(max_length=75)
+    ttid = models.CharField(max_length=75,unique=True)
     nickname = models.CharField(max_length=75)
     priority = models.IntegerField(default=3)
     

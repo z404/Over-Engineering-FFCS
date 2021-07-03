@@ -50,16 +50,16 @@ const render_timetable = tmtbl => {
     const conventional = slot => '<td class="normal">'+slot+'</td>';
 
     const activated = (slotinfo) => '<td class="normal active">'+slotinfo+'</td>';
+
     tmtbl.forEach(enrollment => {
-        slots_in_enrollment = enrollment.split()[0].split('+');
-        enrollment_data = enrollment.split().slice(1)
+        slots_in_enrollment = enrollment.split(' ')[0].split('+');
+        enrollment_data = enrollment.split(' ').slice(1).join(" ");
         console.log(enrollment_data);
         slots_in_enrollment.forEach(slot => {
             all_text=all_text.replace(conventional(slot), activated(
                 slot+'<br>'+enrollment_data));
         });
     });
-    console.log(tmtbl);
     return all_text
 };
 

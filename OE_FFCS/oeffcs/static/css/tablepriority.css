@@ -46,3 +46,7 @@ tbody {
 #timetablelist td:hover {
     background-color: #202121;
 }
+
+.current {
+    background-color: #202121;
+}

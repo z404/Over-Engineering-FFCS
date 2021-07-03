@@ -109,6 +109,8 @@ const timetableChange = () => {
             }
             var height = $('#boxifycontent').height();
             document.getElementById("timetablelist").style.maxHeight = height + "px";
+            document.getElementsByClassName("current")[0].classList.remove("current");
+            document.getElementById("nickname-"+String(json["index"])).classList.add("current");
         });
 }
 

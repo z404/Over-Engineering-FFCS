@@ -70,4 +70,15 @@
     </div>
 
 </div>
+<script>
+    fetch("/timetableboilerplate/", {
+            method: "POST",
+            body: "",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": csrftoken,
+            }
+        }).then(res => res.json())
+        .then(result => localStorage.setItem("timetable",result["timetable"]));
+</script>
 {% endblock content %} {% block title %}Choose your tables!{% endblock title %}

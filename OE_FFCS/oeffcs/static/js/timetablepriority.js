@@ -44,6 +44,24 @@ const scoreChange = () => {
         })
 };
 
+const render_timetable = tmtbl => {
+    all_text = localStorage.getItem("timetable");
+
+    const conventional = slot => '<td class="normal">'+slot+'</td>';
+
+    const activated = (slotinfo) => '<td class="normal active">'+slotinfo+'</td>';
+    tmtbl.forEach(enrollment => {
+        slots_in_enrollment = enrollment.split()[0].split('+');
+        enrollment_data = enrollment.split().slice(1).join(" ")
+        slots_in_enrollment.forEach(slot => {
+            all_text=all_text.replace(conventional(slot), activated(
+                slot+'<br>'+enrollment_data));
+        });
+    });
+    console.log(tmtbl);
+    console.log(all_text);
+    return all_text
+};
 
 const timetableChange = () => {
     let index;
@@ -72,7 +90,7 @@ const timetableChange = () => {
             let ind = document.getElementById("timetable-index");
             ind.innerText = json["index"] + 1;
             let tmtbl = document.getElementById("render_table_span");
-            tmtbl.innerHTML = json["render_timetable"];
+            tmtbl.innerHTML = render_timetable(json["render_timetable"]);
             let inftbl = document.getElementById("info_table_span");
             inftbl.innerHTML = json["information_table"];
             let nickname = document.getElementById("nickname-" + (json["index"]));
@@ -114,7 +132,7 @@ const nicknameChange = () => {
         }).then(res => res.json())
         .then(json => {
             let ele = document.getElementById("displayNickname" + (Number(document.getElementById("timetable-index").innerText) - 1));
-            ele.innerText = newnick;
+            ele.innerText = '#'+document.getElementById("timetable-index").innerText+': '+newnick;
         });
 }
 const indexSort = (e1,e2) => {

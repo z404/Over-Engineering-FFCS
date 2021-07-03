@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
-from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id
+from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
 import json
 import threading
 import os
@@ -174,3 +174,8 @@ def api_nickname_change(request):
 def genteachlist(request):
     ret = backend_genteachlist(request.user)
     return render(request, 'oeffcs/GenTeachList.html', ret)
+
+@login_required
+def api_timetable_boilerplate(request):
+    res = apicall_timetable_boilerplate()
+    return JsonResponse(res)

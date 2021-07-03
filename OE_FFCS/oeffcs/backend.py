@@ -668,7 +668,7 @@ def get_teacher_data(user_object, teacher, count, slots):
                             </tr>'
     return teacherstring
 
-def get_timetable_data_by_id(user_object, table_id):
+def get_timetable_data_by_id(user_object, table_id, first = 'first'):
     returndata = {}
     timetable = Timetable.objects.filter(ttid = table_id)
     if len(timetable) != 1: return None
@@ -692,7 +692,10 @@ def get_timetable_data_by_id(user_object, table_id):
             returndata['information_table'] += get_teacher_data(user_object, i.class_code, count, i.slots)
             count += 1
         returndata['information_table'] += '</tbody></table>'
-        returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
+        if first=='first':
+            returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
+        else:
+            returndata['render_timetable'] = timetable_lst
         return returndata
         # return timetable[0].ttid
 
@@ -748,7 +751,10 @@ def apicall_render_next(user_object, index_number, first="second"):
         returndata['timetable_list'] += '</tbody></table>'
 
     index_number = index_number % len(list_of_selected_timetables)
-    timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
+    if first == 'first':
+        timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid)
+    else:
+        timetable_by_index = get_timetable_data_by_id(user_object, selected_timetables[index_number].ttid, 'second')
     returndata['nickname_render'] = selected_timetables[index_number].nickname
     returndata.update(timetable_by_index)
     return returndata
@@ -816,3 +822,10 @@ def backend_genteachlist(user_object):
             count+=1
     render_string += '</tbody>'
     return {"display_table":render_string}
+def apicall_timetable_boilerplate()->str:
+    filepath = base_dir+"/oeffcs/templates/oeffcs/timetable.html"
+    with open(filepath, 'r') as obj:
+        all_text = obj.read()
+        return {
+            "timetable":all_text
+        }

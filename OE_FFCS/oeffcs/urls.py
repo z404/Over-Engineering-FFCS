@@ -15,5 +15,6 @@ urlpatterns = [
     path('rendertimetable/',views.api_render_tt, name='rendertimetable'),
     path('scorechange/',views.api_score_change, name='scorechange'),
     path('nicknamechange/',views.api_nickname_change, name='nicknamechange'),
-    path('genteachlist/',views.genteachlist, name='genteachlist')
+    path('genteachlist/',views.genteachlist, name='genteachlist'),
+    path('timetableboilerplate/',views.api_timetable_boilerplate, name='timetableboilerplate')
 ]

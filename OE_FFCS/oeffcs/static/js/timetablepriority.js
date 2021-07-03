@@ -52,14 +52,14 @@ const render_timetable = tmtbl => {
     const activated = (slotinfo) => '<td class="normal active">'+slotinfo+'</td>';
     tmtbl.forEach(enrollment => {
         slots_in_enrollment = enrollment.split()[0].split('+');
-        enrollment_data = enrollment.split().slice(1).join(" ")
+        enrollment_data = enrollment.split().slice(1)
+        console.log(enrollment_data);
         slots_in_enrollment.forEach(slot => {
             all_text=all_text.replace(conventional(slot), activated(
                 slot+'<br>'+enrollment_data));
         });
     });
     console.log(tmtbl);
-    console.log(all_text);
     return all_text
 };
 

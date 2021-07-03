@@ -245,10 +245,6 @@ def timetable_to_html_str(lst):
                 all_text = all_text.replace(conventional(slot), activated(
                     slot+'<br>'+enrollment_data))
         # print("For loops completed\n*******\n")  # +all_text
-        filepath2 = base_dir+"/oeffcs/templates/oeffcs/testing.html"
-        testfile = open(filepath2, 'w')
-        testfile.write(all_text)
-        testfile.close()
     return all_text
 
 def generate_time_tables(user_object):
@@ -381,7 +377,7 @@ def save_timetable_indivisual(timetable_data, user, count):
             course_code=entry.split()[1].split(':')[0],
             class_code=' '.join(entry.split()[1:])
         )
-    temp_entry.save()
+        temp_entry.save()
 
 def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
@@ -764,7 +760,7 @@ def sort_by_priority(element):
 
 def get_timetable_popup(user_object, ttid, nickname):
     ret_string = '''
-    <button class="button-primary" onclick="toggle_modal(myModal'''+ttid+''')" id="myBtn'''+ttid+'''">Show Timetable</button>
+    <a class="btn btn-info text-white" onclick="toggle_modal(myModal'''+ttid+''')" id="myBtn'''+ttid+'''">Show Timetable</a>
     <!-- The Modal -->
     <div id="myModal'''+ttid+'''" class="modal">
 
@@ -788,7 +784,7 @@ def backend_genteachlist(user_object):
     all_timetables = getselectedtt(user_object)
     render_string = '''
     <table class="table">
-    <thead>
+    <tbody>
         <tr>
         <th scope="col">#</th>
         <th scope="col">Timetable Nickname</th>
@@ -797,8 +793,6 @@ def backend_genteachlist(user_object):
         <th scope="col">Generate List</th>
         <th scope="col">Comments</th>
         </tr>
-    </thead>
-    <tbody>
     '''
     all_timetables = sorted(all_timetables, key = sort_by_priority, reverse = True)
     count = 1
@@ -815,13 +809,14 @@ def backend_genteachlist(user_object):
             <td>'''+i.nickname+'''</td>
             <td>'''+get_timetable_popup(user_object, i.ttid, i.nickname)+'''</td>
             <td>'''+prstr+'''</td>
-            <td>'''+"Go button"+'''</td>
+            <td><a class="btn btn-primary text-white" onclick="blank_" id="GoBtn'''+i.ttid+'''">Show List</a></td>
             <td>'''+"Comment functionality"+'''</td>
             </tr>
             '''
             count+=1
     render_string += '</tbody>'
     return {"display_table":render_string}
+
 def apicall_timetable_boilerplate()->str:
     filepath = base_dir+"/oeffcs/templates/oeffcs/timetable.html"
     with open(filepath, 'r') as obj:

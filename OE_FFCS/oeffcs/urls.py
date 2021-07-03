@@ -17,4 +17,5 @@ urlpatterns = [
     path('nicknamechange/',views.api_nickname_change, name='nicknamechange'),
     path('genteachlist/',views.genteachlist, name='genteachlist'),
     path('timetableboilerplate/',views.api_timetable_boilerplate, name='timetableboilerplate'),
+    path('showtimetable/<ttid>/',views.show_timetable_details, name='showtimetable'),
 ]

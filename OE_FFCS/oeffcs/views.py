@@ -187,7 +187,6 @@ def api_timetable_boilerplate(request):
     res = apicall_timetable_boilerplate()
     return JsonResponse(res)
 
-# @login_required
-# def something(request, id):
-#     pass
-#     return HttpResponse("We'll do that later")
+@login_required
+def show_timetable_details(request, ttid):
+    return HttpResponse(f"Here you go, Anish: {ttid}")

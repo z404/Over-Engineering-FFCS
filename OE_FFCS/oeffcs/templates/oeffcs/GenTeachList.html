@@ -4,8 +4,15 @@
 <link rel="stylesheet" href="{% static 'css/genteachlist.css' %}"> 
 
 {% endblock head %}
+{% block title %}
+Final timetables
+{% endblock title %}
 {% block content %}
-
+<script>
+    const showTimetable = () => {
+        window.location.href= window.location.origin + "/showtimetable/" + event.target.dataset.ttid;
+    };
+</script>
 {% autoescape off %}
     {{ display_table }}
 {% endautoescape %}

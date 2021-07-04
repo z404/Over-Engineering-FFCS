@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.conf import settings
-from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
+from .backend import convertToForm, get_timetable_data_by_id, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
 from .backend import display_teacher_list_temp
 import json
@@ -192,3 +192,8 @@ def api_timetable_boilerplate(request):
 def show_timetable_details(request, ttid):
     ret = display_teacher_list_temp(request.user, ttid)
     return render(request, 'oeffcs/TempTeacherList.html', ret)
+
+@login_required
+def api_modal_data(request):
+    post_data = dict(eval(request.body))
+    return JsonResponse(get_timetable_data_by_id(request.user,post_data['ttid'],'second'))

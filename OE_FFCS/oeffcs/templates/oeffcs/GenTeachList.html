@@ -8,6 +8,7 @@
 Final timetables
 {% endblock title %}
 {% block content %}
+<form method="post">{% csrf_token %}</form>
 <script>
     const showTimetable = () => {
         window.location.href= window.location.origin + "/showtimetable/" + event.target.dataset.ttid;

@@ -766,7 +766,7 @@ def sort_by_priority(element):
 
 def get_timetable_popup(user_object, ttid, nickname):
     ret_string = '''
-    <a class="btn btn-info text-white" onclick="toggle_modal(myModal'''+ttid+''')" id="myBtn'''+ttid+'''">Show Timetable</a>
+    <a class="btn btn-info text-white" data-ttid="'''+ttid+'''" onclick="toggle_modal(myModal'''+ttid+''')" id="myBtn'''+ttid+'''">Show Timetable</a>
     <!-- The Modal -->
     <div id="myModal'''+ttid+'''" class="modal">
 
@@ -779,7 +779,8 @@ def get_timetable_popup(user_object, ttid, nickname):
         <span id="myModal'''+ttid+'''close" class="close">&times;</span>
         </div>
         <div class="modal-body">
-        the command to render is: str(get_timetable_data_by_id(user_object,ttid)['render_timetable']) please use an api call
+        '''+f"<span id='{ttid}main'></span>\
+            <span id='{ttid}info'></span> "+'''
         </div>
     </div>
 

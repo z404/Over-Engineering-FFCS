@@ -646,10 +646,11 @@ def getselectedtt(user_object):
     query_data = query_database(saved_filters, user_object)
     return query_data
 
-def get_teacher_data(user_object, teacher, count, slots):
+def get_teacher_data(user_object, teacher, count, slots, clean = 'no'):
     teacherstring = ''
     dataframe = convert_file_to_df(str(user_object.profile.data_file))
     teachers = teacher.split(' ')
+    teacher_dict = {}
     for teacher in teachers:
         course_code, erpid = teacher.split(':')
         name = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == erpid)][EMPLOYEE_NAME].unique()[0]
@@ -662,6 +663,9 @@ def get_teacher_data(user_object, teacher, count, slots):
                                 <td>'+slots+'</td>\
                                 <td>'+cname+'</td>\
                             </tr>'
+        teacher_dict.update({teacher:{'name':name,'course_code':course_code, 'erpid':erpid, 'slots':slots, 'cname':cname}})
+    if clean == 'yes':
+        return teacher_dict
     return teacherstring
 
 def get_timetable_data_by_id(user_object, table_id, first = 'first'):
@@ -683,9 +687,11 @@ def get_timetable_data_by_id(user_object, table_id, first = 'first'):
                                     </tr>'
                                 #</thead><tbody>'
         count = 1
+        returndata['information_dict'] = {}
         for i in entries:
             timetable_lst.append(i.slots+" "+i.course_code)
             returndata['information_table'] += get_teacher_data(user_object, i.class_code, count, i.slots)
+            returndata['information_dict'].update(get_teacher_data(user_object, i.class_code, count, i.slots,'yes'))
             count += 1
         returndata['information_table'] += '</tbody></table>'
         if first=='first':
@@ -773,7 +779,7 @@ def get_timetable_popup(user_object, ttid, nickname):
         <span id="myModal'''+ttid+'''close" class="close">&times;</span>
         </div>
         <div class="modal-body">
-        the command to render is: '''+str(get_timetable_data_by_id(user_object,ttid)['render_timetable'])+''' please use an api call
+        the command to render is: str(get_timetable_data_by_id(user_object,ttid)['render_timetable']) please use an api call
         </div>
     </div>
 
@@ -824,3 +830,72 @@ def apicall_timetable_boilerplate()->str:
         return {
             "timetable":all_text
         }
+
+def display_teacher_list_temp(user_object, ttid):
+    timetable = get_timetable_data_by_id(user_object, ttid)
+    info_dict = timetable['information_dict']
+
+    render_dict = {}
+    for i, data in info_dict.items():
+        if i.split(":")[0] in render_dict.keys():
+            render_dict[i.split(":")[0]] += '<tr>\
+                                <td>'+data['name']+'</td>\
+                                <td>'+data['course_code']+'</td>\
+                                <td>'+data['erpid']+'</td>\
+                                <td>'+data['slots']+'</td>\
+                                <td>'+data['cname']+'</td>\
+                            </tr>'
+        else:
+            render_dict[i.split(":")[0]] = '<tr>\
+                                <td>'+data['name']+'</td>\
+                                <td>'+data['course_code']+'</td>\
+                                <td>'+data['erpid']+'</td>\
+                                <td>'+data['slots']+'</td>\
+                                <td>'+data['cname']+'</td>\
+                            </tr>'
+    for i in render_dict.keys():
+        render_dict[i] = '<table class="table table-bordered table-hover table-sm table-dark">\
+                                <thead>\
+                                    <tr>\
+                                    <th scope="col">Employee Name</th>\
+                                    <th scope="col">Course Code</th>\
+                                    <th scope="col">ERP</th>\
+                                    <th scope="col">Slot</th>\
+                                    <th scope="col">Subject</th>\
+                                    </tr></thead><tbody>' + render_dict[i] + '</tbody></table>'
+
+    final_render = '<div class="thunder">'
+    for i in render_dict.values():
+        final_render = final_render+i
+    final_render = final_render + '</div>'
+    table_demo = '''
+    <table class="table table-bordered pagin-table" id="table1" name="table1">
+    <thead>
+    <tr>
+    <th>Sl No</th>
+    <th>Name</th>
+    <th>Course</th>
+    <th>Mobile No</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>1</td>
+    <td>Studentstutorial</td>
+    <td>B-Tech</td>
+    <td>7507089320</td>
+    </tr>
+    <td>2</td>
+    <td>Divyasundar</td>
+    <td>MCA</td>
+    <td>9437730730</td>
+    </tr>
+    <td>3</td>
+    <td>Chinmay</td>
+    <td>M-Tech</td>
+    <td>9937459805</td>
+    </tr>
+    </tbody>
+    </table>
+    '''
+    return {'ttid':ttid,'render_demo':final_render}

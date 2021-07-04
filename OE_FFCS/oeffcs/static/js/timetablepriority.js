@@ -2,7 +2,6 @@ const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
 const scoreChange = () => {
     const newScore = Number(event.currentTarget.id.slice(-1))
-    console.log(newScore);
     fetch("/scorechange/", {
             method: "POST",
             body: JSON.stringify({
@@ -16,29 +15,27 @@ const scoreChange = () => {
         }).then(res => res.json())
         .then(json => {
             const ele = document.getElementById("displayPriority" + (Number(document.getElementById("timetable-index").innerText) - 1));
-            console.log(ele.parentElement.parentElement);
             if (newScore == 1) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-danger float-right\">1</span>";
-                ele.parentElement.parentElement.dataset.priority=1;
+                ele.parentElement.parentElement.dataset.priority = 1;
             } else if (newScore == 2) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-warning float-right\">2</span>";
-                ele.parentElement.parentElement.dataset.priority=2;
+                ele.parentElement.parentElement.dataset.priority = 2;
             } else if (newScore == 3) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-info float-right\">3</span>";
-                ele.parentElement.parentElement.dataset.priority=3;
+                ele.parentElement.parentElement.dataset.priority = 3;
             } else if (newScore == 4) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-primary float-right\">4</span>";
-                ele.parentElement.parentElement.dataset.priority=4;
+                ele.parentElement.parentElement.dataset.priority = 4;
             } else if (newScore == 5) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-success float-right\">5</span>";
-                ele.parentElement.parentElement.dataset.priority=5;
+                ele.parentElement.parentElement.dataset.priority = 5;
             } else if (newScore == 0) {
                 ele.innerHTML = "<span class=\"badge badge-pill badge-danger float-right\">\
                 <i class=\"fa fa-trash\" aria-hidden=\"true\"></i></span>";
-                ele.parentElement.parentElement.dataset.priority=0;
+                ele.parentElement.parentElement.dataset.priority = 0;
             }
-            if(document.getElementById("priority-button").disabled)
-            {
+            if (document.getElementById("priority-button").disabled) {
                 updatePriority();
             }
         })
@@ -47,17 +44,16 @@ const scoreChange = () => {
 const render_timetable = tmtbl => {
     all_text = localStorage.getItem("timetable");
 
-    const conventional = slot => '<td class="normal">'+slot+'</td>';
+    const conventional = slot => '<td class="normal">' + slot + '</td>';
 
-    const activated = (slotinfo) => '<td class="normal active">'+slotinfo+'</td>';
+    const activated = (slotinfo) => '<td class="normal active">' + slotinfo + '</td>';
 
     tmtbl.forEach(enrollment => {
         slots_in_enrollment = enrollment.split(' ')[0].split('+');
         enrollment_data = enrollment.split(' ').slice(1).join(" ");
-        console.log(enrollment_data);
         slots_in_enrollment.forEach(slot => {
-            all_text=all_text.replace(conventional(slot), activated(
-                slot+'<br>'+enrollment_data));
+            all_text = all_text.replace(conventional(slot), activated(
+                slot + '<br>' + enrollment_data));
         });
     });
     return all_text
@@ -110,7 +106,7 @@ const timetableChange = () => {
             var height = $('#boxifycontent').height();
             document.getElementById("timetablelist").style.maxHeight = height + "px";
             document.getElementsByClassName("current")[0].classList.remove("current");
-            document.getElementById("nickname-"+String(json["index"])).classList.add("current");
+            document.getElementById("nickname-" + String(json["index"])).classList.add("current");
         });
 }
 
@@ -134,17 +130,17 @@ const nicknameChange = () => {
         }).then(res => res.json())
         .then(json => {
             let ele = document.getElementById("displayNickname" + (Number(document.getElementById("timetable-index").innerText) - 1));
-            ele.innerText = '#'+document.getElementById("timetable-index").innerText+': '+newnick;
+            ele.innerText = '#' + document.getElementById("timetable-index").innerText + ': ' + newnick;
         });
 }
-const indexSort = (e1,e2) => {
-    if(Number(e1.dataset.index) < Number(e2.dataset.index))return -1;
-    if(Number(e1.dataset.index) > Number(e2.dataset.index))return 1;
+const indexSort = (e1, e2) => {
+    if (Number(e1.dataset.index) < Number(e2.dataset.index)) return -1;
+    if (Number(e1.dataset.index) > Number(e2.dataset.index)) return 1;
     return 0;
 }
-const prioritySort = (e1,e2) => {
-    if(Number(e1.dataset.priority) > Number(e2.dataset.priority))return -1;
-    if(Number(e1.dataset.priority) < Number(e2.dataset.priority))return 1;
+const prioritySort = (e1, e2) => {
+    if (Number(e1.dataset.priority) > Number(e2.dataset.priority)) return -1;
+    if (Number(e1.dataset.priority) < Number(e2.dataset.priority)) return 1;
     return 0;
 }
 const updateIndex = () => {
@@ -152,18 +148,18 @@ const updateIndex = () => {
     let n = Array.from(t);
     n.sort(indexSort);
     const parent = t[0].parentElement;
-    parent.innerHTML='';
+    parent.innerHTML = '';
     n.forEach(ele => parent.appendChild(ele));
-    document.getElementById("priority-button").disabled=false;
-    document.getElementById("index-button").disabled=true;
+    document.getElementById("priority-button").disabled = false;
+    document.getElementById("index-button").disabled = true;
 };
 const updatePriority = () => {
     let t = document.getElementById("timetablelist").childNodes[0].childNodes;
     let n = Array.from(t);
     n.sort(prioritySort);
     const parent = t[0].parentElement;
-    parent.innerHTML='';
+    parent.innerHTML = '';
     n.forEach(ele => parent.appendChild(ele));
-    document.getElementById("index-button").disabled=false;
-    document.getElementById("priority-button").disabled=true;
+    document.getElementById("index-button").disabled = false;
+    document.getElementById("priority-button").disabled = true;
 };

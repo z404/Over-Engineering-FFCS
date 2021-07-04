@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/temptacherlist.css' %}">
+
+{% endblock head %}
+{% block content %}
+{{ ttid }}
+
+{% autoescape off %}
+{{ render_demo }}
+{{ render_tables }}
+{% endautoescape %}
+    
+<script>
+$('tbody').sortable();
+$('.thunder').sortable();
+</script>
+<script src="{% static 'js/tempteacherlist.js' %}"></script>
+{% endblock content %}

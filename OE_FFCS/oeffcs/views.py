@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .backend import convertToForm, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
+from .backend import display_teacher_list_temp
 import json
 import threading
 import os
@@ -189,4 +190,5 @@ def api_timetable_boilerplate(request):
 
 @login_required
 def show_timetable_details(request, ttid):
-    return HttpResponse(f"Here you go, Anish: {ttid}")
+    ret = display_teacher_list_temp(request.user, ttid)
+    return render(request, 'oeffcs/TempTeacherList.html', ret)

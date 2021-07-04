@@ -30,7 +30,7 @@ class Timetable(models.Model):
     ttid = models.CharField(max_length=75)
     nickname = models.CharField(max_length=75)
     priority = models.IntegerField(default=3)
-    
+    teacherlist = models.TextField(default='')
     def __str__(self):
         return str(self.pk)
 

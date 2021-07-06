@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Timetables loading!{% endblock title %}
+{% block head %}
+<form method="post">{% csrf_token %}</form>
+<link rel="stylesheet" href="{% static 'css/timetablegenloading.css' %}">
+<script src="{% static 'js/timetablegenloading.js' %}" defer></script>
+{% endblock head %}
+{% block content %}
+<div id="container">
+    <div id="info">
+        Working with {{ total_timetables }} timetables here, so we appreciate your cooperation :)
+    </div>
+    <div id="valid-timetables">
+        {{ valid_timetables }} valid found!
+    </div>
+    <div id="progress-bar" class="progress" data-total="{{ completed_timetables }}" data-done="{{ total_timetables }}">
+        <div id="progress-done" class="progress-done">
+            0%
+        </div>
+    </div>
+</div>
+{% endblock content %}

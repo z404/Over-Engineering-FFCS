@@ -19,4 +19,6 @@ urlpatterns = [
     path('timetableboilerplate/',views.api_timetable_boilerplate, name='timetableboilerplate'),
     path('showtimetable/<ttid>/',views.show_timetable_details, name='showtimetable'),
     path('modaldata/', views.api_modal_data, name='modaldata'),
+    path('timetablesgenerating/',views.timetable_gen_loading, name='timetablesgenerating'),
+    path('loadingscreenstatus/', views.api_loadingscreen, name='loadingscreenstatus'),
 ]

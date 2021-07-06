@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .backend import convertToForm, get_timetable_data_by_id, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
-from .backend import display_teacher_list_temp
+from .backend import display_teacher_list_temp, people_status
 import json
 import threading
 import os
@@ -118,7 +118,7 @@ def pickteachers(request):
                 form.save()
             threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
             threadsplit.start()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/timetablesgenerating/')
     return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})
 
 
@@ -197,3 +197,12 @@ def show_timetable_details(request, ttid):
 def api_modal_data(request):
     post_data = dict(eval(request.body))
     return JsonResponse(get_timetable_data_by_id(request.user,post_data['ttid'],'second'))
+
+@login_required
+def api_loadingscreen(request):
+    return JsonResponse(people_status[str(request.user.username)])
+    #total, completed, valid
+
+@login_required
+def timetable_gen_loading(request):
+    return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])

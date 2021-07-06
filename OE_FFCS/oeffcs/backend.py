@@ -23,6 +23,8 @@ EMPLOYEE_NAME = 'EMPLOYEE NAME'
 COURSE_ELA = 'ELA'
 COURSE_ETH = 'ETH'
 
+people_status = {}
+
 # !! Add saturday and sunday classes too !!
 dict_conv = {
         'A1':['L1','L14'], 'B1':['L7','L20'], 'C1':['L13','L26'], 'D1':['L19','L3'], 'E1':['L25','L9'], 'F1':['L2','L15'],\
@@ -248,6 +250,9 @@ def timetable_to_html_str(lst):
     return all_text
 
 def generate_time_tables(user_object):
+    people_status[str(user_object.username)]={}
+    people_status[str(user_object.username)]['valid_timetables'] = 0
+    people_status[str(user_object.username)]['valid_status'] = False
     saved_teachers = eval(user_object.profile.saveteachers)
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
@@ -300,7 +305,12 @@ def generate_time_tables(user_object):
 
     all_combinations = product(*merged_combo)
     print("Combinations found!")
-
+    ## Calculating total number of combos
+    total = 1
+    for i in merged_combo:
+        total = len(i)*total
+    people_status[str(user_object.username)]['total_timetables'] = total
+    people_status[str(user_object.username)]['completed_timetables'] = 0
     form = ChangeStatusForm(
         {'status_value': 2}, instance=user_object.profile)
     if form.is_valid():
@@ -313,6 +323,9 @@ def generate_time_tables(user_object):
         if validate_result[0]:
             count+=1
             save_timetable_indivisual([i,validate_result], user_object, count)
+            people_status[str(user_object.username)]['valid_timetables'] += 1
+        people_status[str(user_object.username)]['completed_timetables'] += 1
+    people_status[str(user_object.username)]['valid_status'] = True
     print(count, "Combinations valid!")
 
     no_of_timetables = count

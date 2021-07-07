@@ -27,3 +27,8 @@ class ChangeTimetableNumber(ModelForm):
     class Meta:
         model = Profile
         fields = ['timetable_count']
+
+class ChangeOrderOfTeacher(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['save_order']

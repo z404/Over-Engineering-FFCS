@@ -4,19 +4,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/temptacherlist.css' %}">
+<script src="{% static 'js/tempteacherlist.js' %}" defer></script>
 
 {% endblock head %}
 {% block content %}
+<form method="post">{% csrf_token %}</form>
 {{ ttid }}
-
 {% autoescape off %}
 {{ render_demo }}
 {{ render_tables }}
 {% endautoescape %}
-    
+<button type="button" id="prioritybutton5" class="btn btn-success"  onclick="Save()">Submit</button>
 <script>
-$('tbody').sortable();
+$('.moovable').sortable();
 $('.thunder').sortable();
 </script>
-<script src="{% static 'js/tempteacherlist.js' %}"></script>
+{% autoescape off %}
+{{ render_timetable }}
+{% endautoescape %}
 {% endblock content %}

@@ -21,4 +21,5 @@ urlpatterns = [
     path('modaldata/', views.api_modal_data, name='modaldata'),
     path('timetablesgenerating/',views.timetable_gen_loading, name='timetablesgenerating'),
     path('loadingscreenstatus/', views.api_loadingscreen, name='loadingscreenstatus'),
+    path('savepreference/', views.api_save_preference, name='savepreference'),
 ]

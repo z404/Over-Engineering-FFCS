@@ -880,40 +880,11 @@ def display_teacher_list_temp(user_object, ttid):
                                     <th scope="col">ERP</th>\
                                     <th scope="col">Slot</th>\
                                     <th scope="col">Subject</th>\
-                                    </tr></thead><tbody>' + render_dict[i] + '</tbody></table>'
+                                    </tr></thead><tbody class="moovable" id="tbody'+i+'">' + render_dict[i] + '</tbody></table>'
 
     final_render = '<div class="thunder">'
     for i in render_dict.values():
         final_render = final_render+i
     final_render = final_render + '</div>'
-    table_demo = '''
-    <table class="table table-bordered pagin-table" id="table1" name="table1">
-    <thead>
-    <tr>
-    <th>Sl No</th>
-    <th>Name</th>
-    <th>Course</th>
-    <th>Mobile No</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-    <td>1</td>
-    <td>Studentstutorial</td>
-    <td>B-Tech</td>
-    <td>7507089320</td>
-    </tr>
-    <td>2</td>
-    <td>Divyasundar</td>
-    <td>MCA</td>
-    <td>9437730730</td>
-    </tr>
-    <td>3</td>
-    <td>Chinmay</td>
-    <td>M-Tech</td>
-    <td>9937459805</td>
-    </tr>
-    </tbody>
-    </table>
-    '''
-    return {'ttid':ttid,'render_demo':final_render}
+    return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid}
+    # return {'ttid':ttid,'render_demo':final_render}

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, request
-from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm
+from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm, ChangeOrderOfTeacher
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
@@ -213,3 +213,17 @@ def api_loadingscreen(request):
 def timetable_gen_loading(request):
     time.sleep(0.5)
     return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])
+
+@login_required
+def api_save_preference(request):
+    post_data = dict(eval(request.body))
+    form = ChangeStatusForm({'status_value': 5}, instance=request.user.profile)
+    if form.is_valid():
+        form.instance.user = request.user
+        form.save()
+    form = ChangeOrderOfTeacher({'save_order': str(post_data)}, instance=request.user.profile)
+    if form.is_valid():
+        form.instance.user = request.user
+        form.save()
+    return JsonResponse({})
+    # return HttpResponseRedirect('/')

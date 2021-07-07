@@ -16,6 +16,7 @@ class Profile(models.Model):
     saveteachers = models.TextField()
     savefilters = models.TextField()
     timetable_count = models.IntegerField(default=0)
+    save_order = models.TextField()
     
     def __str__(self):
         return f'{self.user.username}\'s Profile'

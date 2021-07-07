@@ -12,6 +12,7 @@ from .backend import display_teacher_list_temp, people_status
 import json
 import threading
 import os
+import time
 
 
 class UserLogin(LoginView):
@@ -145,7 +146,12 @@ def viewdata(request):
         if form.is_valid():
             form.instance.user = request.user
             form.save()
-    return render(request, 'oeffcs/ViewData.html', context = ret)
+
+    if request.user.profile.status_value != -5:
+        return render(request, 'oeffcs/ViewData.html', context = ret)
+    else:
+        return HttpResponseRedirect('/timetablesgenerating/')
+
 
 @login_required
 def save_filters(request):
@@ -205,4 +211,5 @@ def api_loadingscreen(request):
 
 @login_required
 def timetable_gen_loading(request):
+    time.sleep(0.5)
     return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])

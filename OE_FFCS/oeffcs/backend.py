@@ -312,7 +312,7 @@ def generate_time_tables(user_object):
     people_status[str(user_object.username)]['total_timetables'] = total
     people_status[str(user_object.username)]['completed_timetables'] = 0
     form = ChangeStatusForm(
-        {'status_value': 2}, instance=user_object.profile)
+        {'status_value': -5}, instance=user_object.profile)
     if form.is_valid():
         form.instance.user = user_object
         form.save()
@@ -327,7 +327,11 @@ def generate_time_tables(user_object):
         people_status[str(user_object.username)]['completed_timetables'] += 1
     people_status[str(user_object.username)]['valid_status'] = True
     print(count, "Combinations valid!")
-
+    form = ChangeStatusForm(
+        {'status_value': 2}, instance=user_object.profile)
+    if form.is_valid():
+        form.instance.user = user_object
+        form.save()
     no_of_timetables = count
     form = ChangeTimetableNumber(
         {'timetable_count': no_of_timetables}, instance=user_object.profile)

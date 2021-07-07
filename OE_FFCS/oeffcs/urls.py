@@ -22,4 +22,5 @@ urlpatterns = [
     path('timetablesgenerating/',views.timetable_gen_loading, name='timetablesgenerating'),
     path('loadingscreenstatus/', views.api_loadingscreen, name='loadingscreenstatus'),
     path('savepreference/', views.api_save_preference, name='savepreference'),
+    path('ffcs', views.ffcs, name='ffcs'),
 ]

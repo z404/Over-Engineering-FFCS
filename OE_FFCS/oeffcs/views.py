@@ -51,11 +51,10 @@ def upload_file(request):
                               instance=request.user.profile)
         if form.is_valid():
             if request.user.profile.status_value >= 1:
-                os.remove(
-                    os.path.join(
-                        settings.MEDIA_ROOT,request.user.profile.data_file.name
-                    )
-                )
+                try:
+                    os.remove(settings.MEDIA_ROOT+'\\exceldata\\'+request.user.profile.data_file.name.replace(" ","_"))
+                except:
+                    pass
             form.save()
         form = ChangeStatusForm({'status_value': 1},
                                 instance=request.user.profile)
@@ -227,3 +226,7 @@ def api_save_preference(request):
         form.save()
     return JsonResponse({})
     # return HttpResponseRedirect('/')
+
+@login_required
+def ffcs(request):
+    return render(request, "oeffcs/FFCSFinal.html")

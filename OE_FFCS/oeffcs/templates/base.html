@@ -117,6 +117,16 @@
                                 <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'genteachlist' %}">Generate Teacher List</a>
                             </li>
                             {% endif %}
+
+                            {% if status >= 5 %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'ffcs' %}">WIN FFCS</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active mb-3">
+                                <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'ffcs' %}">WIN FFCS</a>
+                            </li>
+                            {% endif %}
                             {% endwith %}
 
                         </ul>

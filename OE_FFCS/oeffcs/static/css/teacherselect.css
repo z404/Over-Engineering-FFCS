@@ -5,6 +5,7 @@
     padding: 3px;
     width: 50px;
 }
-.active {
+
+table .active {
     background-color: #ccff33;
 }

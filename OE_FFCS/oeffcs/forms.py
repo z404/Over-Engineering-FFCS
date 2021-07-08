@@ -32,3 +32,8 @@ class ChangeOrderOfTeacher(ModelForm):
     class Meta:
         model = Profile
         fields = ['save_order']
+
+class ChangeStatusOfShare(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['shared_timetable']

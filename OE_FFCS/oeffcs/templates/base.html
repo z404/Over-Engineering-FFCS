@@ -65,6 +65,7 @@
                         <ul class="nav flex-column flex-nowrap text-truncate">
 
                             {% with user.profile.status_value as status %}
+                            {% with user.profile.shared_timetable as shared %}
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'index' %}">Home</a>
                             </li>
@@ -118,7 +119,7 @@
                             </li>
                             {% endif %}
 
-                            {% if status >= 5 %}
+                            {% if status >= 5 or shared == 1%}
                             <li class="nav-item active mb-3">
                                 <a class="btn btn-sm btn-primary w-sidebar" href="{% url 'ffcs' %}">WIN FFCS</a>
                             </li>
@@ -127,6 +128,7 @@
                                 <a class="btn btn-sm btn-primary w-sidebar disabled" href="{% url 'ffcs' %}">WIN FFCS</a>
                             </li>
                             {% endif %}
+                            {% endwith %}
                             {% endwith %}
 
                         </ul>

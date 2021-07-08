@@ -20,15 +20,17 @@ const Save = () => {
         updatedData[index] = Array(rows[0].children[1].innerText, Array.from(rows).map(ele => ele.children[2].innerText))
         index++;
     }
+    const redirect = () => { window.location.href = window.location.origin + "/ffcs/"; }
     console.table(updatedData);
     fetch("/savepreference/", {
         method: "POST",
         body: JSON.stringify({
-            "data": updatedData
+            "data": updatedData,
+            "ttid": document.getElementById("ttid").innerText,
         }),
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             "X-CSRFToken": csrftoken,
         },
-    })
+    }).then(redirect)
 };

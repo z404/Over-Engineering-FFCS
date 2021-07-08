@@ -888,3 +888,15 @@ def display_teacher_list_temp(user_object, ttid):
     final_render = final_render + '</div>'
     return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid}
     # return {'ttid':ttid,'render_demo':final_render}
+
+def finalpage(user_object):
+    data = eval(user_object.profile.save_order)['data']
+    ttid = eval(user_object.profile.save_order)['ttid']
+    author_object = Timetable.objects.filter(ttid = ttid)[0].level.user
+
+    return {"info":data}
+
+#Get name and slot from ttid and erp id, add column with 'C'
+#Get file, remove extra info, remove chosen rows
+#Add each remaining row to the table with 'R' as new column
+#Return table to js

@@ -8,12 +8,15 @@
 {% endblock head %}
 {% block content %}
 <form method="post">{% csrf_token %}</form>
-{{ ttid }}
+<span id="ttid">
+    {{ ttid }}
+</span>
+{{ warning }}
 {% autoescape off %}
 {{ render_demo }}
 {{ render_tables }}
 {% endautoescape %}
-<button type="button" id="prioritybutton5" class="btn btn-success"  onclick="Save()">Submit</button>
+<button type="button" id="prioritybutton5" class="btn btn-success"  onclick="Save()">Save</button>
 <script>
 $('.moovable').sortable();
 $('.thunder').sortable();

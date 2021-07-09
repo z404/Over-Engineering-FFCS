@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, request
-from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm, ChangeOrderOfTeacher, ChangeStatusOfShare
+from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm, ChangeOrderOfTeacher, ChangeStatusOfShare, ChangeCourseType
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .backend import convertToForm, get_timetable_data_by_id, show_selected_data, generate_time_tables, query_database, savefilters, backend_genteachlist
 from .backend import apicall_render_next, apicall_changepriority_by_id, apicall_changenick_by_id, apicall_timetable_boilerplate
-from .backend import display_teacher_list_temp, people_status, finalpage
+from .backend import display_teacher_list_temp, people_status, apicall_finalpage
 from .models import Timetable
 import json
 import threading
@@ -88,6 +88,7 @@ def pickteachers(request):
             return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
         else:
             postdata_cleaned = {}
+            course_type_save_dict = {}
             for course, teachers in postdata.items():
                 if course not in teachers:
                     # return render(request, 'oeffcs/pickteachers.html',
@@ -98,6 +99,11 @@ def pickteachers(request):
                                   {'teacherdata': ret, 'errordisplay': 'You\'ve chosen a subject with 0 teachers!'})
                 else:
                     postdata_cleaned.update({course:teachers})
+                    try:
+                        course_type_save_dict[course] = dict(request.POST)[course+'classification'][0]
+                    except KeyError:
+                        return render(request, 'oeffcs/pickteachers.html',
+                                  {'teacherdata': ret, 'errordisplay': 'Please select your course type for all subjects!'})
             
             if postdata_cleaned == {}:
                 return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': 'Please choose a subject'})
@@ -106,7 +112,10 @@ def pickteachers(request):
             # if form.is_valid():
             #     form.instance.user = request.user
             #     form.save()
-
+            form = ChangeCourseType({'course_type': course_type_save_dict}, instance=request.user.profile)
+            if form.is_valid():
+                form.instance.user = request.user
+                form.save()
             form = ChangeTeachersForm(
                 {'saveteachers': json.dumps(postdata_cleaned)}, instance=request.user.profile)
             if form.is_valid():
@@ -248,5 +257,7 @@ def api_save_preference(request):
 
 @login_required
 def ffcs(request):
-    ret = finalpage(request.user)
-    return render(request, "oeffcs/FFCSFinal.html", ret)
+    return render(request, "oeffcs/FFCSFinal.html")
+
+def api_win_ffcs(request):
+    return JsonResponse({"info":apicall_finalpage(request.user)})

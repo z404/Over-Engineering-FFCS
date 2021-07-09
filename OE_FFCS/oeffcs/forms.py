@@ -37,3 +37,8 @@ class ChangeStatusOfShare(ModelForm):
     class Meta:
         model = Profile
         fields = ['shared_timetable']
+    
+class ChangeCourseType(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['course_type']

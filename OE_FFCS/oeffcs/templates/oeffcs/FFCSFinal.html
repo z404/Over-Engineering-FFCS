@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
+<form method="post">{% csrf_token %}</form>
 {% endblock head %}
 {% block title %}
 FFCS!!
 {% endblock title %}
 {% block content %}
-{{ info }}
+<span id="info"></span>
+<script src="{% static 'js/ffcsfinal.js' %}"></script>
 {% endblock content %}

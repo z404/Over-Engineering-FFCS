@@ -20,7 +20,7 @@ const Save = () => {
         updatedData[index] = Array(rows[0].children[1].innerText, Array.from(rows).map(ele => ele.children[2].innerText))
         index++;
     }
-    const redirect = () => { window.location.href = window.location.origin + "/ffcs/"; }
+    const redirect = () => { window.location.href = window.location.origin + "/winffcs/"; }
     console.table(updatedData);
     fetch("/savepreference/", {
         method: "POST",

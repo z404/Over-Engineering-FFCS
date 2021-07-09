@@ -143,7 +143,15 @@ class FORM:
                 autocomplete="off" '+check_status+'>'
         
         # Creating lable for checkbox
-        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label></div>'
+        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label>'
+        self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+                            <option selected disabled hidden>Course Category</option>
+                            <option value="PC">Programme Core</option>
+                            <option value="PE">Programme Elective</option>
+                            <option value="UC">University Core</option>
+                            <option value="UE">University Elective</option>
+                            </select>
+                            </div>'''
 
         # Creating span to hold and hide teacher names
         self.form += '<span style="display: none;" id="teacherlist'+str(self.count)+'">'
@@ -889,13 +897,69 @@ def display_teacher_list_temp(user_object, ttid):
     return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid}
     # return {'ttid':ttid,'render_demo':final_render}
 
-def finalpage(user_object):
+def apicall_finalpage(user_object):
+    def get_slot_from_code(code):
+        slots = {}
+        course_code, teacher_code = code.split(':')
+        # print(code)
+        teacher_rows = dataframe.loc[(dataframe[COURSE_CODE] == course_code) & (dataframe[ERP_ID] == teacher_code)]
+        for index, row in teacher_rows.iterrows():
+            try:
+                slots[row[COURSE_TYPE]].append(row[SLOT])
+            except:
+                slots[row[COURSE_TYPE]] = [row[SLOT]]
+        combinations = product(*list(slots.values()))
+        combined = []
+        for i in combinations:
+            combined.append("+".join(i) + ' ' + code)
+        return combined
     data = eval(user_object.profile.save_order)['data']
     ttid = eval(user_object.profile.save_order)['ttid']
     author_object = Timetable.objects.filter(ttid = ttid)[0].level.user
-
-    return {"info":data}
-
+    entry = Entry.objects.filter(level = Timetable.objects.filter(ttid = ttid)[0])
+    dataframe = convert_file_to_df(str(author_object.profile.data_file))
+    course_type_stuff = author_object.profile.course_type
+    listofdict = []
+    for i in data:
+        course_list = []
+        coursecode = i[0]
+        teachers = i[1]
+        #this needs to be an indivisual table
+        
+        newdataframe = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'"')
+        for j in teachers:
+            temp = {}
+            temp['erpid'] = j
+            temp['slot'] = entry.filter(class_code__contains = coursecode+":"+j)[0].slots
+            temp['name'] = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'" and `'+ERP_ID+'` == "'+j+'"').iloc[0][EMPLOYEE_NAME]
+            temp['chosen'] = 'C'
+            course_list.append(temp)
+        
+        donelist = []
+        for data in newdataframe.iterrows():
+            if coursecode+':'+data[1][ERP_ID] not in donelist:
+                slots = [i.split(' ')[0] for i in get_slot_from_code(coursecode+':'+data[1][ERP_ID])]
+                donelist.append(coursecode+':'+data[1][ERP_ID])
+                for slot in slots:
+                    if (data[1][ERP_ID] in [i['erpid'] for i in course_list] and slot in [i['slot'] for i in course_list]):
+                        if [i['erpid'] for i in course_list].index(data[1][ERP_ID]) == [i['slot'] for i in course_list].index(slot):
+                            pass
+                        else:
+                            temp = {}
+                            temp['erpid'] = data[1][ERP_ID]
+                            temp['slot'] = slot
+                            temp['name'] = data[1][EMPLOYEE_NAME]
+                            temp['chosen'] = 'R'
+                            course_list.append(temp)
+                    else:
+                        temp = {}
+                        temp['erpid'] = data[1][ERP_ID]
+                        temp['slot'] = slot
+                        temp['name'] = data[1][EMPLOYEE_NAME]
+                        temp['chosen'] = 'R'
+                        course_list.append(temp)
+        listofdict.append([eval(course_type_stuff)[i[0]], newdataframe[COURSE_TITLE].unique()[0]] + course_list)
+    return listofdict
 #Get name and slot from ttid and erp id, add column with 'C'
 #Get file, remove extra info, remove chosen rows
 #Add each remaining row to the table with 'R' as new column

@@ -18,6 +18,7 @@ class Profile(models.Model):
     timetable_count = models.IntegerField(default=0)
     save_order = models.TextField()
     shared_timetable = models.IntegerField(default=0)
+    course_type = models.TextField()
     
     def __str__(self):
         return f'{self.user.username}\'s Profile'

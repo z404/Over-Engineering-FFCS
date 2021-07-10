@@ -916,7 +916,7 @@ def backend_genteachlist(user_object):
             <td>'''+get_timetable_popup(user_object, i.ttid, i.nickname)+'''</td>
             <td>'''+prstr+'''</td>
             <td><a class="btn btn-primary text-white" data-ttid="'''+i.ttid+'''" onclick="showTimetable()" id="GoBtn'''+i.ttid+'''">Show List</a></td>
-            <td>'''+"Comment functionality"+'''</td>
+            <td>'''+"Write it on a paper"+'''</td>
             </tr>
             '''
             count+=1

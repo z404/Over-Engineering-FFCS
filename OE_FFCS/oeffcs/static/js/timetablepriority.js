@@ -107,12 +107,18 @@ const timetableChange = () => {
             document.getElementById("timetablelist").style.maxHeight = height + "px";
             document.getElementsByClassName("current")[0].classList.remove("current");
             document.getElementById("nickname-" + String(json["index"])).classList.add("current");
+            var height = $('#boxifycontent').height();
+            var otherheight = $('#index-button').height();
+            document.getElementById("timetablelist").style.maxHeight = (height - otherheight - 12) + "px";
         });
 }
 
 $(document).ready(() => {
     var height = $('#boxifycontent').height();
-    document.getElementById("timetablelist").style.maxHeight = height + "px";
+    var otherheight = $('#index-button').height();
+    document.getElementById("timetablelist").style.maxHeight = (height - otherheight - 12) + "px";
+    height = $('#nicknamneontop').height();
+    document.getElementById("height_helper").style.paddingTop = height + "px";
 });
 
 const nicknameChange = () => {
@@ -131,6 +137,8 @@ const nicknameChange = () => {
         .then(json => {
             let ele = document.getElementById("displayNickname" + (Number(document.getElementById("timetable-index").innerText) - 1));
             ele.innerText = '#' + document.getElementById("timetable-index").innerText + ': ' + newnick;
+            let ele2 = document.getElementById("nicknamneontop");
+            ele2.innerText = newnick;
         });
 }
 const indexSort = (e1, e2) => {

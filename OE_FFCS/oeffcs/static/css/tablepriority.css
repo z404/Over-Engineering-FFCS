@@ -50,3 +50,9 @@
 .current {
     background-color: #202121;
 }
+
+#timetablelist {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}

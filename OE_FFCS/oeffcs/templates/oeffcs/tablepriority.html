@@ -1,12 +1,17 @@
 {% extends 'base.html' %} {% load static %} {% block head %}
 <form method="post">{% csrf_token %}</form>
 <link rel="stylesheet" href="{% static 'css/tablepriority.css' %}">
+<link rel="stylesheet" href="{% static 'css/tablepriority2.css' %}">
 <script src="{% static 'js/timetablepriority.js' %}"></script>
 {% endblock head %} {% block content %}
 
 <div class="row">
     <div id="displaytimetable" class="col-9">
+        <div id="nicknamneontop">
+            {{ nickname_render }}
+        </div>
         <div id="boxifycontent" style="padding: 0px;">
+
             <span id="render_table_span">
                 {% autoescape off %} 
                     {{ render_timetable }} 
@@ -64,8 +69,11 @@
 
 
     <div id="TimetableListCol" class="col-3">
-        <button class="btn btn-primary" id="index-button" onclick="updateIndex()" disabled>Indexed</button>
-        <button class="btn btn-primary" id="priority-button" onclick="updatePriority()">By priority</button>
+        <div id="height_helper"></div>
+        <div class="bg-dark">
+            <button class="btn btn-primary" id="index-button" onclick="updateIndex()" disabled>Indexed</button>
+            <button class="btn btn-primary" id="priority-button" onclick="updatePriority()">By priority</button>
+        </div>
         {% autoescape off %} {{ timetable_list }} {% endautoescape %}
     </div>
 
@@ -79,6 +87,6 @@
                 "X-CSRFToken": csrftoken,
             }
         }).then(res => res.json())
-        .then(result => localStorage.setItem("timetable",result["timetable"]));
+        .then(result => localStorage.setItem("timetable", result["timetable"]));
 </script>
 {% endblock content %} {% block title %}Choose your tables!{% endblock title %}

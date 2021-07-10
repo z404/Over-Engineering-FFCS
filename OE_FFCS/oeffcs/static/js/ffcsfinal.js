@@ -4,6 +4,7 @@ const FALSE = "FALSE";
 const GREEN = "GREEN";
 const YELLOW = "YELLOW";
 const RED = "RED";
+const GREY = "GREY";
 
 const createDataElement = (type, data) => {
     const element = document.createElement(type);
@@ -15,6 +16,34 @@ const collapseAll = () => {
         .forEach(redrow => {
             redrow.style.visibility = "collapse";
         });
+};
+const rowUpdate = e => {
+    const OLD_STATE = e.currentTarget.dataset['state'];
+    const SELECTED = e.currentTarget.dataset['selected'];
+    const COURSE_CODE = e.currentTarget.children[0].innerText;
+    const ERPID = e.currentTarget.children[1].innerText;
+    const SLOT = e.currentTarget.children[2].innerText;
+    const SUBJECT = e.currentTarget.children[3].innerText;
+    const PARENT = e.currentTarget.parentElement;
+    if (SELECTED === FALSE) {
+        e.currentTarget.dataset['selected'] = TRUE;
+        for (row of PARENT.children) {
+            if (row !== e.currentTarget) {
+                row.style.visibility = "collapse";
+            }
+        }
+    }
+    else{
+        e.currentTarget.dataset['selected'] = FALSE;
+        for (row of PARENT.children) {
+            if (row.dataset['state'] !== RED) {
+                row.style.visibility = "visible";
+            }
+            else{
+                row.style.visibility = "collapse";
+            }
+        }
+    }
 };
 const renderShit = lst => {
     lst.forEach(element => {
@@ -35,6 +64,7 @@ const renderShit = lst => {
         headers.forEach(innertext => {
             headerRow.appendChild(createDataElement("th", innertext));
         });
+
         thead.appendChild(headerRow);
         table.appendChild(thead);
         const label = document.createElement("label");
@@ -44,6 +74,7 @@ const renderShit = lst => {
         document.getElementById("info").appendChild(
             document.createElement("br")
         );
+
         "table table-bordered table-hover table-sm table-dark"
             .split(' ').forEach(cls => {
                 table.classList.add(cls);
@@ -53,20 +84,20 @@ const renderShit = lst => {
         const collapseCurrent = obj => {
             console.log(obj.children);
             Array.from(obj.children)
-            .forEach(row => {
-                if(row.dataset['state']==RED){
-                    row.style.visibility = "collapse";
-                }
-            });
+                .forEach(row => {
+                    if (row.dataset['state'] == RED) {
+                        row.style.visibility = "collapse";
+                    }
+                });
         };
         const expandCurrent = obj => {
             console.log(obj.children);
             Array.from(obj.children)
-            .forEach(row => {
-                if(row.dataset['state']==RED){
-                    row.style.visibility = "visible";
-                }
-            });
+                .forEach(row => {
+                    if (row.dataset['state'] == RED) {
+                        row.style.visibility = "visible";
+                    }
+                });
         };
         element.splice(2).forEach(data => {
             const currentRow = document.createElement("tr");
@@ -74,6 +105,8 @@ const renderShit = lst => {
             currentRow.appendChild(createDataElement("td", data["erpid"]));
             currentRow.appendChild(createDataElement("td", data["slot"]));
             currentRow.appendChild(createDataElement("td", element[1]));
+            currentRow.dataset.selected = FALSE;
+            currentRow.addEventListener("click", rowUpdate);
             if (data["chosen"] == "C") {
                 currentRow.dataset['state'] = YELLOW;
                 currentRow.classList.add(YELLOW);
@@ -87,7 +120,7 @@ const renderShit = lst => {
         });
 
         const currentRow = document.createElement("tr");
-        currentRow.dataset['state'] = "GREY";
+        currentRow.dataset['state'] = GREY;
         currentRow.dataset['collapsed'] = TRUE;
         currentRow.classList.add("GREY");
         currentRow.addEventListener("click", () => {
@@ -127,6 +160,7 @@ const pageload = () => {
     })
         .then(res => res.json())
         .then(res => {
+            // document.getElementById("info").innerText=JSON.stringify(res["info"]);
             renderShit(res["info"]);
         });
 };

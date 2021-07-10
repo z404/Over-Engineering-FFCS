@@ -1049,36 +1049,44 @@ def apicall_finalpage(user_object):
         newdataframe = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'"')
         for j in teachers:
             temp = {}
-            temp['erpid'] = j
+            temp['erpid'] = [j]
             temp['slot'] = entry.filter(class_code__contains = coursecode+":"+j)[0].slots
-            temp['name'] = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'" and `'+ERP_ID+'` == "'+j+'"').iloc[0][EMPLOYEE_NAME]
+            temp['name'] = [dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'" and `'+ERP_ID+'` == "'+j+'"').iloc[0][EMPLOYEE_NAME]]
             temp['chosen'] = 'C'
-            course_list.append(temp)
+            flag = False
+            for k in range(len(course_list)):
+                if temp['slot'] == course_list[k]['slot']:
+                    course_list[k]['name'].append(temp['name'][0])
+                    course_list[k]['erpid'].append(temp['erpid'][0])
+                    flag = True
+            if not flag:
+                course_list.append(temp)
         
         donelist = []
+        course_list2 = []
         for data in newdataframe.iterrows():
             if coursecode+':'+data[1][ERP_ID] not in donelist:
                 slots = [i.split(' ')[0] for i in get_slot_from_code(coursecode+':'+data[1][ERP_ID])]
                 donelist.append(coursecode+':'+data[1][ERP_ID])
                 for slot in slots:
-                    if (data[1][ERP_ID] in [i['erpid'] for i in course_list] and slot in [i['slot'] for i in course_list]):
-                        if [i['erpid'] for i in course_list].index(data[1][ERP_ID]) == [i['slot'] for i in course_list].index(slot):
+                    if (data[1][ERP_ID] in [i['erpid'] for i in course_list] and slot in [i['slot'] for i in course_list]) \
+                        and [i['erpid'] for i in course_list].index(data[1][ERP_ID]) == [i['slot'] for i in course_list].index(slot):
                             pass
-                        else:
-                            temp = {}
-                            temp['erpid'] = data[1][ERP_ID]
-                            temp['slot'] = slot
-                            temp['name'] = data[1][EMPLOYEE_NAME]
-                            temp['chosen'] = 'R'
-                            course_list.append(temp)
                     else:
                         temp = {}
-                        temp['erpid'] = data[1][ERP_ID]
+                        temp['erpid'] = [data[1][ERP_ID]]
                         temp['slot'] = slot
-                        temp['name'] = data[1][EMPLOYEE_NAME]
+                        temp['name'] = [data[1][EMPLOYEE_NAME]]
                         temp['chosen'] = 'R'
-                        course_list.append(temp)
-        listofdict.append([eval(course_type_stuff)[i[0]], newdataframe[COURSE_TITLE].unique()[0]] + course_list)
+                        for k in range(len(course_list2)):
+                            if temp['slot'] == course_list2[k]['slot']:
+                                course_list2[k]['name'].append(temp['name'][0])
+                                course_list2[k]['erpid'].append(temp['erpid'][0])
+                                flag = True
+                        if not flag:
+                            course_list2.append(temp)
+
+        listofdict.append([eval(course_type_stuff)[i[0]], newdataframe[COURSE_TITLE].unique()[0] + ','+coursecode] + course_list + course_list2)
     return listofdict
 #Get name and slot from ttid and erp id, add column with 'C'
 #Get file, remove extra info, remove chosen rows

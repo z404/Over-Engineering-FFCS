@@ -132,7 +132,7 @@ class FORM:
     # count variable to store count
     count = 1
 
-    def add_subject(self, subject, subject_code, check_status = "unchecked"):
+    def add_subject(self, subject, subject_code, check_status = "unchecked", user_object = ''):
         # Creating checkbox for subject
         self.form += '<div class="custom-control custom-switch"><input id ="' + subject_code + '" \
                 type="checkbox" \
@@ -144,7 +144,44 @@ class FORM:
         
         # Creating lable for checkbox
         self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label>'
-        self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+        
+        try:
+            course_type_data =eval(user_object.profile.course_type)
+            crstype = course_type_data[subject_code]
+            if crstype == 'PC':
+                self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+                            <option value="PC" selected>Programme Core</option>
+                            <option value="PE">Programme Elective</option>
+                            <option value="UC">University Core</option>
+                            <option value="UE">University Elective</option>
+                            </select>
+                            </div>'''
+            elif crstype == 'PE':
+                self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+                            <option value="PC">Programme Core</option>
+                            <option value="PE" selected>Programme Elective</option>
+                            <option value="UC">University Core</option>
+                            <option value="UE">University Elective</option>
+                            </select>
+                            </div>'''
+            elif crstype == 'UC':
+                self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+                            <option value="PC">Programme Core</option>
+                            <option value="PE">Programme Elective</option>
+                            <option value="UC" selected>University Core</option>
+                            <option value="UE">University Elective</option>
+                            </select>
+                            </div>'''
+            else:
+                self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
+                            <option value="PC">Programme Core</option>
+                            <option value="PE">Programme Elective</option>
+                            <option value="UC">University Core</option>
+                            <option value="UE" selected>University Elective</option>
+                            </select>
+                            </div>'''
+        except (SyntaxError, KeyError):
+            self.form += '''<select name="'''+subject_code+'''classification" class="form-select" aria-label="Default select example">
                             <option selected disabled hidden>Course Category</option>
                             <option value="PC">Programme Core</option>
                             <option value="PE">Programme Elective</option>
@@ -206,9 +243,9 @@ def convertToForm(user):
         subject, code, *trash = [i.rstrip(' )') for i in subject_data.split('(')]
         # Pass to form
         if code in saved_previous_teachers:
-            form2.add_subject(subject, code, "checked")
+            form2.add_subject(subject, code, "checked", user_object=user)
         else:
-            form2.add_subject(subject, code)
+            form2.add_subject(subject, code, user_object=user)
 
         # Iterating through course data
         for c_type, teacherlist in course_info.items():
@@ -561,6 +598,8 @@ def show_selected_data(user_profile):
             
 
         retdict['teacherdata'] += '</tbody></table>'
+        total_timetables = user_profile.timetable_count
+        retdict['teacherdata'] += '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Total number of valid timetables calculated: '+str(total_timetables)
     
     else:
         retdict['teacherdata'] = 'You haven\'t chosen any teachers yet!'
@@ -645,6 +684,41 @@ def show_selected_data(user_profile):
                                     </tr></tbody></table>'
     else:
         retdict['filters'] = 'You haven\'t chosen any filters yet!'
+    
+    try:
+        ttid = eval(user_profile.save_order)['ttid']
+        data = eval(user_profile.save_order)['data']
+        ds = convert_df_to_ds_2(data, ttid)
+        renderstr = ''
+        count = 0
+        for i in ds:
+            crstype = i[0]
+            crstitle = i[1]
+            crsdata = i[2:]
+            renderstr+='<table class="table table-sm table-bordered table-hover table-dark">\
+                                    <thead>\
+                                        <tr>\
+                                        <th scope="col">##</th>\
+                                        <th scope="col">Teacher Name</th>\
+                                        <th scope="col">ERP ID</th>\
+                                        <th scope="col">Slot</th>\
+                                        <th scope="col">Course</th>\
+                                        </tr>\
+                                    </thead><tbody>'
+            for j in crsdata:
+                count += 1
+                renderstr += '<tr>\
+                                <th scope="row">'+str(count)+'</th>\
+                                <td>'+j['name']+'</td>\
+                                <td>'+j['erpid']+'</td>\
+                                <td>'+j['slot']+'</td>\
+                                <td>'+crstitle+' ('+crstype+')</td>\
+                            </tr>'
+            renderstr += '</tbody></table>'
+        retdict['saved_teacher_list'] = renderstr
+    except SyntaxError:
+        retdict['saved_teacher_list'] = 'You haven\'t generated a teacher list yet!'
+
     return retdict
 
 def savefilters(save_dict, user_object):
@@ -860,7 +934,28 @@ def apicall_timetable_boilerplate()->str:
 def display_teacher_list_temp(user_object, ttid):
     timetable = get_timetable_data_by_id(user_object, ttid)
     info_dict = timetable['information_dict']
-
+    print(info_dict)
+    try:
+        ds2 = eval(user_object.profile.save_order)
+        ds2 = convert_df_to_ds_2(ds2['data'], ds2['ttid'])
+        info_dict2 = {}
+        for i in ds2:
+            course_name, course_code = " ".join(i[1].split('(')[:-1]), i[1].split('(')[-1].replace(')','')
+            print(course_code, course_name)
+            data = i[2:]
+            for i in data:
+                temp = {}
+                temp['name'] = i['name']
+                temp['course_code'] = course_code
+                temp['erpid'] = i['erpid']
+                temp['slots'] = i['slot']
+                temp['cname'] = course_name
+                info_dict2.update({course_code+':'+i['erpid']:temp})
+        print(info_dict2)
+    
+        info_dict = info_dict2
+    except SyntaxError:
+        pass
     render_dict = {}
     for i, data in info_dict.items():
         if i.split(":")[0] in render_dict.keys():
@@ -896,6 +991,31 @@ def display_teacher_list_temp(user_object, ttid):
     final_render = final_render + '</div>'
     return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid}
     # return {'ttid':ttid,'render_demo':final_render}
+
+def convert_df_to_ds_2(data, ttid):
+    # data = eval(user_object.profile.save_order)['data']
+    # ttid = eval(user_object.profile.save_order)['ttid']
+    author_object = Timetable.objects.filter(ttid = ttid)[0].level.user
+    entry = Entry.objects.filter(level = Timetable.objects.filter(ttid = ttid)[0])
+    dataframe = convert_file_to_df(str(author_object.profile.data_file))
+    listofdict = []
+    course_type_stuff = author_object.profile.course_type
+    for i in data:
+        course_list = []
+        coursecode = i[0]
+        teachers = i[1]
+        #this needs to be an indivisual table
+        newdataframe = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'"')
+        for j in teachers:
+            temp = {}
+            temp['erpid'] = j
+            temp['slot'] = entry.filter(class_code__contains = coursecode+":"+j)[0].slots
+            temp['name'] = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'" and `'+ERP_ID+'` == "'+j+'"').iloc[0][EMPLOYEE_NAME]
+            temp['chosen'] = 'C'
+            course_list.append(temp)
+        listofdict.append([eval(course_type_stuff)[i[0]], 
+            newdataframe[COURSE_TITLE].unique()[0] + ' (' + newdataframe[COURSE_CODE].unique()[0] + ')'] + course_list)
+    return listofdict
 
 def apicall_finalpage(user_object):
     def get_slot_from_code(code):

@@ -152,7 +152,8 @@ def viewdata(request):
     except User.profile.RelatedObjectDoesNotExist:
         ret = {'exceldata': 'You haven\'t uploaded a file yet!',
         'teacherdata': 'You haven\'t chosen any teachers yet!',
-        'filters': 'You haven\'t chosen any filters yet!'}
+        'filters': 'You haven\'t chosen any filters yet!', 
+        'saved_teacher_list': 'You haven\'t generated a teacher list yet!'}
         form = ChangeStatusForm({'status_value': 0})
         if form.is_valid():
             form.instance.user = request.user

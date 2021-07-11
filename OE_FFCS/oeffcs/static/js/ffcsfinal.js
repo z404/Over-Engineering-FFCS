@@ -107,7 +107,7 @@ const renderShit = lst => {
             currentRow.appendChild(createDataElement("td", element[1]));
             currentRow.dataset.selected = FALSE;
             currentRow.addEventListener("click", rowUpdate);
-            if (data["chosen"] == "C") {
+            if (data["chosen"] == "C") {//C is for chosen(YELLOW)
                 currentRow.dataset['state'] = YELLOW;
                 currentRow.classList.add(YELLOW);
                 tbody.appendChild(currentRow);

@@ -8,8 +8,6 @@ from itertools import product
 from .forms import ChangeStatusForm, ChangeFiltersForm, ChangeTimetableNumber
 from .models import Profile, Timetable, Entry
 from collections import Counter
-import string
-import random
 import time
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
@@ -424,7 +422,6 @@ def validate_timetable(timetable):
     else: return (False,0,0,0,'none','none')
 
 def save_timetable_indivisual(timetable_data, user, count):
-    randttid = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     temp_timeable = Timetable(
         level = user.profile,
             total8classes = timetable_data[1][1],
@@ -432,7 +429,7 @@ def save_timetable_indivisual(timetable_data, user, count):
             total6classes = timetable_data[1][3],
             theory_status = timetable_data[1][4],
             lab_status = timetable_data[1][5],
-            ttid = randttid,
+            ttid = str(user)+str(count),
             nickname = 'Timetable '+str(count))
     temp_timeable.save()
     for entry in timetable_data[0]:

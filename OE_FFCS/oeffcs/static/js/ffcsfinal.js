@@ -100,23 +100,34 @@ const renderShit = lst => {
                 });
         };
         element.splice(2).forEach(data => {
-            const currentRow = document.createElement("tr");
-            currentRow.appendChild(createDataElement("td", data["name"]));
-            currentRow.appendChild(createDataElement("td", data["erpid"]));
-            currentRow.appendChild(createDataElement("td", data["slot"]));
-            currentRow.appendChild(createDataElement("td", element[1]));
-            currentRow.dataset.selected = FALSE;
-            currentRow.addEventListener("click", rowUpdate);
-            if (data["chosen"] == "C") {//C is for chosen(YELLOW)
-                currentRow.dataset['state'] = YELLOW;
-                currentRow.classList.add(YELLOW);
-                tbody.appendChild(currentRow);
-            }
-            else {
-                currentRow.dataset['state'] = RED;
-                currentRow.classList.add(RED);
-                tbody2.appendChild(currentRow);
-            }
+            const generateRow = row => {
+                const currentRow = document.createElement("tr");
+                currentRow.appendChild(createDataElement("td", row["name"]));
+                currentRow.appendChild(createDataElement("td", row["erpid"]));
+                currentRow.appendChild(createDataElement("td", row["slot"]));
+                currentRow.appendChild(createDataElement("td", element[1]));
+                currentRow.dataset.selected = FALSE;
+                currentRow.addEventListener("click", rowUpdate);
+                if (row["chosen"] == "C") {//C is for chosen(YELLOW)
+                    currentRow.dataset['state'] = YELLOW;
+                    currentRow.classList.add(YELLOW);
+                    tbody.appendChild(currentRow);
+                }
+                else {
+                    currentRow.dataset['state'] = RED;
+                    currentRow.classList.add(RED);
+                    tbody2.appendChild(currentRow);
+                }
+            };
+            data["name"].forEach((placeholder,idx)=>{
+                const row = {
+                    "name":data["name"][idx],
+                    "erpid":data["erpid"][idx],
+                    "slot":data["slot"],
+                    "chosen":data["chosen"]
+                };
+                generateRow(row);
+            });
         });
 
         const currentRow = document.createElement("tr");
@@ -161,6 +172,7 @@ const pageload = () => {
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);
+            localStorage.setItem("info",JSON.stringify(res["info"]));
             renderShit(res["info"]);
         });
 };

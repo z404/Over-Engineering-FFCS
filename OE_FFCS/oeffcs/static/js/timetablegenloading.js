@@ -33,9 +33,7 @@ const func = async () => {
     //     firstCall();
     // }, 1000);
     firstCall();
-    console.log("I'm here");
-    const progress = document.querySelector('.progress-done');
-    const repeater = setInterval(async () => {
+    const loadingRefresh = async () => {
         const res = await fetch("/loadingscreenstatus/", {
             method: "POST",
             body: JSON.stringify({}),
@@ -56,12 +54,17 @@ const func = async () => {
         document.getElementById("valid-timetables").innerText= String(result['valid_timetables']) + " valid found!";
         console.log(result);
         if (result['valid_status']!=false) {
-            clearInterval(repeater);
             setTimeout(() => {
                 window.location.href= window.location.origin + "/pickfilters/";
             }, 3000);
         }
-    }, 15000);
+        else{
+            setTimeout(loadingRefresh, Math.random()*10000 + 10000);
+        }
+    };
+    console.log("I'm here");
+    const progress = document.querySelector('.progress-done');
+    loadingRefresh();
 };
 
 func();

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
+<link rel="stylesheet" href="{% static 'css/winffcs.css' %}"> 
 <form method="post">{% csrf_token %}</form>
 {% endblock head %}
 {% block title %}

@@ -36,7 +36,7 @@ const fallbackCopyTextToClipboard = (text) => {
 
 const nameCopyButton = () => {
     const element = document.createElement("button");
-    "btn"
+    "btn btn-info"
     .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
@@ -49,10 +49,12 @@ const nameCopyButton = () => {
 
 const courseCodeCopyButton = () => {
     const btn = document.createElement("button");
+    "btn btn-info"
+    .split(' ').forEach(cls => btn.classList.add(cls));
     btn.innerHTML = "For searching Course Code";
-    btn.addEventListener("click",()=>{
+    btn.addEventListener("click", () => {
         const coursecode = btn.parentElement.innerText;
-        fallbackCopyTextToClipboard(coursecode.slice(-32,-25));
+        fallbackCopyTextToClipboard(coursecode.slice(-32, -25));
     });
     return btn;
 };
@@ -78,14 +80,12 @@ const rowUpdate = e => {
                 row.style.visibility = "collapse";
             }
         }
-    }
-    else {
+    } else {
         e.currentTarget.dataset['selected'] = FALSE;
         for (row of PARENT.children) {
             if (row.dataset['state'] !== RED) {
                 row.style.visibility = "visible";
-            }
-            else {
+            } else {
                 row.style.visibility = "collapse";
             }
         }
@@ -125,9 +125,9 @@ const renderShit = lst => {
         );
 
         "table table-bordered table-hover table-sm table-dark"
-            .split(' ').forEach(cls => {
-                table.classList.add(cls);
-            });
+        .split(' ').forEach(cls => {
+            table.classList.add(cls);
+        });
         const tbody = document.createElement("tbody");
         const tbody2 = document.createElement("tbody");
         const collapseCurrent = obj => {
@@ -155,17 +155,16 @@ const renderShit = lst => {
                 currentRow.appendChild(createDataElement("td", row["erpid"]));
                 currentRow.appendChild(createDataElement("td", row["slot"]));
                 currentRow.appendChild(createDataElement("td", element[1]));
-                let copyElement = createDataElement("td","");
+                let copyElement = createDataElement("td", "");
                 copyElement.appendChild(nameCopyButton());
                 currentRow.appendChild(copyElement);
                 currentRow.dataset.selected = FALSE;
                 currentRow.addEventListener("click", rowUpdate);
-                if (row["chosen"] == "C") {//C is for chosen(YELLOW)
+                if (row["chosen"] == "C") { //C is for chosen(YELLOW)
                     currentRow.dataset['state'] = YELLOW;
                     currentRow.classList.add(YELLOW);
                     tbody.appendChild(currentRow);
-                }
-                else {
+                } else {
                     currentRow.dataset['state'] = RED;
                     currentRow.classList.add(RED);
                     tbody2.appendChild(currentRow);
@@ -191,8 +190,7 @@ const renderShit = lst => {
                 console.log(currentRow.dataset['collapsed'])
                 expandCurrent(event.target.parentElement.parentElement);
                 event.target.parentElement.dataset['collapsed'] = FALSE;
-            }
-            else {
+            } else {
                 console.log(currentRow.dataset['collapsed'])
                 collapseCurrent(event.target.parentElement.parentElement);
                 event.target.parentElement.dataset['collapsed'] = TRUE;
@@ -214,13 +212,13 @@ const renderShit = lst => {
 
 const pageload = () => {
     fetch("/ffcsfinalpagedata/", {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "X-CSRFToken": CSRFTOKEN,
-        },
-    })
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        })
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);

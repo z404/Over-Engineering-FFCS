@@ -1,0 +1,28 @@
+{% load static %}
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}"> 
+    <form method="post">{% csrf_token %}</form>
+    <link rel="stylesheet" href="{% static 'css/timetablegenloading.css' %}">
+    <script src="{% static 'js/timetablegenloading.js' %}" defer></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="info">
+            Working with {{ total_timetables }} timetables here, so we appreciate your cooperation :)
+        </div>
+        <div id="valid-timetables">
+            {{ valid_timetables }} valid found!
+        </div>
+        <div id="progress-bar" class="progress" data-total="{{ completed_timetables }}" data-done="{{ total_timetables }}">
+            <div id="progress-done" class="progress-done">
+                0%
+            </div>
+        </div>
+    </div>
+</body>
+
+

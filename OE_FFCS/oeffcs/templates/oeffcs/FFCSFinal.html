@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/winffcs.css' %}"> 
+<form method="post">{% csrf_token %}</form>
+{% endblock head %}
+{% block title %}
+FFCS!!
+{% endblock title %}
+{% block content %}
+<div id="info"></div>
+<script src="{% static 'js/ffcsfinal.js' %}"></script>
+{% endblock content %}

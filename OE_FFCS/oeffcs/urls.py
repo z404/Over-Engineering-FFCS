@@ -15,4 +15,13 @@ urlpatterns = [
     path('rendertimetable/',views.api_render_tt, name='rendertimetable'),
     path('scorechange/',views.api_score_change, name='scorechange'),
     path('nicknamechange/',views.api_nickname_change, name='nicknamechange'),
+    path('genteachlist/',views.genteachlist, name='genteachlist'),
+    path('timetableboilerplate/',views.api_timetable_boilerplate, name='timetableboilerplate'),
+    path('showtimetable/<ttid>/',views.show_timetable_details, name='showtimetable'),
+    path('modaldata/', views.api_modal_data, name='modaldata'),
+    path('timetablesgenerating/',views.timetable_gen_loading, name='timetablesgenerating'),
+    path('loadingscreenstatus/', views.api_loadingscreen, name='loadingscreenstatus'),
+    path('savepreference/', views.api_save_preference, name='savepreference'),
+    path('winffcs/', views.ffcs, name='ffcs'),
+    path('ffcsfinalpagedata/', views.api_win_ffcs, name='apiwinffcs'),
 ]

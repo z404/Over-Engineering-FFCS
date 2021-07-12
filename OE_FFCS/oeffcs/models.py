@@ -16,6 +16,9 @@ class Profile(models.Model):
     saveteachers = models.TextField()
     savefilters = models.TextField()
     timetable_count = models.IntegerField(default=0)
+    save_order = models.TextField()
+    shared_timetable = models.IntegerField(default=0)
+    course_type = models.TextField()
     
     def __str__(self):
         return f'{self.user.username}\'s Profile'
@@ -27,10 +30,10 @@ class Timetable(models.Model):
     total6classes = models.IntegerField(default=0)
     lab_status = models.CharField(max_length=10)
     theory_status = models.CharField(max_length=10)
-    ttid = models.CharField(max_length=75)
+    ttid = models.CharField(max_length=75,unique=True)
     nickname = models.CharField(max_length=75)
     priority = models.IntegerField(default=3)
-    
+    teacherlist = models.TextField(default='')
     def __str__(self):
         return str(self.pk)
 

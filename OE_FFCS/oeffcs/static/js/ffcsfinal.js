@@ -11,6 +11,52 @@ const createDataElement = (type, data) => {
     element.innerText = data;
     return element;
 };
+
+const fallbackCopyTextToClipboard = (text) => {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
+}
+
+const nameCopyButton = () => {
+    const element = document.createElement("button");
+    "btn"
+    .split(' ').forEach(cls => element.classList.add(cls));
+    element.innerHTML = "Copy!";
+    element.addEventListener("click", () => {
+        const e = element.parentElement.parentElement.children[0];
+        fallbackCopyTextToClipboard(e.innerText)
+        event.stopImmediatePropagation();
+    });
+    return element;
+};
+
+const courseCodeCopyButton = () => {
+    const btn = document.createElement("button");
+    btn.innerHTML = "For searching Course Code";
+    btn.addEventListener("click",()=>{
+        const coursecode = btn.parentElement.innerText;
+        fallbackCopyTextToClipboard(coursecode.slice(-32,-25));
+    });
+    return btn;
+};
+
 const collapseAll = () => {
     Array.from(document.getElementsByClassName(RED))
         .forEach(redrow => {
@@ -33,13 +79,13 @@ const rowUpdate = e => {
             }
         }
     }
-    else{
+    else {
         e.currentTarget.dataset['selected'] = FALSE;
         for (row of PARENT.children) {
             if (row.dataset['state'] !== RED) {
                 row.style.visibility = "visible";
             }
-            else{
+            else {
                 row.style.visibility = "collapse";
             }
         }
@@ -51,7 +97,9 @@ const renderShit = lst => {
         const courseName = element[1];
         const course = document.createElement("label");
         course.appendChild(createDataElement("div", courseType));
-        course.appendChild(createDataElement("div", courseName));
+        const textDiv = createDataElement("div", courseName);
+        textDiv.appendChild(courseCodeCopyButton())
+        course.appendChild(textDiv);
         const table = document.createElement("table");
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
@@ -60,6 +108,7 @@ const renderShit = lst => {
             "ERP",
             "Slot",
             "Subject",
+            "Copy to clipboard",
         ]
         headers.forEach(innertext => {
             headerRow.appendChild(createDataElement("th", innertext));
@@ -106,6 +155,9 @@ const renderShit = lst => {
                 currentRow.appendChild(createDataElement("td", row["erpid"]));
                 currentRow.appendChild(createDataElement("td", row["slot"]));
                 currentRow.appendChild(createDataElement("td", element[1]));
+                let copyElement = createDataElement("td","");
+                copyElement.appendChild(nameCopyButton());
+                currentRow.appendChild(copyElement);
                 currentRow.dataset.selected = FALSE;
                 currentRow.addEventListener("click", rowUpdate);
                 if (row["chosen"] == "C") {//C is for chosen(YELLOW)
@@ -119,12 +171,12 @@ const renderShit = lst => {
                     tbody2.appendChild(currentRow);
                 }
             };
-            data["name"].forEach((placeholder,idx)=>{
+            data["name"].forEach((placeholder, idx) => {
                 const row = {
-                    "name":data["name"][idx],
-                    "erpid":data["erpid"][idx],
-                    "slot":data["slot"],
-                    "chosen":data["chosen"]
+                    "name": data["name"][idx],
+                    "erpid": data["erpid"][idx],
+                    "slot": data["slot"],
+                    "chosen": data["chosen"]
                 };
                 generateRow(row);
             });
@@ -146,7 +198,7 @@ const renderShit = lst => {
                 event.target.parentElement.dataset['collapsed'] = TRUE;
             }
         });
-        for (let index = 0; index < 4; index++) {
+        for (let index = 0; index < 5; index++) {
             currentRow.appendChild(createDataElement("td", ""));
         }
         tbody.appendChild(currentRow);
@@ -172,7 +224,7 @@ const pageload = () => {
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);
-            localStorage.setItem("info",JSON.stringify(res["info"]));
+            localStorage.setItem("info", JSON.stringify(res["info"]));
             renderShit(res["info"]);
         });
 };

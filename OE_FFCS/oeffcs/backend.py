@@ -1078,7 +1078,7 @@ def apicall_finalpage(user_object):
                         temp['name'] = data[1][EMPLOYEE_NAME]
                         temp['chosen'] = 'R'
                         course_list.append(temp)
-        listofdict.append([eval(course_type_stuff)[i[0]], newdataframe[COURSE_TITLE].unique()[0]] + course_list)
+        listofdict.append([eval(course_type_stuff)[i[0]], newdataframe[COURSE_TITLE].unique()[0] + ',' + coursecode] + course_list)
 
     new_datastructure = []
     for subject in listofdict:

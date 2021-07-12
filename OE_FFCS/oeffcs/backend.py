@@ -797,6 +797,7 @@ def get_timetable_data_by_id(user_object, table_id, first = 'first'):
             returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
         else:
             returndata['render_timetable'] = timetable_lst
+        returndata['nickname'] = timetable[0].nickname
         return returndata
         # return timetable[0].ttid
 
@@ -989,7 +990,7 @@ def display_teacher_list_temp(user_object, ttid):
     for i in render_dict.values():
         final_render = final_render+i
     final_render = final_render + '</div>'
-    return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid}
+    return {'render_timetable':timetable['render_timetable'],'render_demo':final_render, "ttid": ttid, 'nickname':timetable['nickname']}
     # return {'ttid':ttid,'render_demo':final_render}
 
 def convert_df_to_ds_2(data, ttid):

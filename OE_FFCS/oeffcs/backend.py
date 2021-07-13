@@ -898,7 +898,6 @@ def backend_genteachlist(user_object):
         <th scope="col">Timetable</th>
         <th scope="col">Prioriry</th>
         <th scope="col">Generate List</th>
-        <th scope="col">Comments</th>
         </tr>
     '''
     all_timetables = sorted(all_timetables, key = sort_by_priority, reverse = True)
@@ -917,7 +916,6 @@ def backend_genteachlist(user_object):
             <td>'''+get_timetable_popup(user_object, i.ttid, i.nickname)+'''</td>
             <td>'''+prstr+'''</td>
             <td><a class="btn btn-primary text-white" data-ttid="'''+i.ttid+'''" onclick="showTimetable()" id="GoBtn'''+i.ttid+'''">Show List</a></td>
-            <td>'''+"Write it on a paper"+'''</td>
             </tr>
             '''
             count+=1
@@ -935,28 +933,28 @@ def apicall_timetable_boilerplate()->str:
 def display_teacher_list_temp(user_object, ttid):
     timetable = get_timetable_data_by_id(user_object, ttid)
     info_dict = timetable['information_dict']
-    print(info_dict)
-    try:
-        ds2 = eval(user_object.profile.save_order)
-        ds2 = convert_df_to_ds_2(ds2['data'], ds2['ttid'])
-        info_dict2 = {}
-        for i in ds2:
-            course_name, course_code = " ".join(i[1].split('(')[:-1]), i[1].split('(')[-1].replace(')','')
-            print(course_code, course_name)
-            data = i[2:]
-            for i in data:
-                temp = {}
-                temp['name'] = i['name']
-                temp['course_code'] = course_code
-                temp['erpid'] = i['erpid']
-                temp['slots'] = i['slot']
-                temp['cname'] = course_name
-                info_dict2.update({course_code+':'+i['erpid']:temp})
-        print(info_dict2)
+    # print(info_dict)
+    # try:
+    #     ds2 = eval(user_object.profile.save_order)
+    #     ds2 = convert_df_to_ds_2(ds2['data'], ds2['ttid'])
+    #     info_dict2 = {}
+    #     for i in ds2:
+    #         course_name, course_code = " ".join(i[1].split('(')[:-1]), i[1].split('(')[-1].replace(')','')
+    #         print(course_code, course_name)
+    #         data = i[2:]
+    #         for i in data:
+    #             temp = {}
+    #             temp['name'] = i['name']
+    #             temp['course_code'] = course_code
+    #             temp['erpid'] = i['erpid']
+    #             temp['slots'] = i['slot']
+    #             temp['cname'] = course_name
+    #             info_dict2.update({course_code+':'+i['erpid']:temp})
+    #     print(info_dict2)
     
-        info_dict = info_dict2
-    except SyntaxError:
-        pass
+    #     info_dict = info_dict2
+    # except SyntaxError:
+    #     pass
     render_dict = {}
     for i, data in info_dict.items():
         if i.split(":")[0] in render_dict.keys():
@@ -994,6 +992,7 @@ def display_teacher_list_temp(user_object, ttid):
     # return {'ttid':ttid,'render_demo':final_render}
 
 def convert_df_to_ds_2(data, ttid):
+    ttid = ttid.strip()
     # data = eval(user_object.profile.save_order)['data']
     # ttid = eval(user_object.profile.save_order)['ttid']
     author_object = Timetable.objects.filter(ttid = ttid)[0].level.user
@@ -1036,8 +1035,8 @@ def apicall_finalpage(user_object):
         return combined
     data = eval(user_object.profile.save_order)['data']
     ttid = eval(user_object.profile.save_order)['ttid']
-    author_object = Timetable.objects.filter(ttid = ttid)[0].level.user
-    entry = Entry.objects.filter(level = Timetable.objects.filter(ttid = ttid)[0])
+    author_object = Timetable.objects.filter(ttid = ttid.strip())[0].level.user
+    entry = Entry.objects.filter(level = Timetable.objects.filter(ttid = ttid.strip())[0])
     dataframe = convert_file_to_df(str(author_object.profile.data_file))
     course_type_stuff = author_object.profile.course_type
     listofdict = []

@@ -26,7 +26,7 @@ const Save = () => {
         method: "POST",
         body: JSON.stringify({
             "data": updatedData,
-            "ttid": document.getElementById("ttid").innerText,
+            "ttid": document.getElementById("ttid").dataset['ttid'],
         }),
         headers: {
             "Content-type": "application/json; charset=UTF-8",

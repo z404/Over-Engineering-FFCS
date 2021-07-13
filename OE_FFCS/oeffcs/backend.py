@@ -686,7 +686,7 @@ def show_selected_data(user_profile):
         retdict['filters'] = 'You haven\'t chosen any filters yet!'
     
     try:
-        ttid = eval(user_profile.save_order)['ttid']
+        ttid = eval(user_profile.save_order)['ttid'].strip()
         data = eval(user_profile.save_order)['data']
         ds = convert_df_to_ds_2(data, ttid)
         renderstr = ''
@@ -716,7 +716,7 @@ def show_selected_data(user_profile):
                             </tr>'
             renderstr += '</tbody></table>'
         retdict['saved_teacher_list'] = renderstr
-    except SyntaxError:
+    except (SyntaxError, IndexError):
         retdict['saved_teacher_list'] = 'You haven\'t generated a teacher list yet!'
 
     return retdict
@@ -1007,6 +1007,7 @@ def convert_df_to_ds_2(data, ttid):
         #this needs to be an indivisual table
         newdataframe = dataframe.query('`'+COURSE_CODE+'` == "'+coursecode+'"')
         for j in teachers:
+            j = j.strip()
             temp = {}
             temp['erpid'] = j
             temp['slot'] = entry.filter(class_code__contains = coursecode+":"+j)[0].slots

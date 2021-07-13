@@ -234,6 +234,7 @@ def api_save_preference(request):
     post_data = dict(eval(request.body))
     ttid = post_data['ttid'].strip()
     post_data['ttid'] = ttid
+    print(post_data)
     creator = Timetable.objects.filter(ttid = ttid)[0].level.user
     if creator.username == request.user.username:
         form = ChangeStatusForm({'status_value': 5}, instance=request.user.profile)

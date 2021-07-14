@@ -106,8 +106,7 @@ $(document).ready(() => {
             json = await request();
             if (json["ret"] == 0) {
                 $("#zero-timetables-error").show();
-                $("#slots").addClass("is-invalid");
-                $("#pre-check-info").text("");
+                $("#pre-check-info").hide("");
             }
             else {
                 $("form.ajax").submit();

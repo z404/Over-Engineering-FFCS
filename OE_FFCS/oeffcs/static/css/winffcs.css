@@ -1,0 +1,20 @@
+table {
+    padding-top: 100px;
+    border: 1px solid black;
+    table-layout: fixed;
+    width: 80%;
+}
+
+.course-code-copy-btn {
+    float: right;
+    margin-right: 7px;
+    margin-bottom: 10px;
+}
+
+.course-code-copy-btn:hover {
+    cursor: default !important;
+}
+
+.green {
+    background-color: #0275d8;
+}

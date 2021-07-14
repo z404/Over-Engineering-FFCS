@@ -39,8 +39,8 @@ const fallbackCopyTextToClipboard = (text) => {
 
 const nameCopyButton = () => {
     const element = document.createElement("button");
-    "btn btn-info"
-        .split(' ').forEach(cls => element.classList.add(cls));
+    "name-copy-button btn btn-info"
+    .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
         const e = element.parentElement.parentElement.children[0];
@@ -52,8 +52,8 @@ const nameCopyButton = () => {
 
 const courseCodeCopyButton = () => {
     const btn = document.createElement("button");
-    "btn btn-info"
-        .split(' ').forEach(cls => btn.classList.add(cls));
+    "course-code-copy-btn btn btn-info"
+    .split(' ').forEach(cls => btn.classList.add(cls));
     btn.innerHTML = "For searching Course Code";
     btn.addEventListener("click", () => {
         const coursecode = btn.parentElement.innerText;
@@ -139,7 +139,7 @@ const getSelectedTimetables = () => {
         finalTmtbl.push(
             (currCourse => {
                 let currStr = "";
-                
+
                 // currStr += currCourse.children[2].children[0].children[1].children[0].children[2].innerText;
                 // currStr += " ";
                 // currStr += currCourse.children[2].children[0].children[1].children[0].children[3].innerText.split(',')[1];
@@ -169,13 +169,13 @@ const rowUpdate = e => {
     let temp_booked_slots = {};
     let str_all_curr_slots;
     if (SELECTED === FALSE) {
+        e.currentTarget.classList.add("green")
         e.currentTarget.dataset['selected'] = TRUE;
         e.currentTarget.parentElement.parentElement.parentElement.parentElement.dataset['selected'] = TRUE;
         for (row of PARENT.children) {
             if (row !== e.currentTarget) {
                 row.style.visibility = "collapse";
-            }
-            else {
+            } else {
                 temp_booked_slots = JSON.parse(localStorage.getItem("booked"));
                 str_all_curr_slots = row.children[2].innerText;
                 e.currentTarget.parentElement.parentElement.parentElement.parentElement.dataset['slots'] = str_all_curr_slots;
@@ -183,6 +183,11 @@ const rowUpdate = e => {
                 all_curr_slots = str_all_curr_slots.split('+')
                 all_curr_slots.forEach(slot => {
                     temp_booked_slots[slot] = TRUE;
+                    // console.log(SLOT_CONFLICT_DATA[slot]);
+                    try {
+                        Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = TRUE)
+                    } catch {}
+
                 });
                 console.log(temp_booked_slots)
                 localStorage.setItem("booked", JSON.stringify(temp_booked_slots))
@@ -190,6 +195,7 @@ const rowUpdate = e => {
             }
         }
     } else {
+        e.currentTarget.classList.remove("green")
         e.currentTarget.dataset['selected'] = FALSE;
         e.currentTarget.parentElement.parentElement.parentElement.parentElement.dataset['selected'] = FALSE;
         temp_booked_slots = JSON.parse(localStorage.getItem("booked"));
@@ -197,6 +203,9 @@ const rowUpdate = e => {
         all_curr_slots = str_all_curr_slots.split('+')
         all_curr_slots.forEach(slot => {
             temp_booked_slots[slot] = FALSE;
+            try {
+                Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = FALSE)
+            } catch {}
         });
         localStorage.setItem("booked", JSON.stringify(temp_booked_slots))
         for (row of PARENT.children) {
@@ -210,7 +219,13 @@ const rowUpdate = e => {
     }
     updateTimetable();
 };
+
+const addClass = (obj, classes) => {
+    obj.className = '';
+    classes.split(' ').forEach(cls => obj.classList.add(cls));
+}
 const renderShit = lst => {
+    // $.unbind('hover')
     init_state_values = {}
     LIST_ALL_SLOTS.forEach(slot => init_state_values[slot] = FALSE);
     localStorage.setItem("booked", JSON.stringify(init_state_values));
@@ -218,10 +233,19 @@ const renderShit = lst => {
         const courseType = element[0];
         const courseName = element[1];
         const course = document.createElement("label");
-        course.appendChild(createDataElement("div", courseType));
-        const textDiv = createDataElement("div", courseName);
-        textDiv.appendChild(courseCodeCopyButton())
-        course.appendChild(textDiv);
+        course.appendChild(createDataElement("div", ""));
+        const contentDiv = createDataElement("div", "");
+        const textSpan = createDataElement("span", "");
+        const subjectSpan = createDataElement("span", `${courseName.split(',')[0]} ${courseName.split(',')[1]}`);
+        addClass(subjectSpan, "subject-span");
+        const courseTypeSpan = createDataElement("span", `${courseType}`);
+        addClass(courseTypeSpan, "course-type-span");
+        addClass(textSpan, "subject-details")
+        textSpan.appendChild(subjectSpan);
+        textSpan.appendChild(courseTypeSpan);
+        contentDiv.appendChild(textSpan);
+        contentDiv.appendChild(courseCodeCopyButton())
+        course.appendChild(contentDiv);
         const table = document.createElement("table");
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
@@ -247,10 +271,10 @@ const renderShit = lst => {
         // course.appendChild(document.createElement("br"));
         document.getElementById("info").appendChild(course);
 
-        "table table-bordered table-hover table-sm table-dark"
-            .split(' ').forEach(cls => {
-                table.classList.add(cls);
-            });
+        "table table-bordered table-sm table-dark"
+        .split(' ').forEach(cls => {
+            table.classList.add(cls);
+        });
         const tbody = document.createElement("tbody");
         const tbody2 = document.createElement("tbody");
         const collapseCurrent = obj => {
@@ -313,6 +337,7 @@ const renderShit = lst => {
         });
 
         const currentRow = document.createElement("tr");
+        addClass(currentRow, "toggle-button");
         currentRow.dataset['state'] = GREY;
         currentRow.dataset['collapsed'] = TRUE;
         currentRow.classList.add("GREY");
@@ -343,13 +368,13 @@ const renderShit = lst => {
 
 const pageload = () => {
     fetch("/ffcsfinalpagedata/", {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "X-CSRFToken": CSRFTOKEN,
-        },
-    })
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        })
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);

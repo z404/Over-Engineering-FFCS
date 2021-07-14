@@ -39,7 +39,7 @@ const fallbackCopyTextToClipboard = (text) => {
 
 const nameCopyButton = () => {
     const element = document.createElement("button");
-    "name-copy-button btn btn-info"
+    "button name-copy-btn"
     .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
@@ -52,7 +52,7 @@ const nameCopyButton = () => {
 
 const courseCodeCopyButton = () => {
     const btn = document.createElement("button");
-    "course-code-copy-btn btn btn-info"
+    "button course-code-copy-btn"
     .split(' ').forEach(cls => btn.classList.add(cls));
     btn.innerHTML = "For searching Course Code";
     btn.addEventListener("click", () => {
@@ -271,7 +271,7 @@ const renderShit = lst => {
         // course.appendChild(document.createElement("br"));
         document.getElementById("info").appendChild(course);
 
-        "table table-bordered table-sm table-dark"
+        "table table-bordered table-hover table-sm table-dark"
         .split(' ').forEach(cls => {
             table.classList.add(cls);
         });

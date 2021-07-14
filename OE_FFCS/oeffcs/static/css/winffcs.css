@@ -5,14 +5,26 @@ table {
     width: 80%;
 }
 
+.button {
+    background-color: #0275d8; /* Green */
+    border: none;
+    color: white;
+    padding: 7px 11px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
 .course-code-copy-btn {
     float: right;
     margin-right: 7px;
     margin-bottom: 10px;
 }
 
-.course-code-copy-btn:hover {
-    cursor: default !important;
+.name-copy-btn {
+    padding: 5px 10px;
 }
 
 .green {

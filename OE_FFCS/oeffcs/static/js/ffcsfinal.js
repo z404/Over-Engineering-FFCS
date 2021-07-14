@@ -40,7 +40,7 @@ const fallbackCopyTextToClipboard = (text) => {
 const nameCopyButton = () => {
     const element = document.createElement("button");
     "button name-copy-btn"
-    .split(' ').forEach(cls => element.classList.add(cls));
+        .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
         const e = element.parentElement.parentElement.children[0];
@@ -53,11 +53,12 @@ const nameCopyButton = () => {
 const courseCodeCopyButton = () => {
     const btn = document.createElement("button");
     "button course-code-copy-btn"
-    .split(' ').forEach(cls => btn.classList.add(cls));
+        .split(' ').forEach(cls => btn.classList.add(cls));
     btn.innerHTML = "For searching Course Code";
     btn.addEventListener("click", () => {
-        const coursecode = btn.parentElement.innerText;
-        fallbackCopyTextToClipboard(coursecode.slice(-32, -25));
+        const arr = btn.parentElement.children[0].children[0].innerText.split(' ');
+        const coursecode = arr[arr.length -1];
+        fallbackCopyTextToClipboard(coursecode);
     });
     return btn;
 };
@@ -186,7 +187,7 @@ const rowUpdate = e => {
                     // console.log(SLOT_CONFLICT_DATA[slot]);
                     try {
                         Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = TRUE)
-                    } catch {}
+                    } catch { }
 
                 });
                 console.log(temp_booked_slots)
@@ -205,7 +206,7 @@ const rowUpdate = e => {
             temp_booked_slots[slot] = FALSE;
             try {
                 Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = FALSE)
-            } catch {}
+            } catch { }
         });
         localStorage.setItem("booked", JSON.stringify(temp_booked_slots))
         for (row of PARENT.children) {
@@ -272,9 +273,9 @@ const renderShit = lst => {
         document.getElementById("info").appendChild(course);
 
         "table table-bordered table-hover table-sm table-dark"
-        .split(' ').forEach(cls => {
-            table.classList.add(cls);
-        });
+            .split(' ').forEach(cls => {
+                table.classList.add(cls);
+            });
         const tbody = document.createElement("tbody");
         const tbody2 = document.createElement("tbody");
         const collapseCurrent = obj => {
@@ -368,13 +369,13 @@ const renderShit = lst => {
 
 const pageload = () => {
     fetch("/ffcsfinalpagedata/", {
-            method: "POST",
-            body: JSON.stringify({}),
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "X-CSRFToken": CSRFTOKEN,
-            },
-        })
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "X-CSRFToken": CSRFTOKEN,
+        },
+    })
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);

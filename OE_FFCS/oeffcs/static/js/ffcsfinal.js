@@ -352,8 +352,11 @@ const renderShit = lst => {
                 event.target.parentElement.dataset['collapsed'] = TRUE;
             }
         });
-        for (let index = 0; index < 5; index++) {
-            currentRow.appendChild(createDataElement("td", ""));
+        for (let index = 0; index < 1; index++) {
+            const blankTD = createDataElement("td", "Click to expand");
+            blankTD.setAttribute("colspan", "5");
+            addClass(blankTD, "center");
+            currentRow.appendChild(blankTD);
         }
         tbody.appendChild(currentRow);
         tbody.dataset['expanded'] = FALSE;

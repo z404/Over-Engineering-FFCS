@@ -1,5 +1,3 @@
-const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
 const scoreChange = () => {
     const newScore = Number(event.currentTarget.id.slice(-1))
     fetch("/scorechange/", {

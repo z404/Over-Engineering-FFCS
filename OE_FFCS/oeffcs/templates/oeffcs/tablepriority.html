@@ -1,5 +1,4 @@
 {% extends 'base.html' %} {% load static %} {% block head %}
-<form method="post">{% csrf_token %}</form>
 <link rel="stylesheet" href="{% static 'css/tablepriority.css' %}">
 <link rel="stylesheet" href="{% static 'css/tablepriority2.css' %}">
 <script src="{% static 'js/timetablepriority.js' %}"></script>
@@ -82,15 +81,4 @@ you can move to the next page
     </div>
 
 </div>
-<script>
-    fetch("/timetableboilerplate/", {
-            method: "POST",
-            body: "",
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "X-CSRFToken": csrftoken,
-            }
-        }).then(res => res.json())
-        .then(result => localStorage.setItem("timetable", result["timetable"]));
-</script>
 {% endblock content %} {% block title %}Choose your tables!{% endblock title %}

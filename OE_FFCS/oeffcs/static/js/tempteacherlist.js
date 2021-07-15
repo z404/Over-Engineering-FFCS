@@ -9,8 +9,6 @@
 //     }
 //     console.log(arr2d);
 // })
-const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
 const Save = () => {
     let updatedData = [];
     const allTables = document.querySelector('.thunder').children;

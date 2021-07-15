@@ -107,6 +107,7 @@ $(document).ready(() => {
                 $("#pre-check-info").hide("");
             }
             else {
+                localStorage.setItem("allstoredtimetables",null);
                 $("form.ajax").submit();
             }
         }

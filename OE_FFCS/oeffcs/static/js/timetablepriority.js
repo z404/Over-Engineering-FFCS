@@ -72,43 +72,59 @@ const timetableChange = () => {
         }
     }
 
-    fetch("/rendertimetable/", {
-            method: "POST",
-            body: JSON.stringify({ "index": index }),
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "X-CSRFToken": csrftoken,
-            }
-        }).then(res => res.json())
-        .then(json => {
-            let ind = document.getElementById("timetable-index");
-            ind.innerText = json["index"] + 1;
-            let tmtbl = document.getElementById("render_table_span");
-            tmtbl.innerHTML = render_timetable(json["render_timetable"]);
-            let inftbl = document.getElementById("info_table_span");
-            inftbl.innerHTML = json["information_table"];
-            let nickname = document.getElementById("nickname-" + (json["index"]));
-            document.getElementById("nickname-box").value = (nickname.childNodes[0].nodeValue);
-            let nicktextbox = document.getElementById("nickname-box");
-            nicktextbox.value = json["nickname_render"]
-            if (ind.innerText == 1) {
-                document.getElementById("prev-timetable").disabled = true;
-            } else {
-                document.getElementById("prev-timetable").disabled = false;
-            }
-            if (ind.innerText == total) {
-                document.getElementById("next-timetable").disabled = true;
-            } else {
-                document.getElementById("next-timetable").disabled = false;
-            }
-            var height = $('#boxifycontent').height();
-            document.getElementById("timetablelist").style.maxHeight = height + "px";
-            document.getElementsByClassName("current")[0].classList.remove("current");
-            document.getElementById("nickname-" + String(json["index"])).classList.add("current");
-            var height = $('#boxifycontent').height();
-            var otherheight = $('#index-button').height();
-            document.getElementById("timetablelist").style.maxHeight = (height - otherheight - 12) + "px";
-        });
+    const updateTimetable = json => {
+        let ind = document.getElementById("timetable-index");
+        ind.innerText = json["index"] + 1;
+        let tmtbl = document.getElementById("render_table_span");
+        tmtbl.innerHTML = render_timetable(json["render_timetable"]);
+        let inftbl = document.getElementById("info_table_span");
+        inftbl.innerHTML = json["information_table"];
+        let nickname = document.getElementById("nickname-" + (json["index"]));
+        document.getElementById("nickname-box").value = (nickname.childNodes[0].nodeValue);
+        let nicktextbox = document.getElementById("nickname-box");
+        nicktextbox.value = json["nickname_render"]
+        if (ind.innerText == 1) {
+            document.getElementById("prev-timetable").disabled = true;
+        } else {
+            document.getElementById("prev-timetable").disabled = false;
+        }
+        if (ind.innerText == total) {
+            document.getElementById("next-timetable").disabled = true;
+        } else {
+            document.getElementById("next-timetable").disabled = false;
+        }
+        var height = $('#boxifycontent').height();
+        document.getElementById("timetablelist").style.maxHeight = height + "px";
+        document.getElementsByClassName("current")[0].classList.remove("current");
+        document.getElementById("nickname-" + String(json["index"])).classList.add("current");
+        var height = $('#boxifycontent').height();
+        var otherheight = $('#index-button').height();
+        document.getElementById("timetablelist").style.maxHeight = (height - otherheight - 12) + "px";
+    }
+    try {
+        const json = JSON.parse(localStorage.getItem("allstoredtimetables"))[index];
+        updateTimetable(json);
+    }
+    catch {
+        fetch("/rendertimetable/", {
+                method: "POST",
+                body: JSON.stringify({ "index": index }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    "X-CSRFToken": csrftoken,
+                }
+            }).then(res => res.json())
+            .then(json => {
+                updateTimetable(json);
+                let tempHolder = JSON.parse(localStorage.getItem("allstoredtimetables"));
+                if(tempHolder == null)
+                {
+                    tempHolder = {};
+                }
+                tempHolder[index] = json;
+                localStorage.setItem("allstoredtimetables",JSON.stringify(tempHolder));
+            });
+    }
 }
 
 $(document).ready(() => {
@@ -137,6 +153,9 @@ const nicknameChange = () => {
             ele.innerText = '#' + document.getElementById("timetable-index").innerText + ': ' + newnick;
             let ele2 = document.getElementById("nicknamneontop");
             ele2.innerText = newnick;
+            let tempHolder = JSON.parse(localStorage.getItem("allstoredtimetables"));
+            tempHolder[index]["nickname_render"] = newnick;
+            localStorage.setItem("allstoredtimetables",JSON.stringify(tempHolder));
         });
 }
 const indexSort = (e1, e2) => {

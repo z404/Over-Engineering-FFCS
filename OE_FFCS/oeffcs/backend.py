@@ -10,6 +10,37 @@ from .models import Profile, Timetable, Entry
 from collections import Counter
 import time
 from discord_logger import DiscordLogger
+from discord_logger import DiscordLogger
+from ipware import get_client_ip
+
+options_info = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "info",
+}
+options_success = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "success",
+}
+options_error = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "error",
+}
+
+lowlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_info)
+highlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_info)
+lowlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_success)
+highlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_success)
+lowlevellog_error = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_error)
+highlevellog_error = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_error)
 
 options = {
     "application_name": "OEFFCS LOGGER",
@@ -311,7 +342,7 @@ def generate_time_tables(user_object):
     people_status[str(user_object.username)]={}
     people_status[str(user_object.username)]['valid_timetables'] = 0
     people_status[str(user_object.username)]['valid_status'] = False
-    print(people_status)
+    # print(people_status)
     saved_teachers = eval(user_object.profile.saveteachers)
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
@@ -363,7 +394,9 @@ def generate_time_tables(user_object):
         merged_combo.append([key+' '+value for key,value in subjectlst.items()])
 
     all_combinations = product(*merged_combo)
-    print("Combinations found!")
+    # print("Combinations found!")
+    lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated combinations! Calculating number of valid timetables")
+    lowlevellog_info.send()
     ## Calculating total number of combos
     total = 1
     for i in merged_combo:
@@ -385,7 +418,9 @@ def generate_time_tables(user_object):
             people_status[str(user_object.username)]['valid_timetables'] += 1
         people_status[str(user_object.username)]['completed_timetables'] += 1
     people_status[str(user_object.username)]['valid_status'] = True
-    print(count, "Combinations valid!")
+    lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated "+str(count)+" valid timetables!")
+    lowlevellog_info.send()
+    # print(count, "Combinations valid!")
     form = ChangeStatusForm(
         {'status_value': 2}, instance=user_object.profile)
     if form.is_valid():

@@ -9,6 +9,19 @@ from .forms import ChangeStatusForm, ChangeFiltersForm, ChangeTimetableNumber
 from .models import Profile, Timetable, Entry
 from collections import Counter
 import time
+from discord_logger import DiscordLogger
+
+options = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "info",
+}
+
+logger = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options)
+logger.construct(title="Log", description="Service restarted!")
+response = logger.send()
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -298,6 +311,7 @@ def generate_time_tables(user_object):
     people_status[str(user_object.username)]={}
     people_status[str(user_object.username)]['valid_timetables'] = 0
     people_status[str(user_object.username)]['valid_status'] = False
+    print(people_status)
     saved_teachers = eval(user_object.profile.saveteachers)
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
@@ -806,12 +820,14 @@ def apicall_changenick_by_id(user_object, table_index, new_nick):
     timetable = selected_timetables[table_index]
     timetable.nickname = new_nick
     timetable.save(update_fields = ['nickname'])
+    return timetable.ttid
 
 def apicall_changepriority_by_id(user_object, table_index, new_priority):
     selected_timetables = getselectedtt(user_object)
     timetable = selected_timetables[table_index]
     timetable.priority = new_priority
     timetable.save(update_fields = ['priority'])
+    return timetable.ttid
     
 # render next timetable
 def apicall_render_next(user_object, index_number, first="second"):

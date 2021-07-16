@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, request
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, request, response
 from .forms import UploadFileForm, ChangeStatusForm, ChangeTeachersForm, ChangeOrderOfTeacher, ChangeStatusOfShare, ChangeCourseType
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.views import LoginView, LogoutView
@@ -14,7 +14,31 @@ import json
 import threading
 import os
 import time
+from discord_logger import DiscordLogger
+from ipware import get_client_ip
 
+options_info = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "info",
+}
+options_success = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "success",
+}
+
+lowlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_info)
+highlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_info)
+lowlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_success)
+highlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_success)
+
+# logger.construct(title="Log", description="Service restarted!")
+# response = logger.send()
 
 class UserLogin(LoginView):
     template_name = 'oeffcs/loginpage.html'
@@ -46,6 +70,7 @@ def index(request):
 
 @login_required
 def upload_file(request):
+    ip, is_routable = get_client_ip(request)
     if request.method == 'POST':
         # try:
         form = UploadFileForm(request.POST, request.FILES,
@@ -64,6 +89,9 @@ def upload_file(request):
             # print("I'm here")
             form.instance.user = request.user
             form.save()
+        message = request.user.username+' ('+ip+') has uploaded excel sheet '+str(request.user.profile.data_file)
+        highlevellog_success.construct(title="Progress Log", description=message)
+        response = highlevellog_success.send()
         return HttpResponseRedirect('/')
         # except User.profile.RelatedObjectDoesNotExist:
         #     form = UploadFileForm(request.POST, request.FILES)
@@ -73,6 +101,9 @@ def upload_file(request):
         #         form.save()
         #         return HttpResponseRedirect('/oeffcs')
     else:
+        message = request.user.username+' ('+ip+') has entered Upload File page!'
+        highlevellog_info.construct(title="Page View Log", description=message)
+        response = highlevellog_info.send()
         form = UploadFileForm()
     return render(request, 'oeffcs/uploadexcel.html', {'form': form})
 
@@ -80,6 +111,7 @@ def upload_file(request):
 @login_required
 def pickteachers(request):
     # teacherdata = str(request.user.profile.data_file)
+    ip, is_routable = get_client_ip(request)
     ret = convertToForm(request.user)
     if request.method == 'POST':
         postdata = dict(request.POST)
@@ -130,23 +162,43 @@ def pickteachers(request):
                 form.save()
             threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
             threadsplit.start()
+            message = request.user.username+' ('+ip+')'+' has chosen teachers! \nTeachers chosen = '+json.dumps(postdata_cleaned, indent=3)
+            highlevellog_success.construct(title="Progress Log", description=message)
+            highlevellog_success.send()
             return HttpResponseRedirect('/timetablesgenerating/')
+    
+    message = request.user.username+' ('+ip+')'+' has entered the Pick Teachers page!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     return render(request, 'oeffcs/pickteachers.html', {'teacherdata': ret, 'errordisplay': ''})
 
 
 @login_required
 def pickfilters(request):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Pick Filters page!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     teacherdata = json.loads(request.user.profile.saveteachers)
     return render(request, 'oeffcs/pickfilters.html', {'display': teacherdata})
 
 @login_required
 def pre_check(request):
+    ip, is_routable = get_client_ip(request)
     data=dict(eval(request.body))
     return_data = query_database(data, request.user)
+    message = request.user.username+' ('+ip+')'+' made a pre-check call for '+str(len(return_data))+' timetables with \
+        filters: \n'+json.dumps(data, indent=3)
+    highlevellog_success.construct(title="Progress Log", description=message)
+    highlevellog_success.send()
     return JsonResponse(data={"ret":len(return_data)})
 
 @login_required
 def viewdata(request):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Dashboard!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     try:
         ret = show_selected_data(request.user.profile)
     except User.profile.RelatedObjectDoesNotExist:
@@ -167,13 +219,21 @@ def viewdata(request):
 
 @login_required
 def save_filters(request):
+    ip, is_routable = get_client_ip(request)
     filters = dict(request.POST)
     del filters['csrfmiddlewaretoken']
     savefilters(filters, request.user)
+    message = request.user.username+' ('+ip+')'+' saved filters: \n'+json.dumps(filters, indent=3)
+    highlevellog_success.construct(title="Progress Log", description=message)
+    highlevellog_success.send()
     return HttpResponseRedirect('/')
 
 @login_required
 def tablepriority(request):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Table Priority Page!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     # ret = apicall_getselectedtt(request.user)
     ret = apicall_render_next(request.user, 0, 'first')
     return render(request, 'oeffcs/TablePriority.html', ret)
@@ -187,17 +247,29 @@ def api_render_tt(request):
 @login_required
 def api_score_change(request):
     post_data = dict(eval(request.body))
-    apicall_changepriority_by_id(request.user, post_data['index'], post_data['score'])
+    ttid = apicall_changepriority_by_id(request.user, post_data['index'], post_data['score'])
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has changed priority of table '+ttid+' to '+str(post_data['score'])+'!'
+    highlevellog_success.construct(title="Progress Log", description=message)
+    highlevellog_success.send()
     return JsonResponse({})
 
 @login_required
 def api_nickname_change(request):
     post_data = dict(eval(request.body))
-    apicall_changenick_by_id(request.user, post_data['index'], post_data['nick'])
+    ttid = apicall_changenick_by_id(request.user, post_data['index'], post_data['nick'])
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has changed nickname of table '+ttid+' to '+post_data['nick']+'!'
+    highlevellog_success.construct(title="Progress Log", description=message)
+    highlevellog_success.send()
     return JsonResponse({})
 
 @login_required
 def genteachlist(request):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Generate Teacher List page'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     ret = backend_genteachlist(request.user)
     return render(request, 'oeffcs/GenTeachList.html', ret)
 
@@ -208,6 +280,10 @@ def api_timetable_boilerplate(request):
 
 @login_required
 def show_timetable_details(request, ttid):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Subject Priority (Temporary Teacher list) page of ttid '+ttid+'!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     userobject = Timetable.objects.filter(ttid = ttid)[0].level.user
     ret = display_teacher_list_temp(userobject, ttid)
     if userobject.username != request.user.username:
@@ -227,6 +303,10 @@ def api_loadingscreen(request):
 @login_required
 def timetable_gen_loading(request):
     time.sleep(0.5)
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Loading Screen with stats '+json.dumps(people_status[str(request.user.username)])+'!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])
 
 @login_required
@@ -234,6 +314,10 @@ def api_save_preference(request):
     post_data = dict(eval(request.body))
     ttid = post_data['ttid'].strip()
     post_data['ttid'] = ttid
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has saved ttid '+ttid+' for thier Win FFCS Page!'
+    highlevellog_success.construct(title="Progress Log", description=message)
+    highlevellog_success.send()
     # print(post_data)
     creator = Timetable.objects.filter(ttid = ttid)[0].level.user
     if creator.username == request.user.username:
@@ -260,6 +344,10 @@ def api_save_preference(request):
 
 @login_required
 def ffcs(request):
+    ip, is_routable = get_client_ip(request)
+    message = request.user.username+' ('+ip+')'+' has entered the Win FFCS page!'
+    highlevellog_info.construct(title="Page View Log", description=message)
+    highlevellog_info.send()
     return render(request, "oeffcs/FFCSFinal.html")
 
 def api_win_ffcs(request):

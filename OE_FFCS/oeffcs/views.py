@@ -447,24 +447,30 @@ def api_win_ffcs(request):
 
 @login_required
 def api_lowlevel_info(request):
+    ip, is_routable = get_client_ip(request)
     data = dict(eval(request.body))
-    message = data['message']
+    message = request.user.username+' ('+ip+')'+data['message']
     title = data['title']
     lowlevellog_info.construct(title=title, description=message)
     lowlevellog_info.send()
+    return JsonResponse({})
 
 @login_required
 def api_lowlevel_success(request):
+    ip, is_routable = get_client_ip(request)
     data = dict(eval(request.body))
-    message = data['message']
+    message = request.user.username+' ('+ip+')'+data['message']
     title = data['title']
     lowlevellog_success.construct(title=title, description=message)
     lowlevellog_success.send()
+    return JsonResponse({})
 
 @login_required
 def api_lowlevel_error(request):
+    ip, is_routable = get_client_ip(request)
     data = dict(eval(request.body))
-    message = data['message']
+    message = request.user.username+' ('+ip+')'+data['message']
     title = data['title']
     lowlevellog_error.construct(title=title, description=message)
     lowlevellog_error.send()
+    return JsonResponse({})

@@ -39,14 +39,30 @@ const fallbackCopyTextToClipboard = (text) => {
 
 const nameCopyButton = () => {
     const element = document.createElement("button");
+    let copiedText = "";
+    let subjectText = "";
     "button name-copy-btn"
         .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
         const e = element.parentElement.parentElement.children[0];
         fallbackCopyTextToClipboard(e.innerText)
+        copiedText = e.innerText;
+        subjectText = e.parentElement.parentElement.parentElement.parentElement.parentElement.children[1].children[0].innerText;
         event.stopImmediatePropagation();
+        fetch("/lowlevellog_success/",{
+            method: "POST",
+            body: JSON.stringify({
+                "message": ` just copied ${copiedText} for ${subjectText}`,
+                "title": "Win FFCS Log"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        });
     });
+
     return element;
 };
 
@@ -59,6 +75,17 @@ const courseCodeCopyButton = () => {
         const arr = btn.parentElement.children[0].children[0].innerText.split(' ');
         const coursecode = arr[arr.length -1];
         fallbackCopyTextToClipboard(coursecode);
+        fetch("/lowlevellog_info/",{
+            method: "POST",
+            body: JSON.stringify({
+                "message": ` copied ${coursecode}`,
+                "title": "Win FFCS Log"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        });
     });
     return btn;
 };
@@ -162,7 +189,7 @@ const updateTimetable = () => {
 const rowUpdate = e => {
     const OLD_STATE = e.currentTarget.dataset['state'];
     const SELECTED = e.currentTarget.dataset['selected'];
-    const COURSE_CODE = e.currentTarget.children[0].innerText;
+    const TEACHER_NAME = e.currentTarget.children[0].innerText;
     const ERPID = e.currentTarget.children[1].innerText;
     const SLOT = e.currentTarget.children[2].innerText;
     const SUBJECT = e.currentTarget.children[3].innerText;
@@ -195,6 +222,17 @@ const rowUpdate = e => {
                 updateComputedInfo();
             }
         }
+        fetch("/lowlevellog_info/",{
+            method: "POST",
+            body: JSON.stringify({
+                "message": `Just selected ${TEACHER_NAME} for ${SUBJECT}`,
+                "title": "Win FFCS Log"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        });
     } else {
         e.currentTarget.classList.remove("green")
         e.currentTarget.dataset['selected'] = FALSE;
@@ -216,6 +254,17 @@ const rowUpdate = e => {
                 row.style.visibility = "collapse";
             }
         }
+        fetch("/lowlevellog_error/",{
+            method: "POST",
+            body: JSON.stringify({
+                "message": `Just unselected ${TEACHER_NAME} for ${SUBJECT}`,
+                "title": "Win FFCS Log"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        });
         updateComputedInfo();
     }
     updateTimetable();

@@ -12,6 +12,7 @@ import time
 from discord_logger import DiscordLogger
 from discord_logger import DiscordLogger
 from ipware import get_client_ip
+from django.db import transaction, DatabaseError, IntegrityError
 
 options_info = {
     "application_name": "OEFFCS LOGGER",
@@ -410,13 +411,14 @@ def generate_time_tables(user_object):
         form.save()
     Timetable.objects.filter(level=user_object.profile).delete()
     count = 0
-    for i in all_combinations:
-        validate_result = validate_timetable(i)
-        if validate_result[0]:
-            count+=1
-            save_timetable_indivisual([i,validate_result], user_object, count)
-            people_status[str(user_object.username)]['valid_timetables'] += 1
-        people_status[str(user_object.username)]['completed_timetables'] += 1
+    with transaction.atomic():
+        for i in all_combinations:
+            validate_result = validate_timetable(i)
+            if validate_result[0]:
+                count+=1
+                save_timetable_indivisual([i,validate_result], user_object, count)
+                people_status[str(user_object.username)]['valid_timetables'] += 1
+            people_status[str(user_object.username)]['completed_timetables'] += 1
     people_status[str(user_object.username)]['valid_status'] = True
     lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated "+str(count)+" valid timetables!")
     lowlevellog_info.send()

@@ -31,11 +31,19 @@ options_success = {
     "display_hostname": False,
     "default_level": "success",
 }
+options_error = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "error",
+}
 
 lowlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_info)
 highlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_info)
 lowlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_success)
 highlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_success)
+highlevellog_error = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_error)
 
 # logger.construct(title="Log", description="Service restarted!")
 # response = logger.send()
@@ -281,7 +289,7 @@ def api_timetable_boilerplate(request):
 @login_required
 def show_timetable_details(request, ttid):
     ip, is_routable = get_client_ip(request)
-    message = request.user.username+' ('+ip+')'+' has entered the Subject Priority (Temporary Teacher list) page of ttid '+ttid+'!'
+    message = request.user.username+' ('+ip+')'+'has entered the Subject Priority (Temporary Teacher list) page of ttid '+ttid+'!'
     highlevellog_info.construct(title="Page View Log", description=message)
     highlevellog_info.send()
     userobject = Timetable.objects.filter(ttid = ttid)[0].level.user
@@ -297,17 +305,33 @@ def api_modal_data(request):
 
 @login_required
 def api_loadingscreen(request):
-    return JsonResponse(people_status[str(request.user.username)])
+    try:
+        return JsonResponse(people_status[str(request.user.username)])
     #total, completed, valid
+    except KeyError:
+        threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
+        threadsplit.start()
+        return JsonResponse(people_status[str(request.user.username)])
 
 @login_required
 def timetable_gen_loading(request):
     time.sleep(0.5)
     ip, is_routable = get_client_ip(request)
-    message = request.user.username+' ('+ip+')'+' has entered the Loading Screen with stats '+json.dumps(people_status[str(request.user.username)])+'!'
-    highlevellog_info.construct(title="Page View Log", description=message)
-    highlevellog_info.send()
-    return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])
+    try:
+        message = request.user.username+' ('+ip+')'+' has entered the Loading Screen with stats '+json.dumps(people_status[str(request.user.username)],indent=3)+'!'
+        highlevellog_info.construct(title="Page View Log", description=message)
+        highlevellog_info.send()
+        return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])
+    except KeyError:
+        threadsplit = threading.Thread(target = generate_time_tables, args = (request.user,))
+        threadsplit.start()
+        time.sleep(0.5)
+        message = request.user.username+' ('+ip+')'+' has entered the Loading Screen with an error, Now reloading. \nStats: '+json.dumps(people_status[str(request.user.username)],indent=3)+'!'
+        highlevellog_error.construct(title="Page View Log", description=message)
+        highlevellog_error.send()
+        return render(request,'oeffcs/TimetableGenLoading.html',people_status[str(request.user.username)])
+
+
 
 @login_required
 def api_save_preference(request):
@@ -350,5 +374,6 @@ def ffcs(request):
     highlevellog_info.send()
     return render(request, "oeffcs/FFCSFinal.html")
 
+@login_required
 def api_win_ffcs(request):
     return JsonResponse({"info":apicall_finalpage(request.user)})

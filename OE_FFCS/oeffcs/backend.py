@@ -411,14 +411,13 @@ def generate_time_tables(user_object):
         form.save()
     Timetable.objects.filter(level=user_object.profile).delete()
     count = 0
-    with transaction.atomic():
-        for i in all_combinations:
-            validate_result = validate_timetable(i)
-            if validate_result[0]:
-                count+=1
-                save_timetable_indivisual([i,validate_result], user_object, count)
-                people_status[str(user_object.username)]['valid_timetables'] += 1
-            people_status[str(user_object.username)]['completed_timetables'] += 1
+    for i in all_combinations:
+        validate_result = validate_timetable(i)
+        if validate_result[0]:
+            count+=1
+            save_timetable_indivisual([i,validate_result], user_object, count)
+            people_status[str(user_object.username)]['valid_timetables'] += 1
+        people_status[str(user_object.username)]['completed_timetables'] += 1
     people_status[str(user_object.username)]['valid_status'] = True
     lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated "+str(count)+" valid timetables!")
     lowlevellog_info.send()
@@ -483,14 +482,15 @@ def save_timetable_indivisual(timetable_data, user, count):
             ttid = str(user)+str(count),
             nickname = 'Timetable '+str(count))
     temp_timeable.save()
-    for entry in timetable_data[0]:
-        temp_entry=Entry(
-            level = temp_timeable,
-            slots=entry.split()[0],
-            course_code=entry.split()[1].split(':')[0],
-            class_code=' '.join(entry.split()[1:])
-        )
-        temp_entry.save()
+    with transaction.atomic():
+        for entry in timetable_data[0]:
+            temp_entry=Entry(
+                level = temp_timeable,
+                slots=entry.split()[0],
+                course_code=entry.split()[1].split(':')[0],
+                class_code=' '.join(entry.split()[1:])
+            )
+            temp_entry.save()
 
 def save_timetable(time_tables_data, user):
     # Save to user profile, update status number

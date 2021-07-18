@@ -273,7 +273,8 @@ const rowUpdate = e => {
 const addClass = (obj, classes) => {
     obj.className = '';
     classes.split(' ').forEach(cls => obj.classList.add(cls));
-}
+};
+
 const renderShit = lst => {
     // $.unbind('hover')
     init_state_values = {}

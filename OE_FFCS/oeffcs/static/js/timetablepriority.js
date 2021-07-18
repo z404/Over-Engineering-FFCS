@@ -57,6 +57,17 @@ const render_timetable = tmtbl => {
     return all_text
 };
 
+const createDataElement = (type, data) => {
+    const element = document.createElement(type);
+    element.innerText = data;
+    return element;
+};
+
+const addClass = (obj, classes) => {
+    obj.className = '';
+    classes.split(' ').forEach(cls => obj.classList.add(cls));
+};
+
 const timetableChange = () => {
     let index;
     const total = Number(document.getElementById("timetable-total").innerText);
@@ -73,12 +84,42 @@ const timetableChange = () => {
     }
 
     const updateTimetable = json => {
+        console.log(json);
         let ind = document.getElementById("timetable-index");
         ind.innerText = json["index"] + 1;
         let tmtbl = document.getElementById("render_table_span");
         tmtbl.innerHTML = render_timetable(json["render_timetable"]);
         let inftbl = document.getElementById("info_table_span");
-        inftbl.innerHTML = json["information_table"];
+        inftbl.innerHTML = "";
+        const createInfoTable = (info_dict) => {
+            const createRow = (rowData,idx) => {
+                const newRow = createDataElement("tr","");
+                const subj = createDataElement("td",rowData["cname"]);
+                const courseCode = createDataElement("td",rowData["course_code"]);
+                const erpid = createDataElement("td",rowData["erpid"]);
+                const name = createDataElement("td",rowData["name"]);
+                const slots = createDataElement("td",rowData["slots"]);
+                const idxElement = createDataElement("td",idx);
+                [idxElement,name,courseCode,erpid,slots,subj].forEach(el => newRow.appendChild(el));
+                return newRow;
+            };
+            const info_table = document.createElement("table");
+            const info_tbody = document.createElement("tbody");
+            info_table.appendChild(info_tbody);
+            info_table.setAttribute("id","Teachertable");
+            addClass(info_table,"table table-bordered table-hover table-sm table-dark");
+            const header = createDataElement("tr","");
+            ["##","Employee Name", "Course Code", "ERP", "Slot", "Subject"].forEach(el => header.appendChild(createDataElement("th",el)));
+            info_tbody.appendChild(header);
+            let i=1;
+            for(prop in json["information_dict"])
+            {
+                info_tbody.appendChild(createRow(json["information_dict"][prop],i));
+                i++;
+            }
+            return info_table;
+        };
+        inftbl.appendChild(createInfoTable(json["information_dict"]));
         let nickname = document.getElementById("nickname-" + (json["index"]));
         document.getElementById("nickname-box").value = (nickname.childNodes[0].nodeValue);
         let nicktextbox = document.getElementById("nickname-box");
@@ -149,13 +190,20 @@ const nicknameChange = () => {
             },
         }).then(res => res.json())
         .then(json => {
-            let ele = document.getElementById("displayNickname" + (Number(document.getElementById("timetable-index").innerText) - 1));
+            const index = Number(document.getElementById("timetable-index").innerText) - 1;
+            let ele = document.getElementById("displayNickname" + (index));
             ele.innerText = '#' + document.getElementById("timetable-index").innerText + ': ' + newnick;
             let ele2 = document.getElementById("nicknamneontop");
             ele2.innerText = newnick;
-            let tempHolder = JSON.parse(localStorage.getItem("allstoredtimetables"));
-            tempHolder[index]["nickname_render"] = newnick;
+            const tempHolder = JSON.parse(localStorage.getItem("allstoredtimetables"));
+            try {
+                tempHolder[index]["nickname_render"] = newnick;
+            }
+            catch {
+                tempHolder[index] = {};
+            }
             localStorage.setItem("allstoredtimetables",JSON.stringify(tempHolder));
+
         });
 }
 const indexSort = (e1, e2) => {

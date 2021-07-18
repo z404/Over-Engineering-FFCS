@@ -26,7 +26,7 @@ SECRET_KEY = '+r98869=j_f&+e2_jiff-*yo0ulv&ims^*6y4)dd!-!2y14ro5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -80,6 +80,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 50,  # in seconds
+            # see also
+            # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
+        }
     }
 }
 

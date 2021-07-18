@@ -24,4 +24,7 @@ urlpatterns = [
     path('savepreference/', views.api_save_preference, name='savepreference'),
     path('winffcs/', views.ffcs, name='ffcs'),
     path('ffcsfinalpagedata/', views.api_win_ffcs, name='apiwinffcs'),
+    path('lowlevellog_success/', views.api_lowlevel_success, name='api_lowlevel_success'),
+    path('lowlevellog_info/', views.api_lowlevel_info, name='api_lowlevel_info'),
+    path('lowlevellog_error/', views.api_lowlevel_error, name='api_lowlevel_error'),
 ]

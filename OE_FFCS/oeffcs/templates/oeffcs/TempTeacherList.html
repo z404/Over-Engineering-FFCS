@@ -7,11 +7,12 @@
 <link rel="stylesheet" href="{% static 'css/tempteacherlist.css' %}"> 
 
 {% endblock head %}
+{% block title %}
+Finalize Teachers list
+{% endblock title %}
 {% block content %}
 <form method="post">{% csrf_token %}</form>
-<span id="ttid" hidden>
-    {{ ttid }}
-</span>
+<span id="ttid" data-ttid="{{ ttid }}" hidden></span>
 <h5>Save Teacher Priority</h5>
 Here, you can order the priorities of subjects and thier teachers by dragging and dropping the rows of a table and the tables themselves.
 Save this list if you feel like this is the timetable you want to do your FFCS with

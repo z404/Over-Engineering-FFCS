@@ -1,0 +1,57 @@
+table {
+    padding-top: 100px;
+    border: 1px solid black;
+    table-layout: fixed;
+    width: 80%;
+}
+
+.button {
+    background-color: #5cb85c;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 7px 11px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.course-code-copy-btn {
+    float: right;
+    margin-right: 7px;
+    margin-bottom: 10px;
+}
+
+.name-copy-btn {
+    padding: 5px 10px;
+}
+
+.green {
+    background-color: #0275d8;
+}
+
+.subject-span {
+    font-size: larger;
+    color: #0275d8;
+    padding-right: 8px;
+    font-weight: 700;
+}
+
+.course-type-span {
+    color: red;
+    font-size: large;
+    font-weight: 700;
+}
+
+.toggle-button {
+    text-align: center;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    border: 3px solid green;
+    padding: 10px;
+}

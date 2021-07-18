@@ -5,9 +5,16 @@
 {% endblock head %}
 {% block content %}
 <h5>Choose your filters</h5>
+<p>
+  On this page you can filter out generated timetables if they don't have the characteristics that you want.
+  We encourage you to spend time on this page and reduce your timetables to a reasonable number.
+</p>
   <form method="post" action="{% url 'savefilters' %}"  class="ajax form-group">
     {% csrf_token %}
     <hr>
+    <h6>
+      <b>Lab and theory status</b>
+    </h6>
     <input type="radio" name="pre-post-lunch" id="none" value="none" checked>
     <label for="none">Any of these is fine!</label>
     <br>
@@ -30,6 +37,7 @@
     <label for="post-lab">Only want all <b>lab</b> classes be <b>after</b> lunch</label>
     <br>
     <hr>
+    <b>What type of lazy are you?</b><br>
     <p>Maximum number of:</p>
     <label for="8-classes">8 am 'o' clock classes: </label>
     <input type="number" name="8-classes" id="8-classes" min="0" max="5" value="5">
@@ -41,6 +49,7 @@
     <input type="number" name="6-classes" id="6-classes" min="0" max="5" value="5">
     <br>
     <hr>
+    <b>Slot exclusion</b>
     <div class="form-group">
       <label for="slots" class="form-control-label">Enter the slots you want to eliminate for sure:</label>
       <input type="text" name="slots" id="slots" placeholder="A1, A2, B2, C1, D2 ..." class="form-control">
@@ -52,7 +61,7 @@
     </div>
     <div id="zero-timetables-error" class="paragraph text-danger">Those filters generate 0 timetables!
     </div><br>
-    <input type="submit" id="pre-check" class="btn btn-info" value="Pre check"/>
+    <input type="submit" id="pre-check" class="btn btn-info" value="Check"/>
     <input type="submit" id="save-filters" value="Save these filters" class="btn btn-primary"/>
   </form>
   <script type="text/javascript" src="{% static 'js/pickfilters.js' %}"></script>

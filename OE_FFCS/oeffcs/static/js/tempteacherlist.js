@@ -9,8 +9,6 @@
 //     }
 //     console.log(arr2d);
 // })
-const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
 const Save = () => {
     let updatedData = [];
     const allTables = document.querySelector('.thunder').children;
@@ -26,7 +24,7 @@ const Save = () => {
         method: "POST",
         body: JSON.stringify({
             "data": updatedData,
-            "ttid": document.getElementById("ttid").innerText,
+            "ttid": document.getElementById("ttid").dataset['ttid'],
         }),
         headers: {
             "Content-type": "application/json; charset=UTF-8",

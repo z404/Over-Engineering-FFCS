@@ -16,10 +16,12 @@ const firstCall = async () => {
         ...result,
         ...(await res.json())
     }
+    const progress = document.getElementById("progress-done");
     let percentage = Number(result['completed_timetables'])/Number(result['total_timetables'])*100;
     percentage = percentage.toPrecision(3);
     progress.style.width = percentage + '%';
     progress.style.opacity = 1;
+    document.getElementById("info").innerText = `Working with ${result['total_timetables']} timetables here, so we appreciate your cooperation :)`
     document.getElementById("progress-done").innerText= String(percentage) +"%";
     document.getElementById("valid-timetables").innerText= String(result['valid_timetables']) + " valid found!";
 };

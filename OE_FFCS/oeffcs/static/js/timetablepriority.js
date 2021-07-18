@@ -124,6 +124,8 @@ const timetableChange = () => {
         document.getElementById("nickname-box").value = (nickname.childNodes[0].nodeValue);
         let nicktextbox = document.getElementById("nickname-box");
         nicktextbox.value = json["nickname_render"]
+        let nicknameontoptitle = document.getElementById("nicknameontop");
+        nicknameontoptitle.innerText = json["nickname_render"];
         if (ind.innerText == 1) {
             document.getElementById("prev-timetable").disabled = true;
         } else {
@@ -172,7 +174,7 @@ $(document).ready(() => {
     var height = $('#boxifycontent').height();
     var otherheight = $('#index-button').height();
     document.getElementById("timetablelist").style.maxHeight = (height - otherheight - 12) + "px";
-    height = $('#nicknamneontop').height();
+    height = $('#nicknameontop').height();
     document.getElementById("height_helper").style.paddingTop = height + "px";
 });
 
@@ -193,7 +195,7 @@ const nicknameChange = () => {
             const index = Number(document.getElementById("timetable-index").innerText) - 1;
             let ele = document.getElementById("displayNickname" + (index));
             ele.innerText = '#' + document.getElementById("timetable-index").innerText + ': ' + newnick;
-            let ele2 = document.getElementById("nicknamneontop");
+            let ele2 = document.getElementById("nicknameontop");
             ele2.innerText = newnick;
             const tempHolder = JSON.parse(localStorage.getItem("allstoredtimetables"));
             try {

@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="{% static 'css/tempteacherlist.css' %}"> 
 
 {% endblock head %}
+{% block title %}
+Finalize Teachers list
+{% endblock title %}
 {% block content %}
 <form method="post">{% csrf_token %}</form>
 <span id="ttid" data-ttid="{{ ttid }}" hidden></span>

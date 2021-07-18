@@ -8,6 +8,9 @@
 Final timetables
 {% endblock title %}
 {% block content %}
+<h5>Generation of teachers list</h5>
+Go through every timetable here, and make sure you find one you like. Then click on "Show List" to generate the list of teachers present in that timetable
+<br><br>
 <form method="post">{% csrf_token %}</form>
 <script>
     const showTimetable = () => {

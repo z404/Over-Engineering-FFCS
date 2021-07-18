@@ -9,6 +9,51 @@ from .forms import ChangeStatusForm, ChangeFiltersForm, ChangeTimetableNumber
 from .models import Profile, Timetable, Entry
 from collections import Counter
 import time
+from discord_logger import DiscordLogger
+from discord_logger import DiscordLogger
+from ipware import get_client_ip
+from django.db import transaction, DatabaseError, IntegrityError
+
+options_info = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "info",
+}
+options_success = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "success",
+}
+options_error = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "error",
+}
+
+lowlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_info)
+highlevellog_info = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_info)
+lowlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_success)
+highlevellog_success = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_success)
+lowlevellog_error = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options_error)
+highlevellog_error = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865266449731420241/enyFO8HDsx3gQwvXYcrUZ2WilDkSKm3EnfjmEpknR4yFOtyYAnqK1fczycvzPPN2ihgj", **options_error)
+
+options = {
+    "application_name": "OEFFCS LOGGER",
+    "service_name": "Backend logger",
+    "service_icon_url": "https://cdn.discordapp.com/attachments/853138859772215299/865220535964925952/unknown.png",
+    "display_hostname": False,
+    "default_level": "info",
+}
+
+logger = DiscordLogger(webhook_url="https://discord.com/api/webhooks/865251088046489630/OQlPSvuqHFdTepq37bm0q4cffe8HrA3CzjlqH-0NZDuCZnmztyTYtYdD9DzVFqGatTNx", **options)
+logger.construct(title="Log", description="Service restarted!")
+response = logger.send()
 
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
@@ -298,6 +343,7 @@ def generate_time_tables(user_object):
     people_status[str(user_object.username)]={}
     people_status[str(user_object.username)]['valid_timetables'] = 0
     people_status[str(user_object.username)]['valid_status'] = False
+    # print(people_status)
     saved_teachers = eval(user_object.profile.saveteachers)
     teacher_db = user_object.profile.data_file
     dataframe = convert_file_to_df(str(teacher_db))
@@ -349,7 +395,9 @@ def generate_time_tables(user_object):
         merged_combo.append([key+' '+value for key,value in subjectlst.items()])
 
     all_combinations = product(*merged_combo)
-    print("Combinations found!")
+    # print("Combinations found!")
+    lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated combinations! Calculating number of valid timetables")
+    lowlevellog_info.send()
     ## Calculating total number of combos
     total = 1
     for i in merged_combo:
@@ -371,7 +419,9 @@ def generate_time_tables(user_object):
             people_status[str(user_object.username)]['valid_timetables'] += 1
         people_status[str(user_object.username)]['completed_timetables'] += 1
     people_status[str(user_object.username)]['valid_status'] = True
-    print(count, "Combinations valid!")
+    lowlevellog_info.construct(title="Process Log", description=user_object.username+" generated "+str(count)+" valid timetables!")
+    lowlevellog_info.send()
+    # print(count, "Combinations valid!")
     form = ChangeStatusForm(
         {'status_value': 2}, instance=user_object.profile)
     if form.is_valid():
@@ -432,14 +482,15 @@ def save_timetable_indivisual(timetable_data, user, count):
             ttid = str(user)+str(count),
             nickname = 'Timetable '+str(count))
     temp_timeable.save()
-    for entry in timetable_data[0]:
-        temp_entry=Entry(
-            level = temp_timeable,
-            slots=entry.split()[0],
-            course_code=entry.split()[1].split(':')[0],
-            class_code=' '.join(entry.split()[1:])
-        )
-        temp_entry.save()
+    with transaction.atomic():
+        for entry in timetable_data[0]:
+            temp_entry=Entry(
+                level = temp_timeable,
+                slots=entry.split()[0],
+                course_code=entry.split()[1].split(':')[0],
+                class_code=' '.join(entry.split()[1:])
+            )
+            temp_entry.save()
 
 def save_timetable(time_tables_data, user):
     # Save to user profile, update status number
@@ -797,6 +848,7 @@ def get_timetable_data_by_id(user_object, table_id, first = 'first'):
             returndata['render_timetable'] = timetable_to_html_str(timetable_lst)
         else:
             returndata['render_timetable'] = timetable_lst
+            del returndata['information_table']
         returndata['nickname'] = timetable[0].nickname
         return returndata
         # return timetable[0].ttid
@@ -806,12 +858,14 @@ def apicall_changenick_by_id(user_object, table_index, new_nick):
     timetable = selected_timetables[table_index]
     timetable.nickname = new_nick
     timetable.save(update_fields = ['nickname'])
+    return timetable.ttid
 
 def apicall_changepriority_by_id(user_object, table_index, new_priority):
     selected_timetables = getselectedtt(user_object)
     timetable = selected_timetables[table_index]
     timetable.priority = new_priority
     timetable.save(update_fields = ['priority'])
+    return timetable.ttid
     
 # render next timetable
 def apicall_render_next(user_object, index_number, first="second"):

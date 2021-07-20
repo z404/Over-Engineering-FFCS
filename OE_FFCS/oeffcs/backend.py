@@ -58,9 +58,9 @@ response = logger.send()
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
 # Coulmn names, if needed to be changed later
-COURSE_CODE = 'COURSE CODE'
+COURSE_CODE = 'COURSE CO'
 COURSE_TITLE = 'COURSE TITLE'
-COURSE_TYPE = 'COURSE TYPE'
+COURSE_TYPE = 'COURSE'
 SLOT = 'SLOT'
 ERP_ID = 'ERP ID'
 EMPLOYEE_NAME = 'EMPLOYEE NAME'
@@ -188,7 +188,7 @@ class FORM:
                 autocomplete="off" '+check_status+'>'
         
         # Creating lable for checkbox
-        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject+'</label>'
+        self.form += '<label class="custom-control-label" for="'+subject_code+'"> '+subject_code+' '+subject+'</label>'
         
         try:
             course_type_data =eval(user_object.profile.course_type)

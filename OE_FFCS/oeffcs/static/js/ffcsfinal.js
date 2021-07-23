@@ -42,7 +42,7 @@ const nameCopyButton = () => {
     let copiedText = "";
     let subjectText = "";
     "button name-copy-btn"
-        .split(' ').forEach(cls => element.classList.add(cls));
+    .split(' ').forEach(cls => element.classList.add(cls));
     element.innerHTML = "Copy!";
     element.addEventListener("click", () => {
         const e = element.parentElement.parentElement.children[0];
@@ -50,7 +50,7 @@ const nameCopyButton = () => {
         copiedText = e.innerText;
         subjectText = e.parentElement.parentElement.parentElement.parentElement.parentElement.children[1].children[0].innerText;
         event.stopImmediatePropagation();
-        fetch("/lowlevellog_success/",{
+        fetch("/lowlevellog_success/", {
             method: "POST",
             body: JSON.stringify({
                 "message": ` just copied ${copiedText} for ${subjectText}`,
@@ -69,13 +69,13 @@ const nameCopyButton = () => {
 const courseCodeCopyButton = () => {
     const btn = document.createElement("button");
     "button course-code-copy-btn"
-        .split(' ').forEach(cls => btn.classList.add(cls));
+    .split(' ').forEach(cls => btn.classList.add(cls));
     btn.innerHTML = "For searching Course Code";
     btn.addEventListener("click", () => {
         const arr = btn.parentElement.children[0].children[0].innerText.split(' ');
-        const coursecode = arr[arr.length -1];
+        const coursecode = arr[arr.length - 1];
         fallbackCopyTextToClipboard(coursecode);
-        fetch("/lowlevellog_info/",{
+        fetch("/lowlevellog_info/", {
             method: "POST",
             body: JSON.stringify({
                 "message": ` copied ${coursecode}`,
@@ -149,7 +149,7 @@ const render_timetable = tmtbl => {
         slots_in_enrollment = enrollment.split(' ')[0].split('+');
         enrollment_data = enrollment.split(' ').slice(1).join(" ");
         slots_in_enrollment.forEach(slot => {
-            all_text = all_text.replace(conventional(slot), activated(
+            all_text = all_text.replaceAll(conventional(slot), activated(
                 slot + '<br>' + enrollment_data));
         });
     });
@@ -214,7 +214,7 @@ const rowUpdate = e => {
                     // console.log(SLOT_CONFLICT_DATA[slot]);
                     try {
                         Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = TRUE)
-                    } catch { }
+                    } catch {}
 
                 });
                 console.log(temp_booked_slots)
@@ -222,7 +222,7 @@ const rowUpdate = e => {
                 updateComputedInfo();
             }
         }
-        fetch("/lowlevellog_info/",{
+        fetch("/lowlevellog_info/", {
             method: "POST",
             body: JSON.stringify({
                 "message": `Just selected ${TEACHER_NAME} for ${SUBJECT}`,
@@ -244,7 +244,7 @@ const rowUpdate = e => {
             temp_booked_slots[slot] = FALSE;
             try {
                 Array.from(SLOT_CONFLICT_DATA[slot]).forEach(i => temp_booked_slots[i] = FALSE)
-            } catch { }
+            } catch {}
         });
         localStorage.setItem("booked", JSON.stringify(temp_booked_slots))
         for (row of PARENT.children) {
@@ -254,7 +254,7 @@ const rowUpdate = e => {
                 row.style.visibility = "collapse";
             }
         }
-        fetch("/lowlevellog_error/",{
+        fetch("/lowlevellog_error/", {
             method: "POST",
             body: JSON.stringify({
                 "message": `Just unselected ${TEACHER_NAME} for ${SUBJECT}`,
@@ -323,9 +323,9 @@ const renderShit = lst => {
         document.getElementById("info").appendChild(course);
 
         "table table-bordered table-hover table-sm table-dark"
-            .split(' ').forEach(cls => {
-                table.classList.add(cls);
-            });
+        .split(' ').forEach(cls => {
+            table.classList.add(cls);
+        });
         const tbody = document.createElement("tbody");
         const tbody2 = document.createElement("tbody");
         const collapseCurrent = obj => {
@@ -422,13 +422,13 @@ const renderShit = lst => {
 
 const pageload = () => {
     fetch("/ffcsfinalpagedata/", {
-        method: "POST",
-        body: JSON.stringify({}),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "X-CSRFToken": CSRFTOKEN,
-        },
-    })
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": CSRFTOKEN,
+            },
+        })
         .then(res => res.json())
         .then(res => {
             // document.getElementById("info").innerText=JSON.stringify(res["info"]);

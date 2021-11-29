@@ -469,10 +469,86 @@ def validate_timetable(timetable):
 
     for i in timetable:
         slots.extend(i.split(' ')[0].split('+'))
+    # remove all occurances of NIL from slots
+    slots = [i for i in slots if i != 'NIL']
     if len(slots) != len(set(slots)):
         return (False, 0, 0, 0, 'none', 'none')
+    print(slots)
+
+    if 'D1' in slots and 'L4' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TB1' in slots and 'L5' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TG1' in slots and 'L6' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'E1' in slots and 'L10' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TC1' in slots and 'L11' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TAA1' in slots and 'L12' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'F1' in slots and 'L16' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'V1' in slots and 'L17' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'V2' in slots and 'L18' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'G1' in slots and 'L22' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TE1' in slots and 'L23' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TCC1' in slots and 'L24' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'TA1' in slots and 'L28' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TF1' in slots and 'L29' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TD1' in slots and 'L30' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    #######################################
+    if 'D2' in slots and 'L34' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TB2' in slots and 'L35' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TG2' in slots and 'L36' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'E2' in slots and 'L40' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TC2' in slots and 'L41' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TAA2' in slots and 'L42' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'F2' in slots and 'L46' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TD2' in slots and 'L47' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TBB2' in slots and 'L48' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'G2' in slots and 'L52' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TE2' in slots and 'L53' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TCC2' in slots and 'L54' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
+    if 'TA2' in slots and 'L58' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TF2' in slots and 'L59' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+    if 'TDD2' in slots and 'L60' in slots:
+        return (False, 0, 0, 0, 'none', 'none')
+
     slots_cleaned = []
     for i in slots:
+        if i == 'NIL':
+            continue
         if i in dict_conv.keys():
             if theory != 'mixed':
                 if i in morning_theory and theory == '':
@@ -486,6 +562,7 @@ def validate_timetable(timetable):
             slots_cleaned.extend(dict_conv[i])
         else:
             if lab != 'mixed':
+
                 inti = int(i[1:])
                 if inti <= 30 and lab == '':
                     lab = 'morning'

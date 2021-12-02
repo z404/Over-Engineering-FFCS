@@ -986,6 +986,7 @@ def get_timetable_data_by_id(user_object, table_id, first='first'):
             returndata['render_timetable'] = timetable_to_html_str(
                 timetable_lst)
         else:
+            print("This got triggered?")
             returndata['render_timetable'] = timetable_lst
             del returndata['information_table']
         returndata['nickname'] = timetable[0].nickname

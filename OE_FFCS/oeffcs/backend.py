@@ -65,9 +65,9 @@ response = logger.send()
 base_dir = str(settings.BASE_DIR).replace('\\', '/')
 
 # Coulmn names, if needed to be changed later
-COURSE_CODE = 'COURSE CO'
+COURSE_CODE = 'COURSE CODE'
 COURSE_TITLE = 'COURSE TITLE'
-COURSE_TYPE = 'COURSE'
+COURSE_TYPE = 'COURSE TY'
 SLOT = 'SLOT'
 ERP_ID = 'ERP ID'
 EMPLOYEE_NAME = 'EMPLOYEE NAME'
@@ -1283,6 +1283,7 @@ def apicall_finalpage(user_object):
                 '`'+COURSE_CODE+'` == "'+coursecode+'" and `'+ERP_ID+'` == "'+j+'"').iloc[0][EMPLOYEE_NAME]
             temp['chosen'] = 'C'
             course_list.append(temp)
+            # NIL
 
         donelist = []
         for data in newdataframe.iterrows():

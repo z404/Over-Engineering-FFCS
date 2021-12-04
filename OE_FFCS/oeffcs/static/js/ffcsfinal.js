@@ -5,6 +5,7 @@ const GREEN = "GREEN";
 const YELLOW = "YELLOW";
 const RED = "RED";
 const GREY = "GREY";
+let blockedSlotsText = "";
 
 const SLOT_CONFLICT_DATA = {
     A1: ["L1", "L14"],
@@ -293,7 +294,7 @@ const rowGeneratesConflict = (row) => {
         // console.log(slots)
         const data = JSON.parse(localStorage.getItem("booked"));
         // console.log(data)
-        for (slot of slots) {
+        for (const slot of slots) {
             if (data[slot] == TRUE) {
                 // console.log("Generates conflict:",data[slot])
                 return 1;
@@ -386,6 +387,40 @@ const updateTimetable = () => {
     document.getElementById("dynamic-timetable").innerHTML = render_timetable(
         getSelectedTimetables()
     );
+};
+
+const update = (e) => {
+    const slotText = document.querySelector("#update-text").value;
+    const slots = slotText.split("+");
+    const temp_booked_slots = JSON.parse(localStorage.getItem("booked"));
+    console.log(blockedSlotsText);
+    slots.forEach((slot) => {
+        temp_booked_slots[slot] = TRUE;
+        // console.log(SLOT_CONFLICT_DATA[slot]);
+        try {
+            Array.from(SLOT_CONFLICT_DATA[slot]).forEach(
+                (i) => (temp_booked_slots[i] = TRUE)
+            );
+        } catch {}
+    });
+    const blockedSlots = blockedSlotsText.split("+");
+    const unblockedSlots = blockedSlots.filter((ele) => !slots.includes(ele));
+    console.log(unblockedSlots);
+    unblockedSlots.forEach((slot) => {
+        temp_booked_slots[slot] = FALSE;
+        // console.log(SLOT_CONFLICT_DATA[slot]);
+        try {
+            Array.from(SLOT_CONFLICT_DATA[slot]).forEach(
+                (i) => (temp_booked_slots[i] = FALSE)
+            );
+        } catch {}
+    });
+    localStorage.setItem("booked", JSON.stringify(temp_booked_slots));
+    updateComputedInfo();
+    blockedSlotsText = slotText;
+    console.log(blockedSlotsText);
+
+    console.log(temp_booked_slots);
 };
 
 const rowUpdate = (e) => {
@@ -665,5 +700,8 @@ const pageload = () => {
             console.log(res);
             renderShit(res["info"]);
         });
+    document.querySelector("#update-btn").addEventListener("click", (e) => {
+        update(e);
+    });
 };
 pageload();

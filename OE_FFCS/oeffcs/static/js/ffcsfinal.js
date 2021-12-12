@@ -390,8 +390,14 @@ const updateTimetable = () => {
 };
 
 const update = (e) => {
+    const slotSplitter = (strng) =>
+        strng
+            .toUpperCase()
+            .split(",")
+            .filter((e) => e !== " ")
+            .map((e) => e.trim());
     const slotText = document.querySelector("#update-text").value;
-    const slots = slotText.split("+");
+    const slots = slotSplitter(slotText);
     const temp_booked_slots = JSON.parse(localStorage.getItem("booked"));
     console.log(blockedSlotsText);
     slots.forEach((slot) => {
@@ -403,7 +409,7 @@ const update = (e) => {
             );
         } catch {}
     });
-    const blockedSlots = blockedSlotsText.split("+");
+    const blockedSlots = slotSplitter(blockedSlotsText);
     const unblockedSlots = blockedSlots.filter((ele) => !slots.includes(ele));
     console.log(unblockedSlots);
     unblockedSlots.forEach((slot) => {

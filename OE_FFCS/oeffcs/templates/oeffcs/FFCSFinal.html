@@ -1,19 +1,20 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} 
+{% load static %} 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/winffcs.css' %}"> 
+<link rel="stylesheet" href="{% static 'css/winffcs.css' %}" />
 <form method="post">{% csrf_token %}</form>
-{% endblock head %}
-{% block title %}
-FFCS!!
-{% endblock title %}
+{% endblock head %} 
+{% block title %} FFCS!! {% endblock title %} 
 {% block content %}
 <h5>Win FFCS!</h5>
-This page is to be accessed during FFCS, but you can experiment with it a little. All teachers are listed below, with copy to clipboard
-buttons for names and course codes. This page will even help you in case you aren't able to choose the teacher you wanted to, by giving
-substitutes. ALL THE BEST, AND HAVE FUN.
-<br>
-<br>
+This page is to be accessed during FFCS, but you can experiment with it a
+little. All teachers are listed below, with copy to clipboard buttons for names
+and course codes. This page will even help you in case you aren't able to choose
+the teacher you wanted to, by giving substitutes. ALL THE BEST, AND HAVE FUN.
+<br />
+<input type="text" id="update-text" placeholder="A1, A2, B1, ..." />
+<button id="update-btn" class="btn btn-primary">Update</button>
+<br />
 <div id="dynamic-timetable"></div>
 <div id="info"></div>
 <script src="{% static 'js/ffcsfinal.js' %}"></script>

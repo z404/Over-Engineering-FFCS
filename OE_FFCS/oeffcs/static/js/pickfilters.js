@@ -24,8 +24,8 @@ const ValidForm = () => {
         (that.val().length != 0 &&
             validList(that.val()).length ===
             validList(that.val())
-                .map(linearSearch)
-                .filter((e) => e).length &&
+            .map(linearSearch)
+            .filter((e) => e).length &&
             validList(that.val()).length !== 0) ||
         that.val().length == 0
     ) {
@@ -39,10 +39,11 @@ const ValidForm = () => {
     return false;
 };
 
-const request = async () => {
+const request = async() => {
     var data = {},
         that = $("form.ajax");
-    that.find("input[type=radio]:checked,input[type=number],input[type=text]")
+    that
+        .find("input[type=radio]:checked,input[type=number],input[type=text]")
         .each((index, valv) => {
             var that = $(valv),
                 name = that.attr("name"),
@@ -71,7 +72,7 @@ $(document).ready(() => {
     $(".invalid-feedback").hide();
     $("#zero-timetables-error").hide();
 
-    $("#pre-check").on("click", async () => {
+    $("#pre-check").on("click", async() => {
         if (ValidForm()) {
             event.preventDefault();
             json = await request();
@@ -85,12 +86,10 @@ $(document).ready(() => {
                 $("#pre-check-info").show();
                 $("#error-message1").hide();
                 $("#zero-timetables-error").hide();
-            }
-            else {
+            } else {
                 $("#zero-timetables-error").show();
                 $("#pre-check-info").hide();
             }
-
         } else {
             $("#error-message1").show();
             $("#pre-check-info").text("");
@@ -98,20 +97,19 @@ $(document).ready(() => {
         }
     });
 
-    $("#save-filters").on("click", async () => {
+    $("#save-filters").on("click", async() => {
         if (ValidForm()) {
             event.preventDefault();
             json = await request();
             if (json["ret"] == 0) {
                 $("#zero-timetables-error").show();
                 $("#pre-check-info").hide("");
-            }
-            else {
-                localStorage.setItem("allstoredtimetables",null);
+                $("form.ajax").submit();
+            } else {
+                localStorage.setItem("allstoredtimetables", null);
                 $("form.ajax").submit();
             }
-        }
-        else {
+        } else {
             event.preventDefault();
             $("#error-message1").show();
             $("#pre-check-info").text("");

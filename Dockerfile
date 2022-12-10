@@ -1,6 +1,6 @@
 FROM python:3.8.15
 
-EXPOSE 8000
+EXPOSE 8001
 
 RUN pip install --upgrade pip
 

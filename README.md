@@ -20,7 +20,7 @@ You can use [build args](https://vsupalov.com/docker-arg-env-variable-guide/) fo
 
 ```bash
 docker run -d \
-    -p 80:8000 \
+    -p 80:8001 \
     -v :/home
     oeffcs
 ```
